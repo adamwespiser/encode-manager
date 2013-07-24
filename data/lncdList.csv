@@ -1,0 +1,29 @@
+geneName,gene_id,foundInDerrien,description,lncRnaDbEntry,publicationEntry
+XIST,ENSG00000229807.3,yes,”x inactivation”
+JPX,ENSG00000225470.1,yes,”xist activator”
+FTX,ENSG00000230590.1,yes,”xist regulator”
+MEG3,ENSG00000214548.7,yes,”stimulate p53 expression an inhibit cell cycle”,http://www.lncrnadb.org/Detail.aspx?TKeyID=104 KCNQ1OT1,ENSG00000269821,no,http://www.lncrnadb.org/Detail.aspx?TKeyID=101
+AIRN,ENSG00000268257,no,http://www.lncrnadb.org/Detail.aspx?TKeyID=77
+HOTTIP,ENSG00000243766.1,yes,”hoxA associated transcript”,http://www.lncrnadb.org/Detail.aspx?TKeyID=175
+ANRIL,ENSG00000240498.1,yes,"AS non-coding RNA in Ink4 locus”,http://www.lncrnadb.org/Detail.aspx?TKeyID=79
+EVF2,ENSMUSG00000090063, no,“Antisense to Dlx6 genes in the Dlx5/6 cluster”
+DLX6-AS-RNA,ENSG00000231764.2,yes,”synonym for Evf2”,http://www.lncrnadb.org/Detail.aspx?TKeyID=90
+BDNF-AS,ENSG00000245573.3,yes,”regulates bdnf-mRNA in vivo”
+TPTEP1,ENSG00000100181.14,yes,”miRNA decoy”,http://www.lncrnadb.org/Detail.aspx?TKeyID=187
+MALAT1,ENSG00000251562.3,yes,”found to regulate alternative splicing of endogenous target genes”,http://www.lncrnadb.org/Detail.aspx?TKeyID=93
+TUG1,ENSG00000253352.2,yes,”involved in the formation of photoreceptors in rodents.”,http://www.lncrnadb.org/Detail.aspx?TKeyID=120
+NEAT1,ENSG00000245532.2,yes ,”essential for the assembly,maintenance and structural integrity of paraspeckles”,http://www.lncrnadb.org/Detail.aspx?TKeyID=105
+HOTAIR,ENSG00000228630.1,yes,”scaffold for protein complexes”,http://www.lncrnadb.org/Detail.aspx?TKeyID=97
+GAS5,ENSG00000234741.2,yes,”Growth arrest specific transcript,may be a tumour supressor”,http://www.lncrnadb.org/Detail.aspx?TKeyID=92,http://www.ncbi.nlm.nih.gov/pubmed/23621190
+GOMAFU,ENSG00000225783.2,yes,”Gomafu binds directly to the splicing factors QKI and SRSF1,http://www.lncrnadb.org/Detail.aspx?TKeyID=88,http://www.ncbi.nlm.nih.gov/pubmed/23628989
+PCAT-1,ENSG00000253438.1,yes,”upregulated in colorectal cancer with poor prognosis,mechanism not fully understood(5/2013)”,NA,http://www.ncbi.nlm.nih.gov/pubmed/23640607
+ncRAN,ENSG00000163597.8 ,yes,”expression correlates with clinical grade in clinical cancer specimens”,NA,http://www.ncbi.nlm.nih.gov/pubmed/21147498 
+lincRoR,ENSG00000258609.1,no,” linc-RoR maintains human embryonic stem cell self-renewal by functioning as a sponge to trap miR-145”,NA,http://www.ncbi.nlm.nih.gov/pubmed/23597480
+HULC,ENSG00000251164.1,yes,“Competing endogenous RNA (ceRNA). Functions as a sponge/ target mimic for miR-372 through a conserved target site”,http://www.lncrnadb.org/Detail.aspx?TKeyID=183,NA
+CRNDE,ENSG00000245694.2,yes,Colorectal Neoplasia Differentially Expressed (non-protein-coding),a long non-coding RNA (lncRNA),NA,doi: 10.3389/fgene.2012.00270
+DHRS4-AS1,ENSG00000215256,no,“AS1DHRS4,a head-to-head natural antisense transcript,silences the DHRS4 gene cluster in cis and trans.”,NA,doi:10.1073/pnas.1116597109
+TINCR,ENSG00000223573.1,yes,”terminal differentiation-induced ncRNA (TINCR),controls human epidermal  differentiation by a post-transcriptional mechanism.”,NA,doi: 10.1038/nature11661
+PANDAR,ENSG00000213500,no,”called LAP3P2 sometimes”,http://lncrnadb.com/Detail.aspx?TKeyID=267,NA
+PTENP1,ENSG00000237984,no,”competing endogenous rna. possible tmour suppressor”,http://lncrnadb.com/Detail.aspx?TKeyID=187,http://www.ncbi.nlm.nih.gov/pubmed/21833010
+TERC,ENSG00000200182,no,”telemerase associated”,NA,http://www.nature.com/nmeth/journal/v8/n12/full/nmeth.1787.html?WT.ec_id=NMETH-201112
+H19,ENSG00000130600.9,yes,”first lncRNA described in mammals, sense and antisense transcripts from the H19 locus were identified as binding to the PRC2 chromatin modification complex 

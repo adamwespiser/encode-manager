@@ -1,0 +1,1206 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<script type="text/javascript">
+    function ShowLoginWindow() {
+        pcLogin.Show();
+    }
+
+    function ShowCreateAccountWindow() {
+        pcCreateAccount.Show();
+        tbFirstName.Focus();
+    }
+    function disableEnterKey(e) {
+        var key;
+        if (window.event)
+            key = window.event.keyCode; //IE
+        else
+            key = e.which; //firefox      
+
+        return (key != 13);
+    }
+
+</script>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head id="ctl00_Head1"><link rel="stylesheet" type="text/css" href="/DXR.axd?r=0_424-2bqz2" /><link rel="stylesheet" type="text/css" href="/DXR.axd?r=0_427-2bqz2" /><link rel="stylesheet" type="text/css" href="/DXR.axd?r=0_309-2bqz2" /><link rel="stylesheet" type="text/css" href="/DXR.axd?r=0_312-2bqz2" /><link rel="stylesheet" type="text/css" href="/DXR.axd?r=2_2-2bqz2" /><link rel="stylesheet" type="text/css" href="/DXR.axd?r=0_300-2bqz2" /><link rel="stylesheet" type="text/css" href="/DXR.axd?r=0_303-2bqz2" /><link rel="stylesheet" type="text/css" href="CSS/rnaDBStyle.css" />
+    <title>
+	lncRNA Database
+</title><link href="App_Themes/BlackGlass/Editors/sprite.css" type="text/css" rel="stylesheet" /><link href="App_Themes/BlackGlass/Editors/styles.css" type="text/css" rel="stylesheet" /><link href="App_Themes/BlackGlass/GridView/sprite.css" type="text/css" rel="stylesheet" /><link href="App_Themes/BlackGlass/GridView/styles.css" type="text/css" rel="stylesheet" /><link href="App_Themes/BlackGlass/HtmlEditor/sprite.css" type="text/css" rel="stylesheet" /><link href="App_Themes/BlackGlass/HtmlEditor/styles.css" type="text/css" rel="stylesheet" /><link href="App_Themes/BlackGlass/Scheduler/sprite.css" type="text/css" rel="stylesheet" /><link href="App_Themes/BlackGlass/Scheduler/styles.css" type="text/css" rel="stylesheet" /><link href="App_Themes/BlackGlass/SpellChecker/styles.css" type="text/css" rel="stylesheet" /><link href="App_Themes/BlackGlass/TreeList/sprite.css" type="text/css" rel="stylesheet" /><link href="App_Themes/BlackGlass/TreeList/styles.css" type="text/css" rel="stylesheet" /><link href="App_Themes/BlackGlass/Web/sprite.css" type="text/css" rel="stylesheet" /><link href="App_Themes/BlackGlass/Web/styles.css" type="text/css" rel="stylesheet" /></head>
+<body>
+    <div id="frame">
+        <form name="aspnetForm" method="post" action="Detail.aspx?TKeyID=259" id="aspnetForm">
+<input type="hidden" name="__VIEWSTATE" id="__VIEWSTATE" value="/wEPDwUKMTAyNzE0NzkwNg9kFgJmD2QWAgIDD2QWBAIBDzwrAAkCAA8WAh4PRGF0YVNvdXJjZUJvdW5kZ2QGDxYCHgpJc1NhdmVkQWxsZw8UKwAEPCsADAEAFgoeC05hdmlnYXRlVXJsBQ0vRGVmYXVsdC5hc3B4HgRUZXh0BQRIb21lHgdUb29sVGlwBQ5BYm91dCBsbmNSTkFkYh4OUnVudGltZUNyZWF0ZWRnHghEYXRhUGF0aAUNL0RlZmF1bHQuYXNweDwrAAwBABYKHwIFDC9TZWFyY2guYXNweB8DBQZTZWFyY2gfBAUcUGVyZm9ybSBzZWFyY2hlcyBvbiBsbmNSTkFkYh8FZx8GBQwvU2VhcmNoLmFzcHg8KwAMAQAWCh8CBQ8vU3VibWl0TmV3LmFzcHgfAwUGU3VibWl0HwQFJ1N1Ym1pdCBhbiBlbnRyeSBmb3IgYWRkaXRpb24gdG8gbG5jIFJOQR8FZx8GBQ8vU3VibWl0TmV3LmFzcHg8KwAMAQAWCh8CBQovSGVscC5hc3B4HwMFBEhlbHAfBAUcQWRtaW5pc3RyYXRvciBBY2Nlc3MgbG5jIFJOQR8FZx8GBQovSGVscC5hc3B4ZGQCAw9kFggCBQ88KwAWAgAPFgIfAGdkBg9kEBYBAgMWATwrAAsBABYCHglTb3J0SW5kZXhmDxYBAgEWAQWZAURldkV4cHJlc3MuV2ViLkFTUHhHcmlkVmlldy5HcmlkVmlld0RhdGFUZXh0Q29sdW1uLCBEZXZFeHByZXNzLldlYi5BU1B4R3JpZFZpZXcudjEwLjIsIFZlcnNpb249MTAuMi42LjAsIEN1bHR1cmU9bmV1dHJhbCwgUHVibGljS2V5VG9rZW49Yjg4ZDE3NTRkNzAwZTQ5YWQCBw88KwAWAgAPFgIfAGdkBg9kEBYCAgQCBRYCPCsACwEAFgIfBwIBPCsACwEAFgIfB2YPFgICAQIBFgEFmQFEZXZFeHByZXNzLldlYi5BU1B4R3JpZFZpZXcuR3JpZFZpZXdEYXRhVGV4dENvbHVtbiwgRGV2RXhwcmVzcy5XZWIuQVNQeEdyaWRWaWV3LnYxMC4yLCBWZXJzaW9uPTEwLjIuNi4wLCBDdWx0dXJlPW5ldXRyYWwsIFB1YmxpY0tleVRva2VuPWI4OGQxNzU0ZDcwMGU0OWFkAgkPPCsAFgIADxYEHwBnHgdWaXNpYmxlZ2QGD2QQFgECAxYBPCsACwEJPCsACQEIPCsABAECDxYCHwFnDxQrAEQUKwABFgYfAwUUSG9tbyBzYXBpZW5zIChIdW1hbikeBVZhbHVlAgcfBWcUKwABFgYfAwUUTXVzIG11c2N1bHVzIChNb3VzZSkfCQIIHwVnFCsAARYGHwMFF1JhdHR1cyBub3J2ZWdpY3VzIChSYXQpHwkCCR8FZxQrAAEWBh8DBRNCb3MgdGF1cnVzIChDYXR0bGUpHwkCCh8FZxQrAAEWBh8DBRxQYW4gdHJvZ2xvZHl0ZXMgKENoaW1wYW56ZWUpHwkCCx8FZxQrAAEWBh8DBSRYZW5vcHVzIGxhZXZpcyAoQWZyaWNhbiBjbGF3ZWQgZnJvZykfCQIMHwVnFCsAARYGHwMFF0dhbGx1cyBHYWxsdXMgKENoaWNrZW4pHwkCDR8FZxQrAAEWBh8DBRdEYW5pbyByZXJpbyAoWmVicmFmaXNoKR8JAg4fBWcUKwABFgYfAwUjRHJvc29waGlsYSBtZWxhbm9nYXN0ZXIgKEZydWl0IGZseSkfCQIPHwVnFCsAARYGHwMFFkNhbmlzIGZhbWlsaWFyaXMgKERvZykfCQIRHwVnFCsAARYGHwMFIE1hY2FjYSBtdWxhdHRhICAoUmhlc3VzIG1hY2FxdWUpHwkCEh8FZxQrAAEWBh8DBRlBcGlzIG1lbGxpZmVyYSAoSG9uZXliZWUpHwkCEx8FZxQrAAEWBh8DBTFNb25vZGVscGhpcyBkb21lc3RpY2EgKFNob3J0IHRhaWxlZCBncmV5IG9wb3NzdW0pHwkCFB8FZxQrAAEWBh8DBRZFcXV1cyBjYWJhbGx1cyAoSG9yc2UpHwkCFR8FZxQrAAEWBh8DBSFNYWNyb3B1cyBldWdlbmlpIChUYW1tYXIgd2FsbGFieSkfCQIWHwVnFCsAARYGHwMFEk92aXMgYXJpZXMgKFNoZWVwKR8JAhcfBWcUKwABFgYfAwUcQ2F2aWEgcG9yY2VsbHVzIChHdWluZWEgcGlnKR8JAhgfBWcUKwABFgYfAwUQU3VzIHNjcm9mYSAoUGlnKR8JAhkfBWcUKwABFgYfAwUoU2FjY2hhcm9teWNlcyBjZXJldmlzaWFlIChCYWtlcidzIHllYXN0KR8JAhofBWcUKwABFgYfAwUmQXJhYmlkb3BzaXMgdGhhbGlhbmEgKE1vdXNlLWVhciBjcmVzcykfCQIbHwVnFCsAARYGHwMFFkJyYXNzaWNhIHJhcGEgKFR1cm5pcCkfCQIcHwVnFCsAARYGHwMFFlZpdGlzIHZpbmlmZXJhIChHcmFwZSkfCQIdHwVnFCsAARYGHwMFIFBvcHVsdXMgdHJlbXVsYSAoRXVyb3BlYW4gYXNwZW4pHwkCHh8FZxQrAAEWBh8DBRNPcnl6YSBzYXRpdmEgKFJpY2UpHwkCHx8FZxQrAAEWBh8DBSBMeWNvcGVyc2ljb24gZXNjdWxlbnR1bSAoVG9tYXRvKR8JAiAfBWcUKwABFgYfAwUVR2x5Y2luZSBtYXggKFNveWJlYW4pHwkCIR8FZxQrAAEWBh8DBSRNZWRpY2FnbyB0cnVuY2F0dWxhICAoQmFycmVsIENsb3ZlcikfCQIiHwVnFCsAARYGHwMFME94eXRyaWNoYSB0cmlmYWxsYXggKFN0ZXJraWVsbGEgaGlzdHJpb211c2NvcnVtKR8JAiMfBWcUKwABFgYfAwUWUGFyYW1lY2l1bSB0ZXRyYXVyZWxpYR8JAiQfBWcUKwABFgYfAwUlRGljdHlvc3RlbGl1bSBkaXNjb2lkZXVtIChTbGltZSBtb2xkKR8JAiUfBWcUKwABFgYfAwUSTmV1cm9zcG9yYSBjcmFzc2EgHwkCJh8FZxQrAAEWBh8DBSlTY2hpem9zYWNjaGFyb215Y2VzIHBvbWJlIChGaXNzaW9uIHllYXN0KR8JAicfBWcUKwABFgYfAwUkQ3JpY2V0dWx1cyBncmlzZXVzIChDaGluZXNlIGhhbXN0ZXIpHwkCKB8FZxQrAAEWBh8DBSNQb25nbyBweWdtYWV1cyAgKEJvcm5lYW4gb3Jhbmd1dGFuKR8JAikfBWcUKwABFgYfAwUsTWljcm9jcmljZXR1cyBhdXJldXMgKFN5cmlhbiBnb2xkZW4gaGFtc3RlcikfCQIqHwVnFCsAARYGHwMFMlBoeXRvcGh0aG9yYSBpbmZlc3RhbnMgKFBvdGF0byBsYXRlIGJsaWdodCBmdW5ndXMpHwkCKx8FZxQrAAEWBh8DBShYZW5vcHVzIHRyb3BpY2FsaXMgKFdlc3Rlcm4gY2xhd2VkIGZyb2cpHwkCLB8FZxQrAAEWBh8DBSpDcmljZXR1bHVzIGxvbmdpY2F1ZGF0dXMgKENoaW5lc2UgaGFtc3RlcikfCQItHwVnFCsAARYGHwMFIUxvcmlzIHRhcmRpZ3JhZHVzIChTbGVuZGVyIGxvcmlzKR8JAi4fBWcUKwABFgYfAwUmTnljdGljZWJ1cyBweWdtYWV1cyAoUHlnbXkgc2xvdyBsb3JpcykfCQIvHwVnFCsAARYGHwMFL090b2xlbXVyIGdhcm5ldHRpaSAoR2FybmV0dCdzIGdyZWF0ZXIgYnVzaGJhYnkpHwkCMB8FZxQrAAEWBh8DBSxDaGVpcm9nYWxldXMgbWVkaXVzIChGYXQtdGFpbGVkIGR3YXJmIGxlbXVyKR8JAjEfBWcUKwABFgYfAwUvTGVwaWxlbXVyIGRvcnNhbGlzIChHcmV5LWJhY2tlZCBzcG9ydGl2ZSBsZW11cikfCQIyHwVnFCsAARYGHwMFMkxlcGlsZW11ciBydWZpY2F1ZGF0dXMgKFJlZC10YWlsZWQgc3BvcnRpdmUgbGVtdXIpHwkCMx8FZxQrAAEWBh8DBSRQcm9waXRoZWN1cyB2ZXJyZWF1eGkgKFdoaXRlIHNpZmFrYSkfCQI0HwVnFCsAARYGHwMFJkRhdWJlbnRvbmlhIG1hZGFnYXNjYXJpZW5zaXMgKEF5ZS1heWUpHwkCNR8FZxQrAAEWBh8DBR9MZW11ciBjb3JvbmF0dXMgKENyb3duZWQgbGVtdXIpHwkCNh8FZxQrAAEWBh8DBS1HYWxhZ28gbW9ob2xpIChTb3V0aCBBZnJpY2FuIGxlc3NlciBidXNoYmFieSkfCQI3HwVnFCsAARYGHwMFGU1lZGljYWdvIHNhdGl2YSAoQWxmYWxmYSkfCQI4HwVnFCsAARYGHwMFIkNhZW5vcmhhYmRpdGlzIGVsZWdhbnMgKFJvdW5kd29ybSkfCQI5HwVnFCsAARYGHwMFF1N0eWVsYSBjbGF2YSAoQXNjaWRpYW4pHwkCOh8FZxQrAAEWBh8DBR5TdHJpZ2FtaWEgbWFyaXRpbWEgKENlbnRpcGVkZSkfCQI7HwVnFCsAARYGHwMFI09uY29yaHluY2h1cyBteWtpc3MgKFJhaW5ib3cgdHJvdXQpHwkCPB8FZxQrAAEWBh8DBRZCb21ieXggbW9yaSAoU2lsa21vdGgpHwkCPR8FZxQrAAEWBh8DBRZQYXBpbyB1cnNpbnVzIChCYWJvb24pHwkCPh8FZxQrAAEWBh8DBSlNYWNhY2EgZmFzY2ljdWxhcmlzIChDcmFiIGVhdGluZyBtYWNhcXVlKR8JAj8fBWcUKwABFgYfAwUkR2FzdGVyb3N0ZXVzIGFjdWxlYXR1cyAoU3RpY2tsZWJhY2spHwkCQB8FZxQrAAEWBh8DBSFQb25nbyBhYmVsaWkgKFN1bWF0cmFuIG9yYW5ndXRhbikfCQJBHwVnFCsAARYGHwMFIUdvcmlsbGEgZ29yaWxsYSAoV2VzdGVybiBHb3JpbGxhKR8JAkIfBWcUKwABFgYfAwUdSHlsb2JhdGVzIGxhciAoQ29tbW9uIGdpYmJvbikfCQJDHwVnFCsAARYGHwMFIlBhcGlvIGhhbWFkcnlhcyAoSGFtYWRyeWFzIGJhYm9vbikfCQJEHwVnFCsAARYGHwMFKVBhbiBwYW5pc2N1cyAoUHlnbXkgY2hpbXBhbnplZSkgKEJvbm9ibykgHwkCRR8FZxQrAAEWBh8DBS9DZXJjb3BpdGhlY3VzIGFldGhpb3BzIChHcmVlbiBtb25rZXkpIChHcml2ZXQpIB8JAkYfBWcUKwABFgYfAwUhQW90dXMgdHJpdmlyZ2F0dXMgKE5pZ2h0IG1vbmtleSkgHwkCRx8FZxQrAAEWBh8DBSRTYWd1aW51cyBpbXBlcmF0b3IgKEVtcGVyb3IgdGFtYXJpbikfCQJIHwVnFCsAARYGHwMFJVNhZ3VpbnVzIG9lZGlwdXMgKENvdHRvbi10b3AgdGFtYXJpbikfCQJJHwVnFCsAARYGHwMFHk9yeWN0b2xhZ3VzIGN1bmljdWx1cyAoUmFiYml0KR8JAkofBWcUKwABFgYfAwUlTG94b2RvbnRhIGFmcmljYW5hIChBZnJpY2FuIGVsZXBoYW50KR8JAksfBWdkDxYBAgEWAQWdAURldkV4cHJlc3MuV2ViLkFTUHhHcmlkVmlldy5HcmlkVmlld0RhdGFDb21ib0JveENvbHVtbiwgRGV2RXhwcmVzcy5XZWIuQVNQeEdyaWRWaWV3LnYxMC4yLCBWZXJzaW9uPTEwLjIuNi4wLCBDdWx0dXJlPW5ldXRyYWwsIFB1YmxpY0tleVRva2VuPWI4OGQxNzU0ZDcwMGU0OWFkAgsPPCsAFgIADxYCHwBnZAYPZBAWAgIDAgYWAjwrAAsBCTwrAAkBCBQrAAQWAh4JVmFsdWVUeXBlGSlYU3lzdGVtLkJ5dGUsIG1zY29ybGliLCBWZXJzaW9uPTQuMC4wLjAsIEN1bHR1cmU9bmV1dHJhbCwgUHVibGljS2V5VG9rZW49Yjc3YTVjNTYxOTM0ZTA4OWQPZBAWA2YCAQICFgMUKwABFgIfCQMAFCsAARYCHwkDARQrAAEWAh8JAwJkZDwrAAsBCTwrAAkBCBQrAAQWAh8KGSsEZA9kEBYCZgIBFgIUKwABFgIfCQMAFCsAARYCHwkDAWRkDxYCAgECARYBBZ0BRGV2RXhwcmVzcy5XZWIuQVNQeEdyaWRWaWV3LkdyaWRWaWV3RGF0YUNvbWJvQm94Q29sdW1uLCBEZXZFeHByZXNzLldlYi5BU1B4R3JpZFZpZXcudjEwLjIsIFZlcnNpb249MTAuMi42LjAsIEN1bHR1cmU9bmV1dHJhbCwgUHVibGljS2V5VG9rZW49Yjg4ZDE3NTRkNzAwZTQ5YWQYAQUeX19Db250cm9sc1JlcXVpcmVQb3N0QmFja0tleV9fFg4FD2N0bDAwJEFTUHhNZW51MQUYY3RsMDAkY3BoTWFpbiRndkFubm90YXRlBRNjdGwwMCRjcGhNYWluJGd2TGl0BRdjdGwwMCRjcGhNYWluJGd2U3BlY2llcwUrY3RsMDAkY3BoTWFpbiRndlNwZWNpZXMkY3RsMDAkRFhFZGl0b3IzJERERAUVY3RsMDAkY3BoTWFpbiRndkFzc29jBSljdGwwMCRjcGhNYWluJGd2QXNzb2MkY3RsMDAkRFhFZGl0b3IzJERERAUpY3RsMDAkY3BoTWFpbiRndkFzc29jJGN0bDAwJERYRWRpdG9yNiREREQFDWN0bDAwJHBjTG9naW4FF2N0bDAwJHBjTG9naW4kYnRPS0xvZ2luBRtjdGwwMCRwY0xvZ2luJGJ0Q2FuY2VsTG9naW4FFWN0bDAwJHBjQ3JlYXRlQWNjb3VudAUeY3RsMDAkcGNDcmVhdGVBY2NvdW50JGJ0Q3JlYXRlBSRjdGwwMCRwY0NyZWF0ZUFjY291bnQkYnRDYW5jZWxDcmVhdGX1CvoAmDKMWe6eAvxLxY+gEtXrokZO504SUaEwvy1jJg==" />
+
+<input type="hidden" name="__EVENTVALIDATION" id="__EVENTVALIDATION" value="/wEWCAKWnvLqBwKA7LDRCwLx7dC7CgLFj7E6AuydragFAqqXu5INAomd3+gPAtXw1vYCUWtvN2zRp6MefKsSJZ2NxA7h17MgehL7qohN3y/sfdg=" />
+        <div id="header">
+            <div id="header_inner">
+                <div class="lcol">
+                    <h1>
+                        <a id="linkHome" href="/Default.aspx">lnc<span>rna</span> db</a>
+                    </h1>
+                </div>
+                <div class="rcol">
+                    <div style="padding: 5px">
+
+                    </div>
+                </div>
+                <div class="ccol">
+                    <table style="width: 0%; margin-left: auto; margin-right: auto;">
+                        <tr>
+                            <td style="width: 0%">
+                                <script id="dxis_426333401" src="/DXR.axd?r=1_32-2bqz2" type="text/javascript"></script><script id="dxis_1924075399" src="/DXR.axd?r=1_61-2bqz2" type="text/javascript"></script><script id="dxis_1586321701" src="/DXR.axd?r=1_54-2bqz2" type="text/javascript"></script><script id="dxis_1585784954" src="/DXR.axd?r=1_59-2bqz2" type="text/javascript"></script><script id="dxis_585030015" src="/DXR.axd?r=1_45-2bqz2" type="text/javascript"></script><script id="dxis_425872880" src="/DXR.axd?r=1_39-2bqz2" type="text/javascript"></script><script id="dxis_1586245475" src="/DXR.axd?r=1_52-2bqz2" type="text/javascript"></script><script id="dxis_2025731777" src="/DXR.axd?r=3_7-2bqz2" type="text/javascript"></script><script id="dxis_692451311" src="/DXR.axd?r=2_22-2bqz2" type="text/javascript"></script><script id="dxis_691990790" src="/DXR.axd?r=2_29-2bqz2" type="text/javascript"></script><script id="dxis_692278286" src="/DXR.axd?r=2_21-2bqz2" type="text/javascript"></script><script id="dxis_1586072450" src="/DXR.axd?r=1_51-2bqz2" type="text/javascript"></script><script id="dxis_692527537" src="/DXR.axd?r=2_24-2bqz2" type="text/javascript"></script><script id="dxis_692096293" src="/DXR.axd?r=2_28-2bqz2" type="text/javascript"></script><script id="dxis_2052806423" src="/DXR.axd?r=2_15-2bqz2" type="text/javascript"></script><script id="dxis_426265879" src="/DXR.axd?r=1_30-2bqz2" type="text/javascript"></script><script id="dxss_703538865" type="text/javascript">
+<!--
+window.__aspxServerFormID = 'aspnetForm';
+window.__aspxEmptyImageUrl = '/DXR.axd?r=1_3-2bqz2';
+//-->
+</script><table cellspacing="0" cellpadding="0" id="ctl00_ASPxMenu1" border="0" width="60" style="border-collapse:separate;">
+	<tr>
+		<td class="dxmMenu_BlackGlass" valign="top" style="text-align:Center;"><table cellspacing="0" cellpadding="0" border="0" height="100%" width="100%" style="border-collapse:separate;margin-left:auto;margin-right:auto;">
+			<tr>
+				<td id="ctl00_ASPxMenu1_DXI0_T" title="About lncRNAdb" class="dxmMenuItem_BlackGlass" onclick="aspxMIClick(event, &#39;ctl00_ASPxMenu1&#39;, &#39;0&#39;)" width="25%" style="cursor:pointer;text-align:Left;"><a title="About lncRNAdb" href="/Default.aspx">Home</a></td><td><div id="ctl00_ASPxMenu1_DXI0_II" class="dxmMenuItemSeparatorSpacing_BlackGlass" style="overflow:hidden;font-size:1px;">
+
+				</div></td><td id="ctl00_ASPxMenu1_DXI1_ISF" class="dxmMenuFullHeightSeparator_BlackGlass"><div class="dx">
+
+				</div></td><td id="ctl00_ASPxMenu1_DXI1_IS" class="dxmMenuSeparator_BlackGlass"><div class="dx">
+
+				</div></td><td><div id="ctl00_ASPxMenu1_DXI1_ISI" class="dxmMenuItemSeparatorSpacing_BlackGlass" style="overflow:hidden;font-size:1px;">
+
+				</div></td><td id="ctl00_ASPxMenu1_DXI1_T" title="Perform searches on lncRNAdb" class="dxmMenuItem_BlackGlass" onclick="aspxMIClick(event, &#39;ctl00_ASPxMenu1&#39;, &#39;1&#39;)" width="25%" style="cursor:pointer;text-align:Left;"><a title="Perform searches on lncRNAdb" href="/Search.aspx">Search</a></td><td><div id="ctl00_ASPxMenu1_DXI1_II" class="dxmMenuItemSeparatorSpacing_BlackGlass" style="overflow:hidden;font-size:1px;">
+
+				</div></td><td id="ctl00_ASPxMenu1_DXI2_ISF" class="dxmMenuFullHeightSeparator_BlackGlass"><div class="dx">
+
+				</div></td><td id="ctl00_ASPxMenu1_DXI2_IS" class="dxmMenuSeparator_BlackGlass"><div class="dx">
+
+				</div></td><td><div id="ctl00_ASPxMenu1_DXI2_ISI" class="dxmMenuItemSeparatorSpacing_BlackGlass" style="overflow:hidden;font-size:1px;">
+
+				</div></td><td id="ctl00_ASPxMenu1_DXI2_T" title="Submit an entry for addition to lnc RNA" class="dxmMenuItem_BlackGlass" onclick="aspxMIClick(event, &#39;ctl00_ASPxMenu1&#39;, &#39;2&#39;)" width="25%" style="cursor:pointer;text-align:Left;"><a title="Submit an entry for addition to lnc RNA" href="/SubmitNew.aspx">Submit</a></td><td><div id="ctl00_ASPxMenu1_DXI2_II" class="dxmMenuItemSeparatorSpacing_BlackGlass" style="overflow:hidden;font-size:1px;">
+
+				</div></td><td id="ctl00_ASPxMenu1_DXI3_ISF" class="dxmMenuFullHeightSeparator_BlackGlass"><div class="dx">
+
+				</div></td><td id="ctl00_ASPxMenu1_DXI3_IS" class="dxmMenuSeparator_BlackGlass"><div class="dx">
+
+				</div></td><td><div id="ctl00_ASPxMenu1_DXI3_ISI" class="dxmMenuItemSeparatorSpacing_BlackGlass" style="overflow:hidden;font-size:1px;">
+
+				</div></td><td id="ctl00_ASPxMenu1_DXI3_T" title="Administrator Access lnc RNA" class="dxmMenuItem_BlackGlass" onclick="aspxMIClick(event, &#39;ctl00_ASPxMenu1&#39;, &#39;3&#39;)" width="25%" style="cursor:pointer;text-align:Left;"><a title="Administrator Access lnc RNA" href="/Help.aspx">Help</a></td>
+			</tr>
+		</table></td>
+	</tr>
+</table><iframe id="ctl00_ASPxMenu1_DXMIF0" src="javascript:false" scrolling="no" frameborder="0" style="position:absolute;display:none;z-index:19997;filter:progid:DXImageTransform.Microsoft.Alpha(Style=0, Opacity=0);">
+
+</iframe><script id="dxss_1114164020" type="text/javascript">
+<!--
+aspxAddHoverItems('ctl00_ASPxMenu1',[[[''],[''],['DXM_','DXMBC_']],[['dxmMenuItemHover_BlackGlass'],[''],['DXI0_','DXI1_','DXI2_','DXI3_'],['I','N','T','P'],[[''],[''],[''],['']],['Img','PImg']]]);
+
+var dxo = new ASPxClientMenu('ctl00_ASPxMenu1');
+window['ctl00_ASPxMenu1'] = dxo;
+dxo.uniqueID = 'ctl00$ASPxMenu1';
+dxo.renderIFrameForPopupElements = true;
+dxo.rootSubMenuFIXOffset=-1;
+dxo.rootSubMenuLIXOffset=-1;
+dxo.rootSubMenuXOffset=-1;
+dxo.InlineInitialize();
+
+//-->
+</script>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div id="main">
+            
+    <script type="text/javascript">
+        function OnGetRowValues(values) {
+            meabstract.SetText(values[0]);
+            puclit.Show();
+            /*tldocsum.PerformCustomCallback(values[1])            */
+        }
+        function OnGetTranscript(values) {
+            //document.getElementById("hfTranscriptID").value = values[0];
+            cptranscriptpopup.PerformCallback(values[0]);
+
+        }
+        function ClearSpecies() {
+            cmbspeciessearch.SetSelectedIndex(-1);
+        }
+        function ClearTags() {
+            cmbtagsearch.SetSelectedIndex(-1);
+        }
+        function EndCallback() {
+
+            puctranscript.Show();
+        }
+        function OnTranscriptClick(element, key) {
+            cpdata.PerformCallback(key);
+        }
+        function OnSearchClick() {
+            searchVal = tbsearch.GetText();
+            searchDesc = tesearchdescription.GetText();
+            searchSpec = cmbspeciessearch.GetValue() ? cmbspeciessearch.GetValue() : "";
+            searchTag = cmbtagsearch.GetValue() ? cmbtagsearch.GetValue() : "";
+            rescount = tbcount.GetText();
+
+            passString = searchVal + '|' + searchDesc + '|' + searchSpec + '|' + searchTag + '|' + rescount;
+            gvsearch.PerformCallback(passString);
+        }
+    </script>
+    <div style="padding: 3px; border-style: none; border-width: inherit; margin-bottom: 10px; width:90%; margin: auto;">
+        <h2 style="font-size: 24px; font-weight: bold; color: #0066FF;">
+            linc1610
+        </h2>
+        <h2>
+            Aliases
+        </h2>
+        <p>
+            AK144852, G730013B05Rik, linc-Cblb
+        </p>
+        
+        <div style="margin-left: auto">
+            <div style="margin-top: 10px; float: right; margin-left: 10px">
+            </div>
+            <div style="margin-top: 10px; float: right;">
+            </div>
+        </div>
+        <div style="margin-top: 10px; clear: both">
+        </div>
+        <h2>
+            Annotation
+        </h2>
+        <table class="dxgvControl_BlackGlass" cellspacing="0" cellpadding="0" id="ctl00_cphMain_gvAnnotate" border="0" width="100%" style="border-collapse:separate;">
+	<tr>
+		<td><table id="ctl00_cphMain_gvAnnotate_DXMainTable" class="dxgvTable_BlackGlass" cellspacing="0" cellpadding="0" border="0" width="100%" style="empty-cells:show;">
+			<tr id="ctl00_cphMain_gvAnnotate_DXHeadersRow">
+				<td id="ctl00_cphMain_gvAnnotate_DX-GSDT-col4" class="dxgvHeader_BlackGlass" onmousedown="aspxGVHeaderMouseDown(&#39;ctl00_cphMain_gvAnnotate&#39;, this, event);" width="100" style="border-top-width:0px;border-left-width:0px;"><table cellspacing="0" cellpadding="0" border="0" width="100%">
+					<tr>
+						<td>Section</td>
+					</tr>
+				</table></td><td id="ctl00_cphMain_gvAnnotate_DX-GSDT-col5" class="dxgvHeader_BlackGlass" onmousedown="aspxGVHeaderMouseDown(&#39;ctl00_cphMain_gvAnnotate&#39;, this, event);" style="border-top-width:0px;border-left-width:0px;border-right-width:0px;"><table cellspacing="0" cellpadding="0" border="0" width="100%">
+					<tr>
+						<td>Description</td>
+					</tr>
+				</table></td>
+			</tr><tr id="ctl00_cphMain_gvAnnotate_DXDataRow0" class="dxgvDataRow_BlackGlass">
+				<td class="dxgv">Characteristics</td><td class="dxgv" style="border-right-width:0px;">Intergenic, four-six exon transcript. LincRNA (<a href="http://www.ncbi.nlm.nih.gov/pubmed/20436462">Guttman (2010)</a>).<br \><br \>Alternative splicing and two transcriptional initiation sites (<a href="http://www.ncbi.nlm.nih.gov/pubmed/20436462">Guttman (2010)</a>).<br \><br \>Contains multiple repeat sequences.</td>
+			</tr><tr id="ctl00_cphMain_gvAnnotate_DXDataRow1" class="dxgvDataRow_BlackGlass">
+				<td class="dxgv">Expression</td><td class="dxgv" style="border-right-width:0px;">Expressed in mouse embryonic stem cells (ESCs) (<a href="http://www.ncbi.nlm.nih.gov/pubmed/20436462">Guttman (2010)</a>).<br \><br \>RNA found to be highly unstable with a half-life <2 hr in N2A (neuroblastoma) cells (<a href="http://www.ncbi.nlm.nih.gov/pubmed/22406755">Clark (2012)</a>).</td>
+			</tr><tr id="ctl00_cphMain_gvAnnotate_DXDataRow2" class="dxgvDataRow_BlackGlass">
+				<td class="dxgv" style="border-bottom-width:0px;">Function</td><td class="dxgv" style="border-right-width:0px;border-bottom-width:0px;">Involved in maintaining pluripotency in ESCs (<a href="http://www.ncbi.nlm.nih.gov/pubmed/21874018">Guttman (2011)</a>).<br \><br \>Knockdown in mECSs lead to down-regulation of Nanog, Oct4, Sox2, Klf4 and Zfp42 expression (<a href="http://www.ncbi.nlm.nih.gov/pubmed/21874018">Guttman (2011)</a>).<br \><br \>Found to interact with a number of chromatin binding proteins/complexes in mESCs including PRC1, PRC2 and JARID1C (<a href="http://www.ncbi.nlm.nih.gov/pubmed/21874018">Guttman (2011)</a>).</td>
+			</tr>
+		</table><img id="ctl00_cphMain_gvAnnotate_IADD" class="dxGridView_gvDragAndDropArrowDown_BlackGlass" src="/DXR.axd?r=1_3-2bqz2" alt="|" title="" border="0" border="0" style="position:absolute;visibility:hidden;top:-100px;" /><img id="ctl00_cphMain_gvAnnotate_IADU" class="dxGridView_gvDragAndDropArrowUp_BlackGlass" src="/DXR.axd?r=1_3-2bqz2" alt="|" title="" border="0" border="0" style="position:absolute;visibility:hidden;top:-100px;" /><img id="ctl00_cphMain_gvAnnotate_IDHF" class="dxGridView_gvDragAndDropHideColumn_BlackGlass" src="/DXR.axd?r=1_3-2bqz2" alt="Hide" title="" border="0" border="0" style="position:absolute;visibility:hidden;top:-100px;" /><table id="ctl00_cphMain_gvAnnotate_LP" class="dxgvLoadingPanel_BlackGlass" cellspacing="0" cellpadding="0" border="0" style="left:0px;top:0px;z-index:30000;display:none;">
+			<tr>
+				<td class="dx"><img src="/DXR.axd?r=0_308-2bqz2" alt="" align="middle" border="0" border="0" /></td><td class="dx" style="padding-left:0px;">Loading&hellip;</td>
+			</tr>
+		</table><div id="ctl00_cphMain_gvAnnotate_LD" class="dxgvLoadingDiv_BlackGlass" style="display:none;z-index:29999;position:absolute;">
+
+		</div><input type="hidden" name="ctl00$cphMain$gvAnnotate$DXSelInput" id="ctl00_cphMain_gvAnnotate_DXSelInput" /><table id="ctl00_cphMain_gvAnnotate_DXStyleTable" border="0" style="display:none;">
+			<tr>
+				<td></td>
+			</tr><tr class="dxgvEditingErrorRow_BlackGlass">
+				<td class="dxgv" colspan="2" style="border-right-width:0px;"></td>
+			</tr><tr class="dxgvSelectedRow_BlackGlass">
+				<td></td>
+			</tr><tr class="dxgvFocusedRow_BlackGlass">
+				<td></td>
+			</tr><tr class="dxgvFocusedGroupRow_BlackGlass">
+				<td></td>
+			</tr><tr class="dxgvDataRow_BlackGlass">
+				<td></td>
+			</tr><tr class="dxgvDataRow_BlackGlass">
+				<td></td>
+			</tr><tr class="dxgvDataRow_BlackGlass">
+				<td></td>
+			</tr>
+		</table><input type="hidden" name="ctl00$cphMain$gvAnnotate$CallbackState" id="ctl00_cphMain_gvAnnotate_CallbackState" value="/wEWBB4ERGF0YQX4DUFBQUFBQU1BQUFBREFBQUFBQUFBQUFNQUFBQUFCUUFBQUFwQmJtNXZkR0YwWlVsRUMwRnVibTkwWVhSbElFbEVBd0FBQzBSbGMyTnlhWEIwYVc5dUMwUmxjMk55YVhCMGFXOXVCd0FBQjFObFkzUnBiMjRIVTJWamRHbHZiZ2NBQUJCVWNtRnVjMk55YVhCMFNVUWhTMlY1REZSeVlXNXpZM0pwY0hSSlJBTUFBQVZQY21SbGNnVlBjbVJsY2dNQUFBSUFBQUFFVkdocGN3MVVjbUZ1YzJOeWFYQjBTVVFoQndBSEFBY0FCd0FHLy84REJ2NERCd0twQWtsdWRHVnlaMlZ1YVdNc0lHWnZkWEl0YzJsNElHVjRiMjRnZEhKaGJuTmpjbWx3ZEM0Z1RHbHVZMUpPUVNBb1BHRWdhSEpsWmowaWFIUjBjRG92TDNkM2R5NXVZMkpwTG01c2JTNXVhV2d1WjI5MkwzQjFZbTFsWkM4eU1EUXpOalEyTWlJK1IzVjBkRzFoYmlBb01qQXhNQ2s4TDJFK0tTNEtDa0ZzZEdWeWJtRjBhWFpsSUhOd2JHbGphVzVuSUdGdVpDQjBkMjhnZEhKaGJuTmpjbWx3ZEdsdmJtRnNJR2x1YVhScFlYUnBiMjRnYzJsMFpYTWdLRHhoSUdoeVpXWTlJbWgwZEhBNkx5OTNkM2N1Ym1OaWFTNXViRzB1Ym1sb0xtZHZkaTl3ZFdKdFpXUXZNakEwTXpZME5qSWlQa2QxZEhSdFlXNGdLREl3TVRBcFBDOWhQaWt1Q2dwRGIyNTBZV2x1Y3lCdGRXeDBhWEJzWlNCeVpYQmxZWFFnYzJWeGRXVnVZMlZ6TGdjQ0QwTm9ZWEpoWTNSbGNtbHpkR2xqY3dNR0F3RURCd0VIQUFjQUJ2Ly9Bd2IvQXdjQ21RSkZlSEJ5WlhOelpXUWdhVzRnYlc5MWMyVWdaVzFpY25sdmJtbGpJSE4wWlcwZ1kyVnNiSE1nS0VWVFEzTXBJQ2c4WVNCb2NtVm1QU0pvZEhSd09pOHZkM2QzTG01allta3VibXh0TG01cGFDNW5iM1l2Y0hWaWJXVmtMekl3TkRNMk5EWXlJajVIZFhSMGJXRnVJQ2d5TURFd0tUd3ZZVDRwTGdvS1VrNUJJR1p2ZFc1a0lIUnZJR0psSUdocFoyaHNlU0IxYm5OMFlXSnNaU0IzYVhSb0lHRWdhR0ZzWmkxc2FXWmxJRHd5SUdoeUlHbHVJRTR5UVNBb2JtVjFjbTlpYkdGemRHOXRZU2tnWTJWc2JITWdLRHhoSUdoeVpXWTlJbWgwZEhBNkx5OTNkM2N1Ym1OaWFTNXViRzB1Ym1sb0xtZHZkaTl3ZFdKdFpXUXZNakkwTURZM05UVWlQa05zWVhKcklDZ3lNREV5S1R3dllUNHBMZ2NDQ2tWNGNISmxjM05wYjI0REJnTUJBd2NDQndBSEFBYi8vd01HQUFRSEF0OERTVzUyYjJ4MlpXUWdhVzRnYldGcGJuUmhhVzVwYm1jZ2NHeDFjbWx3YjNSbGJtTjVJR2x1SUVWVFEzTWdLRHhoSUdoeVpXWTlJbWgwZEhBNkx5OTNkM2N1Ym1OaWFTNXViRzB1Ym1sb0xtZHZkaTl3ZFdKdFpXUXZNakU0TnpRd01UZ2lQa2QxZEhSdFlXNGdLREl3TVRFcFBDOWhQaWt1Q2dwTGJtOWphMlJ2ZDI0Z2FXNGdiVVZEVTNNZ2JHVmhaQ0IwYnlCa2IzZHVMWEpsWjNWc1lYUnBiMjRnYjJZZ1RtRnViMmNzSUU5amREUXNJRk52ZURJc0lFdHNaalFnWVc1a0lGcG1jRFF5SUdWNGNISmxjM05wYjI0Z0tEeGhJR2h5WldZOUltaDBkSEE2THk5M2QzY3VibU5pYVM1dWJHMHVibWxvTG1kdmRpOXdkV0p0WldRdk1qRTROelF3TVRnaVBrZDFkSFJ0WVc0Z0tESXdNVEVwUEM5aFBpa3VDZ3BHYjNWdVpDQjBieUJwYm5SbGNtRmpkQ0IzYVhSb0lHRWdiblZ0WW1WeUlHOW1JR05vY205dFlYUnBiaUJpYVc1a2FXNW5JSEJ5YjNSbGFXNXpMMk52YlhCc1pYaGxjeUJwYmlCdFJWTkRjeUJwYm1Oc2RXUnBibWNnVUZKRE1Td2dVRkpETWlCaGJtUWdTa0ZTU1VReFF5QW9QR0VnYUhKbFpqMGlhSFIwY0RvdkwzZDNkeTV1WTJKcExtNXNiUzV1YVdndVoyOTJMM0IxWW0xbFpDOHlNVGczTkRBeE9DSStSM1YwZEcxaGJpQW9NakF4TVNrOEwyRStLUzRIQWdoR2RXNWpkR2x2YmdNR0F3RURCd009HgVTdGF0ZQVwQndZSEFBSUFCd0FDQUFjQUFnQUhBUUlBQndBQ0FRY0JBZ0VIQUFjQUJ3RUhBQWNEQndFSEFBVUFBQUNBQ1FJS1FXNXViM1JoZEdWSlJBa0NBQUlBQXdjRUFnQUhBQUlCQndBSEFBSUJCd0FIQUE9PQ==" /></td>
+	</tr>
+</table><script id="dxss_687630080" type="text/javascript">
+<!--
+
+var dxo = new ASPxClientGridView('ctl00_cphMain_gvAnnotate');
+window['ctl00_cphMain_gvAnnotate'] = dxo;
+dxo.callBack = function(arg) { WebForm_DoCallback('ctl00$cphMain$gvAnnotate',arg,aspxCallback,'ctl00_cphMain_gvAnnotate',aspxCallbackError,true); };
+dxo.uniqueID = 'ctl00$cphMain$gvAnnotate';
+dxo.renderIFrameForPopupElements = true;
+dxo.callBacksEnabled=true;
+dxo.pageRowCount=3;
+dxo.pageRowSize=10;
+dxo.pageIndex=0;
+dxo.pageCount=1;
+dxo.selectedWithoutPageRowCount=0;
+dxo.visibleStartIndex=0;
+dxo.focusedRowIndex=-1;
+dxo.allowFocusedRow=false;
+dxo.isColumnsResizable=false;
+dxo.isVerticalScrolling=false;
+dxo.isHorizontalScrolling=false;
+dxo.isMainControlResizable=false;
+dxo.callbackOnFocusedRowChanged=false;
+dxo.callbackOnSelectionChanged=false;
+dxo.autoFilterDelay='1200';
+dxo.ClearColumns();
+dxo.CreateColumn('',0,null,0,'');
+dxo.CreateColumn('',1,'TranscriptID!Key',0,'');
+dxo.CreateColumn('',2,'AnnotateID',0,'');
+dxo.CreateColumn('',3,'Order',0,'');
+dxo.CreateColumn('',4,'Section',1,'');
+dxo.CreateColumn('',5,'Description',1,'');
+dxo.keys=['1022','1023','1024'];
+dxo.editState=0;
+dxo.InlineInitialize();
+
+//-->
+</script>
+        <h2>
+            Literature
+            <br />
+        </h2>
+        <table class="dxgvControl_BlackGlass" cellspacing="0" cellpadding="0" id="ctl00_cphMain_gvLit" border="0" width="100%" style="border-collapse:separate;">
+	<tr>
+		<td><table id="ctl00_cphMain_gvLit_DXMainTable" class="dxgvTable_BlackGlass" cellspacing="0" cellpadding="0" border="0" width="100%" style="empty-cells:show;">
+			<tr id="ctl00_cphMain_gvLit_DXHeadersRow">
+				<td id="ctl00_cphMain_gvLit_DX-GSDT-col3" class="dxgvHeader_BlackGlass" onmousedown="aspxGVHeaderMouseDown(&#39;ctl00_cphMain_gvLit&#39;, this, event);" width="10%" style="border-top-width:0px;border-left-width:0px;"><table cellspacing="0" cellpadding="0" border="0" width="100%">
+					<tr>
+						<td>Pub Med ID</td>
+					</tr>
+				</table></td><td id="ctl00_cphMain_gvLit_DX-GSDT-col4" class="dxgvHeader_BlackGlass" onmousedown="aspxGVHeaderMouseDown(&#39;ctl00_cphMain_gvLit&#39;, this, event);" width="100" style="border-top-width:0px;border-left-width:0px;"><table cellspacing="0" cellpadding="0" border="0" width="100%">
+					<tr>
+						<td width="100%">Author</td><td style="padding-left:5px;"><img class="dxGridView_gvHeaderSortUp_BlackGlass" src="/DXR.axd?r=1_3-2bqz2" alt="(Ascending)" title="" border="0" border="0" /></td>
+					</tr>
+				</table></td><td id="ctl00_cphMain_gvLit_DX-GSDT-col6" class="dxgvHeader_BlackGlass" onmousedown="aspxGVHeaderMouseDown(&#39;ctl00_cphMain_gvLit&#39;, this, event);" style="border-top-width:0px;border-left-width:0px;"><table cellspacing="0" cellpadding="0" border="0" width="100%">
+					<tr>
+						<td>Title</td>
+					</tr>
+				</table></td><td id="ctl00_cphMain_gvLit_DX-GSDT-col5" class="dxgvHeader_BlackGlass" onmousedown="aspxGVHeaderMouseDown(&#39;ctl00_cphMain_gvLit&#39;, this, event);" width="50" style="border-top-width:0px;border-left-width:0px;border-right-width:0px;"><table cellspacing="0" cellpadding="0" border="0" width="100%">
+					<tr>
+						<td width="100%">Year</td><td style="padding-left:5px;"><img class="dxGridView_gvHeaderSortDown_BlackGlass" src="/DXR.axd?r=1_3-2bqz2" alt="(Descending)" title="" border="0" border="0" /></td>
+					</tr>
+				</table></td>
+			</tr><tr id="ctl00_cphMain_gvLit_DXDataRow0" class="dxgvDataRow_BlackGlass">
+				<td class="dxgv"><a class="dxeHyperlink_BlackGlass" href="http://www.ncbi.nlm.nih.gov/pubmed/22406755" target="_blank">22406755</a></td><td class="dxgv">Clark</td><td class="dxgv">Genome-wide analysis of long noncoding RNA stability.</td><td class="dxgv" style="border-right-width:0px;">2012</td>
+			</tr><tr id="ctl00_cphMain_gvLit_DXDataRow1" class="dxgvDataRow_BlackGlass">
+				<td class="dxgv"><a class="dxeHyperlink_BlackGlass" href="http://www.ncbi.nlm.nih.gov/pubmed/21874018" target="_blank">21874018</a></td><td class="dxgv">Guttman</td><td class="dxgv">lincRNAs act in the circuitry controlling pluripotency and differentiation.</td><td class="dxgv" style="border-right-width:0px;">2011</td>
+			</tr><tr id="ctl00_cphMain_gvLit_DXDataRow2" class="dxgvDataRow_BlackGlass">
+				<td class="dxgv" style="border-bottom-width:0px;"><a class="dxeHyperlink_BlackGlass" href="http://www.ncbi.nlm.nih.gov/pubmed/20436462" target="_blank">20436462</a></td><td class="dxgv" style="border-bottom-width:0px;">Guttman</td><td class="dxgv" style="border-bottom-width:0px;">Ab initio reconstruction of cell type-specific transcriptomes in mouse reveals the conserved multi-exonic structure of lincRNAs.</td><td class="dxgv" style="border-right-width:0px;border-bottom-width:0px;">2010</td>
+			</tr>
+		</table><img id="ctl00_cphMain_gvLit_IADD" class="dxGridView_gvDragAndDropArrowDown_BlackGlass" src="/DXR.axd?r=1_3-2bqz2" alt="|" title="" border="0" border="0" style="position:absolute;visibility:hidden;top:-100px;" /><img id="ctl00_cphMain_gvLit_IADU" class="dxGridView_gvDragAndDropArrowUp_BlackGlass" src="/DXR.axd?r=1_3-2bqz2" alt="|" title="" border="0" border="0" style="position:absolute;visibility:hidden;top:-100px;" /><img id="ctl00_cphMain_gvLit_IDHF" class="dxGridView_gvDragAndDropHideColumn_BlackGlass" src="/DXR.axd?r=1_3-2bqz2" alt="Hide" title="" border="0" border="0" style="position:absolute;visibility:hidden;top:-100px;" /><table id="ctl00_cphMain_gvLit_LP" class="dxgvLoadingPanel_BlackGlass" cellspacing="0" cellpadding="0" border="0" style="left:0px;top:0px;z-index:30000;display:none;">
+			<tr>
+				<td class="dx"><img src="/DXR.axd?r=0_308-2bqz2" alt="" align="middle" border="0" border="0" /></td><td class="dx" style="padding-left:0px;">Loading&hellip;</td>
+			</tr>
+		</table><div id="ctl00_cphMain_gvLit_LD" class="dxgvLoadingDiv_BlackGlass" style="display:none;z-index:29999;position:absolute;">
+
+		</div><input type="hidden" name="ctl00$cphMain$gvLit$DXSelInput" id="ctl00_cphMain_gvLit_DXSelInput" /><table id="ctl00_cphMain_gvLit_DXStyleTable" border="0" style="display:none;">
+			<tr>
+				<td></td>
+			</tr><tr class="dxgvEditingErrorRow_BlackGlass">
+				<td class="dxgv" colspan="4" style="border-right-width:0px;"></td>
+			</tr><tr class="dxgvSelectedRow_BlackGlass">
+				<td></td>
+			</tr><tr class="dxgvFocusedRow_BlackGlass">
+				<td></td>
+			</tr><tr class="dxgvFocusedGroupRow_BlackGlass">
+				<td></td>
+			</tr><tr class="dxgvDataRow_BlackGlass">
+				<td></td>
+			</tr><tr class="dxgvDataRow_BlackGlass">
+				<td></td>
+			</tr><tr class="dxgvDataRow_BlackGlass">
+				<td></td>
+			</tr>
+		</table><input type="hidden" name="ctl00$cphMain$gvLit$CallbackState" id="ctl00_cphMain_gvLit_CallbackState" value="/wEWBB4ERGF0YQWUywFBQUFBQUFNQUFBQURBQUFBQUFBQUFBTUFBQUFBQndBQUFBeE1hWFJsY21GMGRYSmxTVVFOVEdsMFpYSmhkSFZ5WlNCSlJBTUFBQkJVY21GdWMyTnlhWEIwU1VRaFMyVjVERlJ5WVc1elkzSnBjSFJKUkFNQUFBaFFkV0pOWldSSlJBcFFkV0lnVFdWa0lFbEVCd0FBQlZScGRHeGxCVlJwZEd4bEJ3QUFCRmxsWVhJRVdXVmhjZ2NBQUFaQmRYUm9iM0lHUVhWMGFHOXlCd0FBQmtSdlkxTjFiUWRFYjJNZ1UzVnRCd0FBQXdBQUFBUlVhR2x6RFZSeVlXNXpZM0pwY0hSSlJDRUlRV0p6ZEhKaFkzUUhBQWNBQndBSEFBYi8vd01HSVFNREJnTUJCd0lJTWpJME1EWTNOVFVIQWpWSFpXNXZiV1V0ZDJsa1pTQmhibUZzZVhOcGN5QnZaaUJzYjI1bklHNXZibU52WkdsdVp5QlNUa0VnYzNSaFltbHNhWFI1TGdjQ0JESXdNVElIQWdWRGJHRnlhd2NDN0NNOFAzaHRiQ0IyWlhKemFXOXVQU0l4TGpBaVB6NDhJVVJQUTFSWlVFVWdVSFZpYldWa1FYSjBhV05zWlZObGRDQlFWVUpNU1VNZ0lpMHZMMDVNVFM4dlJGUkVJRkIxWWsxbFpFRnlkR2xqYkdVc0lERnpkQ0JLWVc1MVlYSjVJREl3TVRJdkwwVk9JaUFpYUhSMGNEb3ZMM2QzZHk1dVkySnBMbTVzYlM1dWFXZ3VaMjkyTDJOdmNtVm9kRzFzTDNGMVpYSjVMMFJVUkM5d2RXSnRaV1JmTVRJd01UQXhMbVIwWkNKYlhUNDhVSFZpYldWa1FYSjBhV05zWlZObGRENDhVSFZpYldWa1FYSjBhV05zWlQ0OFRXVmtiR2x1WlVOcGRHRjBhVzl1SUZOMFlYUjFjejBpVUhWaWJHbHphR1Z5SWlCUGQyNWxjajBpVGt4TklqNDhVRTFKUkNCV1pYSnphVzl1UFNJeElqNHlNalF3TmpjMU5Ud3ZVRTFKUkQ0OFJHRjBaVU55WldGMFpXUStQRmxsWVhJK01qQXhNand2V1dWaGNqNDhUVzl1ZEdnK016d3ZUVzl1ZEdnK1BFUmhlVDR4TWp3dlJHRjVQand2UkdGMFpVTnlaV0YwWldRK1BFRnlkR2xqYkdVZ1VIVmlUVzlrWld3OUlsQnlhVzUwTFVWc1pXTjBjbTl1YVdNaVBqeEtiM1Z5Ym1Gc1BqeEpVMU5PSUVsemMyNVVlWEJsUFNKRmJHVmpkSEp2Ym1saklqNHhOVFE1TFRVME5qazhMMGxUVTA0K1BFcHZkWEp1WVd4SmMzTjFaU0JEYVhSbFpFMWxaR2wxYlQwaVNXNTBaWEp1WlhRaVBqeFFkV0pFWVhSbFBqeFpaV0Z5UGpJd01USThMMWxsWVhJK1BFMXZiblJvUGsxaGNqd3ZUVzl1ZEdnK1BFUmhlVDQ1UEM5RVlYaytQQzlRZFdKRVlYUmxQand2U205MWNtNWhiRWx6YzNWbFBqeFVhWFJzWlQ1SFpXNXZiV1VnY21WelpXRnlZMmc4TDFScGRHeGxQand2U205MWNtNWhiRDQ4UVhKMGFXTnNaVlJwZEd4bFBrZGxibTl0WlMxM2FXUmxJR0Z1WVd4NWMybHpJRzltSUd4dmJtY2dibTl1WTI5a2FXNW5JRkpPUVNCemRHRmlhV3hwZEhrdVBDOUJjblJwWTJ4bFZHbDBiR1UrUEZCaFoybHVZWFJwYjI0K1BFMWxaR3hwYm1WUVoyNGdMejQ4TDFCaFoybHVZWFJwYjI0K1BFRmljM1J5WVdOMFBqeEJZbk4wY21GamRGUmxlSFErVkhKaGJuTmpjbWx3ZEc5dGFXTWdZVzVoYkhselpYTWdhR0YyWlNCcFpHVnVkR2xtYVdWa0lIUmxibk1nYjJZZ2RHaHZkWE5oYm1SeklHOW1JR2x1ZEdWeVoyVnVhV01zSUdsdWRISnZibWxqTENCaGJtUWdZMmx6TFdGdWRHbHpaVzV6WlNCc2IyNW5JRzV2Ym1OdlpHbHVaeUJTVGtGeklDaHNibU5TVGtGektTQjBhR0YwSUdGeVpTQmxlSEJ5WlhOelpXUWdabkp2YlNCdFlXMXRZV3hwWVc0Z1oyVnViMjFsY3k0Z1JHVnpjR2wwWlNCd2NtOW5jbVZ6Y3lCcGJpQm1kVzVqZEdsdmJtRnNJR05vWVhKaFkzUmxjbWw2WVhScGIyNHNJR3hwZEhSc1pTQnBjeUJyYm05M2JpQmhZbTkxZENCMGFHVWdjRzl6ZEMxMGNtRnVjMk55YVhCMGFXOXVZV3dnY21WbmRXeGhkR2x2YmlCdlppQnNibU5TVGtGeklHRnVaQ0IwYUdWcGNpQm9ZV3htTFd4cGRtVnpMaUJCYkhSb2IzVm5hQ0J0WVc1NUlHRnlaU0JsWVhOcGJIa2daR1YwWldOMFlXSnNaU0JpZVNCaElIWmhjbWxsZEhrZ2IyWWdkR1ZqYUc1cGNYVmxjeXdnYVhRZ2FHRnpJR0psWlc0Z1lYTnpkVzFsWkNCMGFHRjBJR3h1WTFKT1FYTWdZWEpsSUdkbGJtVnlZV3hzZVNCMWJuTjBZV0pzWlN3Z1luVjBJSFJvYVhNZ2FHRnpJRzV2ZENCaVpXVnVJR1Y0WVcxcGJtVmtJR2RsYm05dFpTMTNhV1JsTGlCVmRHbHNhWHBwYm1jZ1lTQmpkWE4wYjIwZ2JtOXVZMjlrYVc1bklGSk9RU0JoY25KaGVTd2dkMlVnWkdWMFpYSnRhVzVsWkNCMGFHVWdhR0ZzWmkxc2FYWmxjeUJ2WmlCK09EQXdJR3h1WTFKT1FYTWdZVzVrSUg0eE1pd3dNREFnYlZKT1FYTWdhVzRnZEdobElHMXZkWE5sSUU1bGRYSnZMVEpoSUdObGJHd2diR2x1WlM0Z1YyVWdabWx1WkNCdmJteDVJR0VnYldsdWIzSnBkSGtnYjJZZ2JHNWpVazVCY3lCaGNtVWdkVzV6ZEdGaWJHVXVJRXh1WTFKT1FTQm9ZV3htTFd4cGRtVnpJSFpoY25rZ2IzWmxjaUJoSUhkcFpHVWdjbUZ1WjJVc0lHTnZiWEJoY21GaWJHVWdkRzhzSUdGc2RHaHZkV2RvSUc5dUlHRjJaWEpoWjJVZ2JHVnpjeUIwYUdGdUxDQjBhR0YwSUc5bUlHMVNUa0Z6TENCemRXZG5aWE4wYVhabElHOW1JR052YlhCc1pYZ2diV1YwWVdKdmJHbHpiU0JoYm1RZ2QybGtaWE53Y21WaFpDQm1kVzVqZEdsdmJtRnNhWFI1TGlCRGIyMWlhVzVwYm1jZ2FHRnNaaTFzYVhabGN5QjNhWFJvSUdOdmJYQnlaV2hsYm5OcGRtVWdiRzVqVWs1QklHRnVibTkwWVhScGIyNXpJR2xrWlc1MGFXWnBaV1FnYUhWdVpISmxaSE1nYjJZZ2RXNXpkR0ZpYkdVZ0tHaGhiR1l0YkdsbVpTQW1iSFE3SURJZ2FDa2dhVzUwWlhKblpXNXBZeXdnWTJsekxXRnVkR2x6Wlc1elpTd2dZVzVrSUdsdWRISnZibWxqSUd4dVkxSk9RWE1zSUdGeklIZGxiR3dnWVhNZ2JHNWpVazVCY3lCemFHOTNhVzVuSUdWNGRISmxiV1VnYzNSaFltbHNhWFI1SUNob1lXeG1MV3hwWm1VZ0ptZDBPeUF4TmlCb0tTNGdRVzVoYkhsemFYTWdiMllnYkc1alVrNUJJR1psWVhSMWNtVnpJSEpsZG1WaGJHVmtJSFJvWVhRZ2FXNTBaWEpuWlc1cFl5QmhibVFnWTJsekxXRnVkR2x6Wlc1elpTQlNUa0Z6SUdGeVpTQnRiM0psSUhOMFlXSnNaU0IwYUdGdUlIUm9iM05sSUdSbGNtbDJaV1FnWm5KdmJTQnBiblJ5YjI1ekxDQmhjeUJoY21VZ2MzQnNhV05sWkNCc2JtTlNUa0Z6SUdOdmJYQmhjbVZrSUhSdklIVnVjM0JzYVdObFpDQW9jMmx1WjJ4bElHVjRiMjRwSUhSeVlXNXpZM0pwY0hSekxpQlRkV0pqWld4c2RXeGhjaUJzYjJOaGJHbDZZWFJwYjI0Z2IyWWdiRzVqVWs1QmN5QnBibVJwWTJGMFpXUWdkMmxrWlhOd2NtVmhaQ0IwY21GbVptbGphMmx1WnlCMGJ5QmthV1ptWlhKbGJuUWdZMlZzYkhWc1lYSWdiRzlqWVhScGIyNXpMQ0IzYVhSb0lHNTFZMnhsWVhJdGJHOWpZV3hwZW1Wa0lHeHVZMUpPUVhNZ2JXOXlaU0JzYVd0bGJIa2dkRzhnWW1VZ2RXNXpkR0ZpYkdVdUlGTjFjbkJ5YVhOcGJtZHNlU3dnYjI1bElHOW1JSFJvWlNCc1pXRnpkQ0J6ZEdGaWJHVWdiRzVqVWs1QmN5QnBjeUIwYUdVZ2QyVnNiQzFqYUdGeVlXTjBaWEpwZW1Wa0lIQmhjbUZ6Y0dWamEyeGxJRkpPUVNCT1pXRjBNU3dnYzNWbloyVnpkR2x1WnlCT1pXRjBNU0JwYm5OMFlXSnBiR2wwZVNCamIyNTBjbWxpZFhSbGN5QjBieUIwYUdVZ1pIbHVZVzFwWXlCdVlYUjFjbVVnYjJZZ2RHaHBjeUJ6ZFdKdWRXTnNaV0Z5SUdSdmJXRnBiaTRnVjJVZ2FHRjJaU0JqY21WaGRHVmtJR0Z1SUc5dWJHbHVaU0JwYm5SbGNtRmpkR2wyWlNCeVpYTnZkWEpqWlNBb2FIUjBjRG92TDNOMFlXSnBiR2wwZVM1dFlYUjBhV05yYkdGaUxtTnZiU2tnZEdoaGRDQmhiR3h2ZDNNZ1pXRnplU0J1WVhacFoyRjBhVzl1SUc5bUlHeHVZMUpPUVNCaGJtUWdiVkpPUVNCemRHRmlhV3hwZEhrZ2NISnZabWxzWlhNZ1lXNWtJSEJ5YjNacFpHVnpJR0VnWTI5dGNISmxhR1Z1YzJsMlpTQmhibTV2ZEdGMGFXOXVJRzltSUg0M01qQXdJRzF2ZFhObElHeHVZMUpPUVhNdVBDOUJZbk4wY21GamRGUmxlSFErUEM5QlluTjBjbUZqZEQ0OFFXWm1hV3hwWVhScGIyNCtTVzV6ZEdsMGRYUmxJR1p2Y2lCTmIyeGxZM1ZzWVhJZ1FtbHZjMk5wWlc1alpTd2dWR2hsSUZWdWFYWmxjbk5wZEhrZ2IyWWdVWFZsWlc1emJHRnVaQ3dnUW5KcGMySmhibVVzSUZGTVJDd2dOREEzTWl3Z1FYVnpkSEpoYkdsaE96d3ZRV1ptYVd4cFlYUnBiMjQrUEVGMWRHaHZja3hwYzNRK1BFRjFkR2h2Y2o0OFRHRnpkRTVoYldVK1EyeGhjbXM4TDB4aGMzUk9ZVzFsUGp4R2IzSmxUbUZ0WlQ1TmFXTm9ZV1ZzSUVJOEwwWnZjbVZPWVcxbFBqeEpibWwwYVdGc2N6NU5Rand2U1c1cGRHbGhiSE0rUEM5QmRYUm9iM0krUEVGMWRHaHZjajQ4VEdGemRFNWhiV1UrU205b2JuTjBiMjQ4TDB4aGMzUk9ZVzFsUGp4R2IzSmxUbUZ0WlQ1U1pXSmxZMk5oSUV3OEwwWnZjbVZPWVcxbFBqeEpibWwwYVdGc2N6NVNURHd2U1c1cGRHbGhiSE0rUEM5QmRYUm9iM0krUEVGMWRHaHZjajQ4VEdGemRFNWhiV1UrU1c1dmMzUnliM3BoTFZCdmJuUmhQQzlNWVhOMFRtRnRaVDQ4Um05eVpVNWhiV1UrVFdGeWFXODhMMFp2Y21WT1lXMWxQanhKYm1sMGFXRnNjejVOUEM5SmJtbDBhV0ZzY3o0OEwwRjFkR2h2Y2o0OFFYVjBhRzl5UGp4TVlYTjBUbUZ0WlQ1R2IzZzhMMHhoYzNST1lXMWxQanhHYjNKbFRtRnRaVDVCY21Ob1lTQklQQzlHYjNKbFRtRnRaVDQ4U1c1cGRHbGhiSE0rUVVnOEwwbHVhWFJwWVd4elBqd3ZRWFYwYUc5eVBqeEJkWFJvYjNJK1BFeGhjM1JPWVcxbFBrWnZjblJwYm1rOEwweGhjM1JPWVcxbFBqeEdiM0psVG1GdFpUNUZiR3hsYmp3dlJtOXlaVTVoYldVK1BFbHVhWFJwWVd4elBrVThMMGx1YVhScFlXeHpQand2UVhWMGFHOXlQanhCZFhSb2IzSStQRXhoYzNST1lXMWxQazF2YzJOaGRHODhMMHhoYzNST1lXMWxQanhHYjNKbFRtRnRaVDVRWVdKc2J6d3ZSbTl5WlU1aGJXVStQRWx1YVhScFlXeHpQbEE4TDBsdWFYUnBZV3h6UGp3dlFYVjBhRzl5UGp4QmRYUm9iM0krUEV4aGMzUk9ZVzFsUGtScGJtZGxjand2VEdGemRFNWhiV1UrUEVadmNtVk9ZVzFsUGsxaGNtTmxiQ0JGUEM5R2IzSmxUbUZ0WlQ0OFNXNXBkR2xoYkhNK1RVVThMMGx1YVhScFlXeHpQand2UVhWMGFHOXlQanhCZFhSb2IzSStQRXhoYzNST1lXMWxQazFoZEhScFkyczhMMHhoYzNST1lXMWxQanhHYjNKbFRtRnRaVDVLYjJodUlGTThMMFp2Y21WT1lXMWxQanhKYm1sMGFXRnNjejVLVXp3dlNXNXBkR2xoYkhNK1BDOUJkWFJvYjNJK1BDOUJkWFJvYjNKTWFYTjBQanhNWVc1bmRXRm5aVDVGVGtjOEwweGhibWQxWVdkbFBqeFFkV0pzYVdOaGRHbHZibFI1Y0dWTWFYTjBQanhRZFdKc2FXTmhkR2x2YmxSNWNHVStTazlWVWs1QlRDQkJVbFJKUTB4RlBDOVFkV0pzYVdOaGRHbHZibFI1Y0dVK1BDOVFkV0pzYVdOaGRHbHZibFI1Y0dWTWFYTjBQanhCY25ScFkyeGxSR0YwWlNCRVlYUmxWSGx3WlQwaVJXeGxZM1J5YjI1cFl5SStQRmxsWVhJK01qQXhNand2V1dWaGNqNDhUVzl1ZEdnK016d3ZUVzl1ZEdnK1BFUmhlVDQ1UEM5RVlYaytQQzlCY25ScFkyeGxSR0YwWlQ0OEwwRnlkR2xqYkdVK1BFMWxaR3hwYm1WS2IzVnlibUZzU1c1bWJ6NDhUV1ZrYkdsdVpWUkJQa2RsYm05dFpTQlNaWE04TDAxbFpHeHBibVZVUVQ0OFRteHRWVzVwY1hWbFNVUStPVFV4T0RBeU1Ud3ZUbXh0Vlc1cGNYVmxTVVErUEVsVFUwNU1hVzVyYVc1blBqRXdPRGd0T1RBMU1Ud3ZTVk5UVGt4cGJtdHBibWMrUEM5TlpXUnNhVzVsU205MWNtNWhiRWx1Wm04K1BDOU5aV1JzYVc1bFEybDBZWFJwYjI0K1BGQjFZbTFsWkVSaGRHRStQRWhwYzNSdmNuaytQRkIxWWsxbFpGQjFZa1JoZEdVZ1VIVmlVM1JoZEhWelBTSmxiblJ5WlhvaVBqeFpaV0Z5UGpJd01USThMMWxsWVhJK1BFMXZiblJvUGpNOEwwMXZiblJvUGp4RVlYaytNVE04TDBSaGVUNDhTRzkxY2o0MlBDOUliM1Z5UGp4TmFXNTFkR1UrTUR3dlRXbHVkWFJsUGp3dlVIVmlUV1ZrVUhWaVJHRjBaVDQ4VUhWaVRXVmtVSFZpUkdGMFpTQlFkV0pUZEdGMGRYTTlJbkIxWW0xbFpDSStQRmxsWVhJK01qQXhNand2V1dWaGNqNDhUVzl1ZEdnK016d3ZUVzl1ZEdnK1BFUmhlVDR4TXp3dlJHRjVQanhJYjNWeVBqWThMMGh2ZFhJK1BFMXBiblYwWlQ0d1BDOU5hVzUxZEdVK1BDOVFkV0pOWldSUWRXSkVZWFJsUGp4UWRXSk5aV1JRZFdKRVlYUmxJRkIxWWxOMFlYUjFjejBpYldWa2JHbHVaU0krUEZsbFlYSStNakF4TWp3dldXVmhjajQ4VFc5dWRHZytNend2VFc5dWRHZytQRVJoZVQ0eE16d3ZSR0Y1UGp4SWIzVnlQalk4TDBodmRYSStQRTFwYm5WMFpUNHdQQzlOYVc1MWRHVStQQzlRZFdKTlpXUlFkV0pFWVhSbFBqd3ZTR2x6ZEc5eWVUNDhVSFZpYkdsallYUnBiMjVUZEdGMGRYTStZV2hsWVdSdlpuQnlhVzUwUEM5UWRXSnNhV05oZEdsdmJsTjBZWFIxY3o0OFFYSjBhV05zWlVsa1RHbHpkRDQ4UVhKMGFXTnNaVWxrSUVsa1ZIbHdaVDBpY0dscElqNW5jaTR4TXpFd016Y3VNVEV4UEM5QmNuUnBZMnhsU1dRK1BFRnlkR2xqYkdWSlpDQkpaRlI1Y0dVOUltUnZhU0krTVRBdU1URXdNUzluY2k0eE16RXdNemN1TVRFeFBDOUJjblJwWTJ4bFNXUStQRUZ5ZEdsamJHVkpaQ0JKWkZSNWNHVTlJbkIxWW0xbFpDSStNakkwTURZM05UVThMMEZ5ZEdsamJHVkpaRDQ4TDBGeWRHbGpiR1ZKWkV4cGMzUStQQzlRZFdKdFpXUkVZWFJoUGp3dlVIVmliV1ZrUVhKMGFXTnNaVDQ4TDFCMVltMWxaRUZ5ZEdsamJHVlRaWFErQndBSEFBYi8vd01HK3dJREJnTUJCd0lJTWpFNE56UXdNVGdIQWt0c2FXNWpVazVCY3lCaFkzUWdhVzRnZEdobElHTnBjbU4xYVhSeWVTQmpiMjUwY205c2JHbHVaeUJ3YkhWeWFYQnZkR1Z1WTNrZ1lXNWtJR1JwWm1abGNtVnVkR2xoZEdsdmJpNEhBZ1F5TURFeEJ3SUhSM1YwZEcxaGJnY0NyQzg4UDNodGJDQjJaWEp6YVc5dVBTSXhMakFpUHo0OElVUlBRMVJaVUVVZ1VIVmliV1ZrUVhKMGFXTnNaVk5sZENCUVZVSk1TVU1nSWkwdkwwNU1UUzh2UkZSRUlGQjFZazFsWkVGeWRHbGpiR1VzSURGemRDQktZVzUxWVhKNUlESXdNVEV2TDBWT0lpQWlhSFIwY0RvdkwzZDNkeTV1WTJKcExtNXNiUzV1YVdndVoyOTJMMlZ1ZEhKbGVpOXhkV1Z5ZVM5RVZFUXZjSFZpYldWa1h6RXhNREV3TVM1a2RHUWlXMTArUEZCMVltMWxaRUZ5ZEdsamJHVlRaWFErUEZCMVltMWxaRUZ5ZEdsamJHVStQRTFsWkd4cGJtVkRhWFJoZEdsdmJpQlBkMjVsY2owaVRreE5JaUJUZEdGMGRYTTlJa2x1TFZCeWIyTmxjM01pUGp4UVRVbEVJRlpsY25OcGIyNDlJakVpUGpJeE9EYzBNREU0UEM5UVRVbEVQanhFWVhSbFEzSmxZWFJsWkQ0OFdXVmhjajR5TURFeFBDOVpaV0Z5UGp4TmIyNTBhRDR3T1R3dlRXOXVkR2crUEVSaGVUNHhOand2UkdGNVBqd3ZSR0YwWlVOeVpXRjBaV1ErUEVGeWRHbGpiR1VnVUhWaVRXOWtaV3c5SWtWc1pXTjBjbTl1YVdNaVBqeEtiM1Z5Ym1Gc1BqeEpVMU5PSUVsemMyNVVlWEJsUFNKRmJHVmpkSEp2Ym1saklqNHhORGMyTFRRMk9EYzhMMGxUVTA0K1BFcHZkWEp1WVd4SmMzTjFaU0JEYVhSbFpFMWxaR2wxYlQwaVNXNTBaWEp1WlhRaVBqeFdiMngxYldVK05EYzNQQzlXYjJ4MWJXVStQRWx6YzNWbFBqY3pOalE4TDBsemMzVmxQanhRZFdKRVlYUmxQanhaWldGeVBqSXdNVEU4TDFsbFlYSStQRTF2Ym5Sb1BsTmxjRHd2VFc5dWRHZytQRVJoZVQ0eE5Ud3ZSR0Y1UGp3dlVIVmlSR0YwWlQ0OEwwcHZkWEp1WVd4SmMzTjFaVDQ4VkdsMGJHVStUbUYwZFhKbFBDOVVhWFJzWlQ0OFNWTlBRV0ppY21WMmFXRjBhVzl1UGs1aGRIVnlaVHd2U1ZOUFFXSmljbVYyYVdGMGFXOXVQand2U205MWNtNWhiRDQ4UVhKMGFXTnNaVlJwZEd4bFBteHBibU5TVGtGeklHRmpkQ0JwYmlCMGFHVWdZMmx5WTNWcGRISjVJR052Ym5SeWIyeHNhVzVuSUhCc2RYSnBjRzkwWlc1amVTQmhibVFnWkdsbVptVnlaVzUwYVdGMGFXOXVMand2UVhKMGFXTnNaVlJwZEd4bFBqeFFZV2RwYm1GMGFXOXVQanhOWldSc2FXNWxVR2R1UGpJNU5TMHpNREE4TDAxbFpHeHBibVZRWjI0K1BDOVFZV2RwYm1GMGFXOXVQanhGVEc5allYUnBiMjVKUkNCRlNXUlVlWEJsUFNKa2Iya2lJRlpoYkdsa1dVNDlJbGtpUGpFd0xqRXdNemd2Ym1GMGRYSmxNVEF6T1RnOEwwVk1iMk5oZEdsdmJrbEVQanhCWW5OMGNtRmpkRDQ4UVdKemRISmhZM1JVWlhoMFBrRnNkR2h2ZFdkb0lIUm9iM1Z6WVc1a2N5QnZaaUJzWVhKblpTQnBiblJsY21kbGJtbGpJRzV2YmkxamIyUnBibWNnVWs1QmN5QW9iR2x1WTFKT1FYTXBJR2hoZG1VZ1ltVmxiaUJwWkdWdWRHbG1hV1ZrSUdsdUlHMWhiVzFoYkhNc0lHWmxkeUJvWVhabElHSmxaVzRnWm5WdVkzUnBiMjVoYkd4NUlHTm9ZWEpoWTNSbGNtbDZaV1FzSUd4bFlXUnBibWNnZEc4Z1pHVmlZWFJsSUdGaWIzVjBJSFJvWldseUlHSnBiMnh2WjJsallXd2djbTlzWlM0Z1ZHOGdZV1JrY21WemN5QjBhR2x6TENCM1pTQndaWEptYjNKdFpXUWdiRzl6Y3kxdlppMW1kVzVqZEdsdmJpQnpkSFZrYVdWeklHOXVJRzF2YzNRZ2JHbHVZMUpPUVhNZ1pYaHdjbVZ6YzJWa0lHbHVJRzF2ZFhObElHVnRZbko1YjI1cFl5QnpkR1Z0SUNoRlV5a2dZMlZzYkhNZ1lXNWtJR05vWVhKaFkzUmxjbWw2WldRZ2RHaGxJR1ZtWm1WamRITWdiMjRnWjJWdVpTQmxlSEJ5WlhOemFXOXVMaUJJWlhKbElIZGxJSE5vYjNjZ2RHaGhkQ0JyYm05amEyUnZkMjRnYjJZZ2JHbHVZMUpPUVhNZ2FHRnpJRzFoYW05eUlHTnZibk5sY1hWbGJtTmxjeUJ2YmlCblpXNWxJR1Y0Y0hKbGMzTnBiMjRnY0dGMGRHVnlibk1zSUdOdmJYQmhjbUZpYkdVZ2RHOGdhMjV2WTJ0a2IzZHVJRzltSUhkbGJHd3RhMjV2ZDI0Z1JWTWdZMlZzYkNCeVpXZDFiR0YwYjNKekxpQk9iM1JoWW14NUxDQnNhVzVqVWs1QmN5QndjbWx0WVhKcGJIa2dZV1ptWldOMElHZGxibVVnWlhod2NtVnpjMmx2YmlCcGJpQjBjbUZ1Y3k0Z1MyNXZZMnRrYjNkdUlHOW1JR1J2ZW1WdWN5QnZaaUJzYVc1alVrNUJjeUJqWVhWelpYTWdaV2wwYUdWeUlHVjRhWFFnWm5KdmJTQjBhR1VnY0d4MWNtbHdiM1JsYm5RZ2MzUmhkR1VnYjNJZ2RYQnlaV2QxYkdGMGFXOXVJRzltSUd4cGJtVmhaMlVnWTI5dGJXbDBiV1Z1ZENCd2NtOW5jbUZ0Y3k0Z1YyVWdhVzUwWldkeVlYUmxJR3hwYm1OU1RrRnpJR2x1ZEc4Z2RHaGxJRzF2YkdWamRXeGhjaUJqYVhKamRXbDBjbmtnYjJZZ1JWTWdZMlZzYkhNZ1lXNWtJSE5vYjNjZ2RHaGhkQ0JzYVc1alVrNUJJR2RsYm1WeklHRnlaU0J5WldkMWJHRjBaV1FnWW5rZ2EyVjVJSFJ5WVc1elkzSnBjSFJwYjI0Z1ptRmpkRzl5Y3lCaGJtUWdkR2hoZENCc2FXNWpVazVCSUhSeVlXNXpZM0pwY0hSeklHSnBibVFnZEc4Z2JYVnNkR2x3YkdVZ1kyaHliMjFoZEdsdUlISmxaM1ZzWVhSdmNua2djSEp2ZEdWcGJuTWdkRzhnWVdabVpXTjBJSE5vWVhKbFpDQm5aVzVsSUdWNGNISmxjM05wYjI0Z2NISnZaM0poYlhNdUlGUnZaMlYwYUdWeUxDQjBhR1VnY21WemRXeDBjeUJrWlcxdmJuTjBjbUYwWlNCMGFHRjBJR3hwYm1OU1RrRnpJR2hoZG1VZ2EyVjVJSEp2YkdWeklHbHVJSFJvWlNCamFYSmpkV2wwY25rZ1kyOXVkSEp2Ykd4cGJtY2dSVk1nWTJWc2JDQnpkR0YwWlM0OEwwRmljM1J5WVdOMFZHVjRkRDQ4TDBGaWMzUnlZV04wUGp4QlptWnBiR2xoZEdsdmJqNUNjbTloWkNCSmJuTjBhWFIxZEdVZ2IyWWdUVWxVSUdGdVpDQklZWEoyWVhKa0xDQTNJRU5oYldKeWFXUm5aU0JEWlc1MFpYSXNJRU5oYldKeWFXUm5aU3dnVFdGemMyRmphSFZ6WlhSMGN5QXdNakUwTWl3Z1ZWTkJMaUJ0WjNWMGRHMWhia0J0YVhRdVpXUjFQQzlCWm1acGJHbGhkR2x2Ymo0OFFYVjBhRzl5VEdsemRDQkRiMjF3YkdWMFpWbE9QU0paSWo0OFFYVjBhRzl5SUZaaGJHbGtXVTQ5SWxraVBqeE1ZWE4wVG1GdFpUNUhkWFIwYldGdVBDOU1ZWE4wVG1GdFpUNDhSbTl5WlU1aGJXVStUV2wwWTJobGJHdzhMMFp2Y21WT1lXMWxQanhKYm1sMGFXRnNjejVOUEM5SmJtbDBhV0ZzY3o0OEwwRjFkR2h2Y2o0OFFYVjBhRzl5SUZaaGJHbGtXVTQ5SWxraVBqeE1ZWE4wVG1GdFpUNUViMjVoWjJobGVUd3ZUR0Z6ZEU1aGJXVStQRVp2Y21WT1lXMWxQa3AxYkdsbFBDOUdiM0psVG1GdFpUNDhTVzVwZEdsaGJITStTand2U1c1cGRHbGhiSE0rUEM5QmRYUm9iM0krUEVGMWRHaHZjaUJXWVd4cFpGbE9QU0paSWo0OFRHRnpkRTVoYldVK1EyRnlaWGs4TDB4aGMzUk9ZVzFsUGp4R2IzSmxUbUZ0WlQ1Q2NubGpaU0JYUEM5R2IzSmxUbUZ0WlQ0OFNXNXBkR2xoYkhNK1FsYzhMMGx1YVhScFlXeHpQand2UVhWMGFHOXlQanhCZFhSb2IzSWdWbUZzYVdSWlRqMGlXU0krUEV4aGMzUk9ZVzFsUGtkaGNtSmxjand2VEdGemRFNWhiV1UrUEVadmNtVk9ZVzFsUGsxaGJuVmxiRHd2Um05eVpVNWhiV1UrUEVsdWFYUnBZV3h6UGswOEwwbHVhWFJwWVd4elBqd3ZRWFYwYUc5eVBqeEJkWFJvYjNJZ1ZtRnNhV1JaVGowaVdTSStQRXhoYzNST1lXMWxQa2R5Wlc1cFpYSThMMHhoYzNST1lXMWxQanhHYjNKbFRtRnRaVDVLWlc1dWFXWmxjaUJMUEM5R2IzSmxUbUZ0WlQ0OFNXNXBkR2xoYkhNK1NrczhMMGx1YVhScFlXeHpQand2UVhWMGFHOXlQanhCZFhSb2IzSWdWbUZzYVdSWlRqMGlXU0krUEV4aGMzUk9ZVzFsUGsxMWJuTnZiand2VEdGemRFNWhiV1UrUEVadmNtVk9ZVzFsUGtkc1pXNDhMMFp2Y21WT1lXMWxQanhKYm1sMGFXRnNjejVIUEM5SmJtbDBhV0ZzY3o0OEwwRjFkR2h2Y2o0OFFYVjBhRzl5SUZaaGJHbGtXVTQ5SWxraVBqeE1ZWE4wVG1GdFpUNVpiM1Z1Wnp3dlRHRnpkRTVoYldVK1BFWnZjbVZPWVcxbFBrZGxibVYyWVR3dlJtOXlaVTVoYldVK1BFbHVhWFJwWVd4elBrYzhMMGx1YVhScFlXeHpQand2UVhWMGFHOXlQanhCZFhSb2IzSWdWbUZzYVdSWlRqMGlXU0krUEV4aGMzUk9ZVzFsUGt4MVkyRnpQQzlNWVhOMFRtRnRaVDQ4Um05eVpVNWhiV1UrUVc1dVpTQkNaWEpuYzNSeWIyMDhMMFp2Y21WT1lXMWxQanhKYm1sMGFXRnNjejVCUWp3dlNXNXBkR2xoYkhNK1BDOUJkWFJvYjNJK1BFRjFkR2h2Y2lCV1lXeHBaRmxPUFNKWklqNDhUR0Z6ZEU1aGJXVStRV05vUEM5TVlYTjBUbUZ0WlQ0OFJtOXlaVTVoYldVK1VtOWlaWEowUEM5R2IzSmxUbUZ0WlQ0OFNXNXBkR2xoYkhNK1Vqd3ZTVzVwZEdsaGJITStQQzlCZFhSb2IzSStQRUYxZEdodmNpQldZV3hwWkZsT1BTSlpJajQ4VEdGemRFNWhiV1UrUW5KMWFHNDhMMHhoYzNST1lXMWxQanhHYjNKbFRtRnRaVDVNWVhWeVlXdGhlVHd2Um05eVpVNWhiV1UrUEVsdWFYUnBZV3h6UGt3OEwwbHVhWFJwWVd4elBqd3ZRWFYwYUc5eVBqeEJkWFJvYjNJZ1ZtRnNhV1JaVGowaVdTSStQRXhoYzNST1lXMWxQbGxoYm1jOEwweGhjM1JPWVcxbFBqeEdiM0psVG1GdFpUNVlhV0Z2Y0dsdVp6d3ZSbTl5WlU1aGJXVStQRWx1YVhScFlXeHpQbGc4TDBsdWFYUnBZV3h6UGp3dlFYVjBhRzl5UGp4QmRYUm9iM0lnVm1Gc2FXUlpUajBpV1NJK1BFeGhjM1JPWVcxbFBrRnRhWFE4TDB4aGMzUk9ZVzFsUGp4R2IzSmxUbUZ0WlQ1SlpHODhMMFp2Y21WT1lXMWxQanhKYm1sMGFXRnNjejVKUEM5SmJtbDBhV0ZzY3o0OEwwRjFkR2h2Y2o0OFFYVjBhRzl5SUZaaGJHbGtXVTQ5SWxraVBqeE1ZWE4wVG1GdFpUNU5aV2x6YzI1bGNqd3ZUR0Z6ZEU1aGJXVStQRVp2Y21WT1lXMWxQa0ZzWlhoaGJtUmxjand2Um05eVpVNWhiV1UrUEVsdWFYUnBZV3h6UGtFOEwwbHVhWFJwWVd4elBqd3ZRWFYwYUc5eVBqeEJkWFJvYjNJZ1ZtRnNhV1JaVGowaVdTSStQRXhoYzNST1lXMWxQbEpsWjJWMlBDOU1ZWE4wVG1GdFpUNDhSbTl5WlU1aGJXVStRWFpwZGp3dlJtOXlaVTVoYldVK1BFbHVhWFJwWVd4elBrRThMMGx1YVhScFlXeHpQand2UVhWMGFHOXlQanhCZFhSb2IzSWdWbUZzYVdSWlRqMGlXU0krUEV4aGMzUk9ZVzFsUGxKcGJtNDhMMHhoYzNST1lXMWxQanhHYjNKbFRtRnRaVDVLYjJodUlFdzhMMFp2Y21WT1lXMWxQanhKYm1sMGFXRnNjejVLVER3dlNXNXBkR2xoYkhNK1BDOUJkWFJvYjNJK1BFRjFkR2h2Y2lCV1lXeHBaRmxPUFNKWklqNDhUR0Z6ZEU1aGJXVStVbTl2ZER3dlRHRnpkRTVoYldVK1BFWnZjbVZPWVcxbFBrUmhkbWxrSUVVOEwwWnZjbVZPWVcxbFBqeEpibWwwYVdGc2N6NUVSVHd2U1c1cGRHbGhiSE0rUEM5QmRYUm9iM0krUEVGMWRHaHZjaUJXWVd4cFpGbE9QU0paSWo0OFRHRnpkRTVoYldVK1RHRnVaR1Z5UEM5TVlYTjBUbUZ0WlQ0OFJtOXlaVTVoYldVK1JYSnBZeUJUUEM5R2IzSmxUbUZ0WlQ0OFNXNXBkR2xoYkhNK1JWTThMMGx1YVhScFlXeHpQand2UVhWMGFHOXlQand2UVhWMGFHOXlUR2x6ZEQ0OFRHRnVaM1ZoWjJVK1pXNW5QQzlNWVc1bmRXRm5aVDQ4UkdGMFlVSmhibXRNYVhOMElFTnZiWEJzWlhSbFdVNDlJbGtpUGp4RVlYUmhRbUZ1YXo0OFJHRjBZVUpoYm10T1lXMWxQa2RGVHp3dlJHRjBZVUpoYm10T1lXMWxQanhCWTJObGMzTnBiMjVPZFcxaVpYSk1hWE4wUGp4QlkyTmxjM05wYjI1T2RXMWlaWEkrUjFORk16QXlORFU4TDBGalkyVnpjMmx2Yms1MWJXSmxjajQ4TDBGalkyVnpjMmx2Yms1MWJXSmxja3hwYzNRK1BDOUVZWFJoUW1GdWF6NDhMMFJoZEdGQ1lXNXJUR2x6ZEQ0OFVIVmliR2xqWVhScGIyNVVlWEJsVEdsemRENDhVSFZpYkdsallYUnBiMjVVZVhCbFBrcHZkWEp1WVd3Z1FYSjBhV05zWlR3dlVIVmliR2xqWVhScGIyNVVlWEJsUGp4UWRXSnNhV05oZEdsdmJsUjVjR1UrVW1WelpXRnlZMmdnVTNWd2NHOXlkQ3dnVGk1SkxrZ3VMQ0JGZUhSeVlXMTFjbUZzUEM5UWRXSnNhV05oZEdsdmJsUjVjR1UrUEZCMVlteHBZMkYwYVc5dVZIbHdaVDVTWlhObFlYSmphQ0JUZFhCd2IzSjBMQ0JPYjI0dFZTNVRMaUJIYjNZbmREd3ZVSFZpYkdsallYUnBiMjVVZVhCbFBqd3ZVSFZpYkdsallYUnBiMjVVZVhCbFRHbHpkRDQ4UVhKMGFXTnNaVVJoZEdVZ1JHRjBaVlI1Y0dVOUlrVnNaV04wY205dWFXTWlQanhaWldGeVBqSXdNVEU4TDFsbFlYSStQRTF2Ym5Sb1BqQTRQQzlOYjI1MGFENDhSR0Y1UGpJNFBDOUVZWGsrUEM5QmNuUnBZMnhsUkdGMFpUNDhMMEZ5ZEdsamJHVStQRTFsWkd4cGJtVktiM1Z5Ym1Gc1NXNW1iejQ4UTI5MWJuUnllVDVGYm1kc1lXNWtQQzlEYjNWdWRISjVQanhOWldSc2FXNWxWRUUrVG1GMGRYSmxQQzlOWldSc2FXNWxWRUUrUEU1c2JWVnVhWEYxWlVsRVBqQTBNVEEwTmpJOEwwNXNiVlZ1YVhGMVpVbEVQanhKVTFOT1RHbHVhMmx1Wno0d01ESTRMVEE0TXpZOEwwbFRVMDVNYVc1cmFXNW5Qand2VFdWa2JHbHVaVXB2ZFhKdVlXeEpibVp2UGp4RGFYUmhkR2x2YmxOMVluTmxkRDVKVFR3dlEybDBZWFJwYjI1VGRXSnpaWFErUEU5MGFHVnlTVVFnVTI5MWNtTmxQU0pPVEUwaVBrNUpTRTFUTXpFME16Z3hJRnRCZG1GcGJHRmliR1VnYjI0Z01ETXZNVFV2TVRKZFBDOVBkR2hsY2tsRVBqeFBkR2hsY2tsRUlGTnZkWEpqWlQwaVRreE5JajVRVFVNek1UYzFNekkzSUZ0QmRtRnBiR0ZpYkdVZ2IyNGdNRE12TVRVdk1USmRQQzlQZEdobGNrbEVQand2VFdWa2JHbHVaVU5wZEdGMGFXOXVQanhRZFdKdFpXUkVZWFJoUGp4SWFYTjBiM0o1UGp4UWRXSk5aV1JRZFdKRVlYUmxJRkIxWWxOMFlYUjFjejBpY21WalpXbDJaV1FpUGp4WlpXRnlQakl3TVRFOEwxbGxZWEkrUEUxdmJuUm9Qak04TDAxdmJuUm9QanhFWVhrK01qZzhMMFJoZVQ0OEwxQjFZazFsWkZCMVlrUmhkR1UrUEZCMVlrMWxaRkIxWWtSaGRHVWdVSFZpVTNSaGRIVnpQU0poWTJObGNIUmxaQ0krUEZsbFlYSStNakF4TVR3dldXVmhjajQ4VFc5dWRHZytOend2VFc5dWRHZytQRVJoZVQ0eU5qd3ZSR0Y1UGp3dlVIVmlUV1ZrVUhWaVJHRjBaVDQ4VUhWaVRXVmtVSFZpUkdGMFpTQlFkV0pUZEdGMGRYTTlJbUZvWldGa2IyWndjbWx1ZENJK1BGbGxZWEkrTWpBeE1Ud3ZXV1ZoY2o0OFRXOXVkR2crT0R3dlRXOXVkR2crUEVSaGVUNHlPRHd2UkdGNVBqd3ZVSFZpVFdWa1VIVmlSR0YwWlQ0OFVIVmlUV1ZrVUhWaVJHRjBaU0JRZFdKVGRHRjBkWE05SW1WdWRISmxlaUkrUEZsbFlYSStNakF4TVR3dldXVmhjajQ4VFc5dWRHZytPRHd2VFc5dWRHZytQRVJoZVQ0ek1Ed3ZSR0Y1UGp4SWIzVnlQalk4TDBodmRYSStQRTFwYm5WMFpUNHdQQzlOYVc1MWRHVStQQzlRZFdKTlpXUlFkV0pFWVhSbFBqeFFkV0pOWldSUWRXSkVZWFJsSUZCMVlsTjBZWFIxY3owaWNIVmliV1ZrSWo0OFdXVmhjajR5TURFeFBDOVpaV0Z5UGp4TmIyNTBhRDQ0UEM5TmIyNTBhRDQ4UkdGNVBqTXdQQzlFWVhrK1BFaHZkWEkrTmp3dlNHOTFjajQ4VFdsdWRYUmxQakE4TDAxcGJuVjBaVDQ4TDFCMVlrMWxaRkIxWWtSaGRHVStQRkIxWWsxbFpGQjFZa1JoZEdVZ1VIVmlVM1JoZEhWelBTSnRaV1JzYVc1bElqNDhXV1ZoY2o0eU1ERXhQQzlaWldGeVBqeE5iMjUwYUQ0NFBDOU5iMjUwYUQ0OFJHRjVQak13UEM5RVlYaytQRWh2ZFhJK05qd3ZTRzkxY2o0OFRXbHVkWFJsUGpBOEwwMXBiblYwWlQ0OEwxQjFZazFsWkZCMVlrUmhkR1UrUEZCMVlrMWxaRkIxWWtSaGRHVWdVSFZpVTNSaGRIVnpQU0p3YldNdGNtVnNaV0Z6WlNJK1BGbGxZWEkrTWpBeE1qd3ZXV1ZoY2o0OFRXOXVkR2crTXp3dlRXOXVkR2crUEVSaGVUNHhOVHd2UkdGNVBqd3ZVSFZpVFdWa1VIVmlSR0YwWlQ0OEwwaHBjM1J2Y25rK1BGQjFZbXhwWTJGMGFXOXVVM1JoZEhWelBtVndkV0pzYVhOb1BDOVFkV0pzYVdOaGRHbHZibE4wWVhSMWN6NDhRWEowYVdOc1pVbGtUR2x6ZEQ0OFFYSjBhV05zWlVsa0lFbGtWSGx3WlQwaWNHbHBJajV1WVhSMWNtVXhNRE01T0R3dlFYSjBhV05zWlVsa1BqeEJjblJwWTJ4bFNXUWdTV1JVZVhCbFBTSmtiMmtpUGpFd0xqRXdNemd2Ym1GMGRYSmxNVEF6T1RnOEwwRnlkR2xqYkdWSlpENDhRWEowYVdOc1pVbGtJRWxrVkhsd1pUMGljSFZpYldWa0lqNHlNVGczTkRBeE9Ed3ZRWEowYVdOc1pVbGtQanhCY25ScFkyeGxTV1FnU1dSVWVYQmxQU0p3YldNaVBsQk5Rek14TnpVek1qYzhMMEZ5ZEdsamJHVkpaRDQ4UVhKMGFXTnNaVWxrSUVsa1ZIbHdaVDBpYldsa0lqNU9TVWhOVXpNeE5ETTRNVHd2UVhKMGFXTnNaVWxrUGp3dlFYSjBhV05zWlVsa1RHbHpkRDQ4TDFCMVltMWxaRVJoZEdFK1BDOVFkV0p0WldSQmNuUnBZMnhsUGp3dlVIVmliV1ZrUVhKMGFXTnNaVk5sZEQ0SEFBY0FCdi8vQXdiOEFnTUdBd0VIQWdneU1EUXpOalEyTWdjQ2dBRkJZaUJwYm1sMGFXOGdjbVZqYjI1emRISjFZM1JwYjI0Z2IyWWdZMlZzYkNCMGVYQmxMWE53WldOcFptbGpJSFJ5WVc1elkzSnBjSFJ2YldWeklHbHVJRzF2ZFhObElISmxkbVZoYkhNZ2RHaGxJR052Ym5ObGNuWmxaQ0J0ZFd4MGFTMWxlRzl1YVdNZ2MzUnlkV04wZFhKbElHOW1JR3hwYm1OU1RrRnpMZ2NDQkRJd01UQUhBZ2RIZFhSMGJXRnVCd0t3UUR3L2VHMXNJSFpsY25OcGIyNDlJakV1TUNJL1Bqd2hSRTlEVkZsUVJTQlFkV0p0WldSQmNuUnBZMnhsVTJWMElGQlZRa3hKUXlBaUxTOHZUa3hOTHk5RVZFUWdVSFZpVFdWa1FYSjBhV05zWlN3Z01YTjBJRXBoYm5WaGNua2dNakF4TVM4dlJVNGlJQ0pvZEhSd09pOHZkM2QzTG01allta3VibXh0TG01cGFDNW5iM1l2Wlc1MGNtVjZMM0YxWlhKNUwwUlVSQzl3ZFdKdFpXUmZNVEV3TVRBeExtUjBaQ0piWFQ0OFVIVmliV1ZrUVhKMGFXTnNaVk5sZEQ0OFVIVmliV1ZrUVhKMGFXTnNaVDQ4VFdWa2JHbHVaVU5wZEdGMGFXOXVJRTkzYm1WeVBTSk9URTBpSUZOMFlYUjFjejBpVFVWRVRFbE9SU0krUEZCTlNVUWdWbVZ5YzJsdmJqMGlNU0krTWpBME16WTBOakk4TDFCTlNVUStQRVJoZEdWRGNtVmhkR1ZrUGp4WlpXRnlQakl3TVRBOEwxbGxZWEkrUEUxdmJuUm9QakExUEM5TmIyNTBhRDQ4UkdGNVBqRXhQQzlFWVhrK1BDOUVZWFJsUTNKbFlYUmxaRDQ4UkdGMFpVTnZiWEJzWlhSbFpENDhXV1ZoY2o0eU1ERXdQQzlaWldGeVBqeE5iMjUwYUQ0d09Ed3ZUVzl1ZEdnK1BFUmhlVDR6TUR3dlJHRjVQand2UkdGMFpVTnZiWEJzWlhSbFpENDhSR0YwWlZKbGRtbHpaV1ErUEZsbFlYSStNakF4TVR3dldXVmhjajQ4VFc5dWRHZytNRFk4TDAxdmJuUm9QanhFWVhrK01UVThMMFJoZVQ0OEwwUmhkR1ZTWlhacGMyVmtQanhCY25ScFkyeGxJRkIxWWsxdlpHVnNQU0pRY21sdWRDMUZiR1ZqZEhKdmJtbGpJajQ4U205MWNtNWhiRDQ4U1ZOVFRpQkpjM051Vkhsd1pUMGlSV3hsWTNSeWIyNXBZeUkrTVRVME5pMHhOamsyUEM5SlUxTk9QanhLYjNWeWJtRnNTWE56ZFdVZ1EybDBaV1JOWldScGRXMDlJa2x1ZEdWeWJtVjBJajQ4Vm05c2RXMWxQakk0UEM5V2IyeDFiV1UrUEVsemMzVmxQalU4TDBsemMzVmxQanhRZFdKRVlYUmxQanhaWldGeVBqSXdNVEE4TDFsbFlYSStQRTF2Ym5Sb1BrMWhlVHd2VFc5dWRHZytQQzlRZFdKRVlYUmxQand2U205MWNtNWhiRWx6YzNWbFBqeFVhWFJzWlQ1T1lYUjFjbVVnWW1sdmRHVmphRzV2Ykc5bmVUd3ZWR2wwYkdVK1BFbFRUMEZpWW5KbGRtbGhkR2x2Ymo1T1lYUXVJRUpwYjNSbFkyaHViMnd1UEM5SlUwOUJZbUp5WlhacFlYUnBiMjQrUEM5S2IzVnlibUZzUGp4QmNuUnBZMnhsVkdsMGJHVStRV0lnYVc1cGRHbHZJSEpsWTI5dWMzUnlkV04wYVc5dUlHOW1JR05sYkd3Z2RIbHdaUzF6Y0dWamFXWnBZeUIwY21GdWMyTnlhWEIwYjIxbGN5QnBiaUJ0YjNWelpTQnlaWFpsWVd4eklIUm9aU0JqYjI1elpYSjJaV1FnYlhWc2RHa3RaWGh2Ym1saklITjBjblZqZEhWeVpTQnZaaUJzYVc1alVrNUJjeTQ4TDBGeWRHbGpiR1ZVYVhSc1pUNDhVR0ZuYVc1aGRHbHZiajQ4VFdWa2JHbHVaVkJuYmo0MU1ETXRNVEE4TDAxbFpHeHBibVZRWjI0K1BDOVFZV2RwYm1GMGFXOXVQanhCWW5OMGNtRmpkRDQ4UVdKemRISmhZM1JVWlhoMFBrMWhjM05wZG1Wc2VTQndZWEpoYkd4bGJDQmpSRTVCSUhObGNYVmxibU5wYm1jZ0tGSk9RUzFUWlhFcElIQnliM1pwWkdWeklHRnVJSFZ1WW1saGMyVmtJSGRoZVNCMGJ5QnpkSFZrZVNCaElIUnlZVzV6WTNKcGNIUnZiV1VzSUdsdVkyeDFaR2x1WnlCaWIzUm9JR052WkdsdVp5QmhibVFnYm05dVkyOWthVzVuSUdkbGJtVnpMaUJWYm5ScGJDQnViM2NzSUcxdmMzUWdVazVCTFZObGNTQnpkSFZrYVdWeklHaGhkbVVnWkdWd1pXNWtaV1FnWTNKMVkybGhiR3g1SUc5dUlHVjRhWE4wYVc1bklHRnVibTkwWVhScGIyNXpJR0Z1WkNCMGFIVnpJR1p2WTNWelpXUWdiMjRnWlhod2NtVnpjMmx2YmlCc1pYWmxiSE1nWVc1a0lIWmhjbWxoZEdsdmJpQnBiaUJyYm05M2JpQjBjbUZ1YzJOeWFYQjBjeTRnU0dWeVpTd2dkMlVnY0hKbGMyVnVkQ0JUWTNKcGNIUjFjbVVzSUdFZ2JXVjBhRzlrSUhSdklISmxZMjl1YzNSeWRXTjBJSFJvWlNCMGNtRnVjMk55YVhCMGIyMWxJRzltSUdFZ2JXRnRiV0ZzYVdGdUlHTmxiR3dnZFhOcGJtY2diMjVzZVNCU1RrRXRVMlZ4SUhKbFlXUnpJR0Z1WkNCMGFHVWdaMlZ1YjIxbElITmxjWFZsYm1ObExpQlhaU0JoY0hCc2FXVmtJR2wwSUhSdklHMXZkWE5sSUdWdFluSjViMjVwWXlCemRHVnRJR05sYkd4ekxDQnVaWFZ5YjI1aGJDQndjbVZqZFhKemIzSWdZMlZzYkhNZ1lXNWtJR3gxYm1jZ1ptbGljbTlpYkdGemRITWdkRzhnWVdOamRYSmhkR1ZzZVNCeVpXTnZibk4wY25WamRDQjBhR1VnWm5Wc2JDMXNaVzVuZEdnZ1oyVnVaU0J6ZEhKMVkzUjFjbVZ6SUdadmNpQnRiM04wSUd0dWIzZHVJR1Y0Y0hKbGMzTmxaQ0JuWlc1bGN5NGdWMlVnYVdSbGJuUnBabWxsWkNCemRXSnpkR0Z1ZEdsaGJDQjJZWEpwWVhScGIyNGdhVzRnY0hKdmRHVnBiaUJqYjJScGJtY2daMlZ1WlhNc0lHbHVZMngxWkdsdVp5QjBhRzkxYzJGdVpITWdiMllnYm05MlpXd2dOU2NnYzNSaGNuUWdjMmwwWlhNc0lETW5JR1Z1WkhNZ1lXNWtJR2x1ZEdWeWJtRnNJR052WkdsdVp5QmxlRzl1Y3k0Z1YyVWdkR2hsYmlCa1pYUmxjbTFwYm1Wa0lIUm9aU0JuWlc1bElITjBjblZqZEhWeVpYTWdiMllnYlc5eVpTQjBhR0Z1SUdFZ2RHaHZkWE5oYm1RZ2JHRnlaMlVnYVc1MFpYSm5aVzVwWXlCdWIyNWpiMlJwYm1jZ1VrNUJJQ2hzYVc1alVrNUJLU0JoYm1RZ1lXNTBhWE5sYm5ObElHeHZZMmt1SUU5MWNpQnlaWE4xYkhSeklHOXdaVzRnZEdobElIZGhlU0IwYnlCa2FYSmxZM1FnWlhod1pYSnBiV1Z1ZEdGc0lHMWhibWx3ZFd4aGRHbHZiaUJ2WmlCMGFHOTFjMkZ1WkhNZ2IyWWdibTl1WTI5a2FXNW5JRkpPUVhNZ1lXNWtJR1JsYlc5dWMzUnlZWFJsSUhSb1pTQndiM2RsY2lCdlppQmhZaUJwYm1sMGFXOGdjbVZqYjI1emRISjFZM1JwYjI0Z2RHOGdjbVZ1WkdWeUlHRWdZMjl0Y0hKbGFHVnVjMmwyWlNCd2FXTjBkWEpsSUc5bUlHMWhiVzFoYkdsaGJpQjBjbUZ1YzJOeWFYQjBiMjFsY3k0OEwwRmljM1J5WVdOMFZHVjRkRDQ4TDBGaWMzUnlZV04wUGp4QlptWnBiR2xoZEdsdmJqNUNjbTloWkNCSmJuTjBhWFIxZEdVZ2IyWWdUVWxVSUdGdVpDQklZWEoyWVhKa0xDQkRZVzFpY21sa1oyVXNJRTFoYzNOaFkyaDFjMlYwZEhNc0lGVlRRUzRnYldkMWRIUnRZVzVBYldsMExtVmtkVHd2UVdabWFXeHBZWFJwYjI0K1BFRjFkR2h2Y2t4cGMzUWdRMjl0Y0d4bGRHVlpUajBpV1NJK1BFRjFkR2h2Y2lCV1lXeHBaRmxPUFNKWklqNDhUR0Z6ZEU1aGJXVStSM1YwZEcxaGJqd3ZUR0Z6ZEU1aGJXVStQRVp2Y21WT1lXMWxQazFwZEdOb1pXeHNQQzlHYjNKbFRtRnRaVDQ4U1c1cGRHbGhiSE0rVFR3dlNXNXBkR2xoYkhNK1BDOUJkWFJvYjNJK1BFRjFkR2h2Y2lCV1lXeHBaRmxPUFNKWklqNDhUR0Z6ZEU1aGJXVStSMkZ5WW1WeVBDOU1ZWE4wVG1GdFpUNDhSbTl5WlU1aGJXVStUV0Z1ZFdWc1BDOUdiM0psVG1GdFpUNDhTVzVwZEdsaGJITStUVHd2U1c1cGRHbGhiSE0rUEM5QmRYUm9iM0krUEVGMWRHaHZjaUJXWVd4cFpGbE9QU0paSWo0OFRHRnpkRTVoYldVK1RHVjJhVzQ4TDB4aGMzUk9ZVzFsUGp4R2IzSmxUbUZ0WlQ1S2IzTm9kV0VnV2p3dlJtOXlaVTVoYldVK1BFbHVhWFJwWVd4elBrcGFQQzlKYm1sMGFXRnNjejQ4TDBGMWRHaHZjajQ4UVhWMGFHOXlJRlpoYkdsa1dVNDlJbGtpUGp4TVlYTjBUbUZ0WlQ1RWIyNWhaMmhsZVR3dlRHRnpkRTVoYldVK1BFWnZjbVZPWVcxbFBrcDFiR2xsUEM5R2IzSmxUbUZ0WlQ0OFNXNXBkR2xoYkhNK1Nqd3ZTVzVwZEdsaGJITStQQzlCZFhSb2IzSStQRUYxZEdodmNpQldZV3hwWkZsT1BTSlpJajQ4VEdGemRFNWhiV1UrVW05aWFXNXpiMjQ4TDB4aGMzUk9ZVzFsUGp4R2IzSmxUbUZ0WlQ1S1lXMWxjend2Um05eVpVNWhiV1UrUEVsdWFYUnBZV3h6UGtvOEwwbHVhWFJwWVd4elBqd3ZRWFYwYUc5eVBqeEJkWFJvYjNJZ1ZtRnNhV1JaVGowaVdTSStQRXhoYzNST1lXMWxQa0ZrYVdOdmJtbHpQQzlNWVhOMFRtRnRaVDQ4Um05eVpVNWhiV1UrV0dsaGJqd3ZSbTl5WlU1aGJXVStQRWx1YVhScFlXeHpQbGc4TDBsdWFYUnBZV3h6UGp3dlFYVjBhRzl5UGp4QmRYUm9iM0lnVm1Gc2FXUlpUajBpV1NJK1BFeGhjM1JPWVcxbFBrWmhiand2VEdGemRFNWhiV1UrUEVadmNtVk9ZVzFsUGt4cGJqd3ZSbTl5WlU1aGJXVStQRWx1YVhScFlXeHpQa3c4TDBsdWFYUnBZV3h6UGp3dlFYVjBhRzl5UGp4QmRYUm9iM0lnVm1Gc2FXUlpUajBpV1NJK1BFeGhjM1JPWVcxbFBrdHZlbWx2YkR3dlRHRnpkRTVoYldVK1BFWnZjbVZPWVcxbFBrMWhaMlJoYkdWdVlTQktQQzlHYjNKbFRtRnRaVDQ4U1c1cGRHbGhiSE0rVFVvOEwwbHVhWFJwWVd4elBqd3ZRWFYwYUc5eVBqeEJkWFJvYjNJZ1ZtRnNhV1JaVGowaVdTSStQRXhoYzNST1lXMWxQa2R1YVhKclpUd3ZUR0Z6ZEU1aGJXVStQRVp2Y21WT1lXMWxQa0Z1WkhKbFlYTThMMFp2Y21WT1lXMWxQanhKYm1sMGFXRnNjejVCUEM5SmJtbDBhV0ZzY3o0OEwwRjFkR2h2Y2o0OFFYVjBhRzl5SUZaaGJHbGtXVTQ5SWxraVBqeE1ZWE4wVG1GdFpUNU9kWE5pWVhWdFBDOU1ZWE4wVG1GdFpUNDhSbTl5WlU1aGJXVStRMmhoWkR3dlJtOXlaVTVoYldVK1BFbHVhWFJwWVd4elBrTThMMGx1YVhScFlXeHpQand2UVhWMGFHOXlQanhCZFhSb2IzSWdWbUZzYVdSWlRqMGlXU0krUEV4aGMzUk9ZVzFsUGxKcGJtNDhMMHhoYzNST1lXMWxQanhHYjNKbFRtRnRaVDVLYjJodUlFdzhMMFp2Y21WT1lXMWxQanhKYm1sMGFXRnNjejVLVER3dlNXNXBkR2xoYkhNK1BDOUJkWFJvYjNJK1BFRjFkR2h2Y2lCV1lXeHBaRmxPUFNKWklqNDhUR0Z6ZEU1aGJXVStUR0Z1WkdWeVBDOU1ZWE4wVG1GdFpUNDhSbTl5WlU1aGJXVStSWEpwWXlCVFBDOUdiM0psVG1GdFpUNDhTVzVwZEdsaGJITStSVk04TDBsdWFYUnBZV3h6UGp3dlFYVjBhRzl5UGp4QmRYUm9iM0lnVm1Gc2FXUlpUajBpV1NJK1BFeGhjM1JPWVcxbFBsSmxaMlYyUEM5TVlYTjBUbUZ0WlQ0OFJtOXlaVTVoYldVK1FYWnBkand2Um05eVpVNWhiV1UrUEVsdWFYUnBZV3h6UGtFOEwwbHVhWFJwWVd4elBqd3ZRWFYwYUc5eVBqd3ZRWFYwYUc5eVRHbHpkRDQ4VEdGdVozVmhaMlUrWlc1blBDOU1ZVzVuZFdGblpUNDhSR0YwWVVKaGJtdE1hWE4wSUVOdmJYQnNaWFJsV1U0OUlsa2lQanhFWVhSaFFtRnVhejQ4UkdGMFlVSmhibXRPWVcxbFBrZEZUend2UkdGMFlVSmhibXRPWVcxbFBqeEJZMk5sYzNOcGIyNU9kVzFpWlhKTWFYTjBQanhCWTJObGMzTnBiMjVPZFcxaVpYSStSMU5GTWpBNE5URThMMEZqWTJWemMybHZiazUxYldKbGNqNDhMMEZqWTJWemMybHZiazUxYldKbGNreHBjM1ErUEM5RVlYUmhRbUZ1YXo0OEwwUmhkR0ZDWVc1clRHbHpkRDQ4UjNKaGJuUk1hWE4wSUVOdmJYQnNaWFJsV1U0OUlsa2lQanhIY21GdWRENDhSM0poYm5SSlJENUVVREVnVDBRd01ETTVOVGd0TURFOEwwZHlZVzUwU1VRK1BFRmpjbTl1ZVcwK1QwUThMMEZqY205dWVXMCtQRUZuWlc1amVUNU9TVWdnU0VoVFBDOUJaMlZ1WTNrK1BFTnZkVzUwY25rK1ZXNXBkR1ZrSUZOMFlYUmxjend2UTI5MWJuUnllVDQ4TDBkeVlXNTBQanhIY21GdWRENDhSM0poYm5SSlJENUVVREVnVDBRd01ETTVOVGd0TURVOEwwZHlZVzUwU1VRK1BFRmpjbTl1ZVcwK1QwUThMMEZqY205dWVXMCtQRUZuWlc1amVUNU9TVWdnU0VoVFBDOUJaMlZ1WTNrK1BFTnZkVzUwY25rK1ZXNXBkR1ZrSUZOMFlYUmxjend2UTI5MWJuUnllVDQ4TDBkeVlXNTBQanhIY21GdWRENDhSM0poYm5SSlJENVNNREVnU0Vjd01EVXhNVEV0TURFOEwwZHlZVzUwU1VRK1BFRmpjbTl1ZVcwK1NFYzhMMEZqY205dWVXMCtQRUZuWlc1amVUNU9TRWRTU1NCT1NVZ2dTRWhUUEM5QloyVnVZM2srUEVOdmRXNTBjbmsrVlc1cGRHVmtJRk4wWVhSbGN6d3ZRMjkxYm5SeWVUNDhMMGR5WVc1MFBqeEhjbUZ1ZEQ0OFFXZGxibU41UGtodmQyRnlaQ0JJZFdkb1pYTWdUV1ZrYVdOaGJDQkpibk4wYVhSMWRHVThMMEZuWlc1amVUNDhRMjkxYm5SeWVUNVZibWwwWldRZ1UzUmhkR1Z6UEM5RGIzVnVkSEo1UGp3dlIzSmhiblErUEVkeVlXNTBQanhCWjJWdVkzaytTRzkzWVhKa0lFaDFaMmhsY3lCTlpXUnBZMkZzSUVsdWMzUnBkSFYwWlR3dlFXZGxibU41UGp4RGIzVnVkSEo1UGxWdWFYUmxaQ0JUZEdGMFpYTThMME52ZFc1MGNuaytQQzlIY21GdWRENDhMMGR5WVc1MFRHbHpkRDQ4VUhWaWJHbGpZWFJwYjI1VWVYQmxUR2x6ZEQ0OFVIVmliR2xqWVhScGIyNVVlWEJsUGtwdmRYSnVZV3dnUVhKMGFXTnNaVHd2VUhWaWJHbGpZWFJwYjI1VWVYQmxQanhRZFdKc2FXTmhkR2x2YmxSNWNHVStVbVZ6WldGeVkyZ2dVM1Z3Y0c5eWRDd2dUaTVKTGtndUxDQkZlSFJ5WVcxMWNtRnNQQzlRZFdKc2FXTmhkR2x2YmxSNWNHVStQRkIxWW14cFkyRjBhVzl1Vkhsd1pUNVNaWE5sWVhKamFDQlRkWEJ3YjNKMExDQk9iMjR0VlM1VExpQkhiM1luZER3dlVIVmliR2xqWVhScGIyNVVlWEJsUGp3dlVIVmliR2xqWVhScGIyNVVlWEJsVEdsemRENDhRWEowYVdOc1pVUmhkR1VnUkdGMFpWUjVjR1U5SWtWc1pXTjBjbTl1YVdNaVBqeFpaV0Z5UGpJd01UQThMMWxsWVhJK1BFMXZiblJvUGpBMVBDOU5iMjUwYUQ0OFJHRjVQakF5UEM5RVlYaytQQzlCY25ScFkyeGxSR0YwWlQ0OEwwRnlkR2xqYkdVK1BFMWxaR3hwYm1WS2IzVnlibUZzU1c1bWJ6NDhRMjkxYm5SeWVUNVZibWwwWldRZ1UzUmhkR1Z6UEM5RGIzVnVkSEo1UGp4TlpXUnNhVzVsVkVFK1RtRjBJRUpwYjNSbFkyaHViMnc4TDAxbFpHeHBibVZVUVQ0OFRteHRWVzVwY1hWbFNVUStPVFl3TkRZME9Ed3ZUbXh0Vlc1cGNYVmxTVVErUEVsVFUwNU1hVzVyYVc1blBqRXdPRGN0TURFMU5qd3ZTVk5UVGt4cGJtdHBibWMrUEM5TlpXUnNhVzVsU205MWNtNWhiRWx1Wm04K1BFTm9aVzFwWTJGc1RHbHpkRDQ4UTJobGJXbGpZV3crUEZKbFoybHpkSEo1VG5WdFltVnlQakE4TDFKbFoybHpkSEo1VG5WdFltVnlQanhPWVcxbFQyWlRkV0p6ZEdGdVkyVStSRTVCTENCSmJuUmxjbWRsYm1salBDOU9ZVzFsVDJaVGRXSnpkR0Z1WTJVK1BDOURhR1Z0YVdOaGJENDhRMmhsYldsallXdytQRkpsWjJsemRISjVUblZ0WW1WeVBqQThMMUpsWjJsemRISjVUblZ0WW1WeVBqeE9ZVzFsVDJaVGRXSnpkR0Z1WTJVK1VrNUJMQ0JOWlhOelpXNW5aWEk4TDA1aGJXVlBabE4xWW5OMFlXNWpaVDQ4TDBOb1pXMXBZMkZzUGp3dlEyaGxiV2xqWVd4TWFYTjBQanhEYVhSaGRHbHZibE4xWW5ObGRENUpUVHd2UTJsMFlYUnBiMjVUZFdKelpYUStQRU52YlcxbGJuUnpRMjl5Y21WamRHbHZibk5NYVhOMFBqeERiMjF0Wlc1MGMwTnZjbkpsWTNScGIyNXpJRkpsWmxSNWNHVTlJa052YlcxbGJuUkpiaUkrUEZKbFpsTnZkWEpqWlQ1T1lYUWdRbWx2ZEdWamFHNXZiQzRnTWpBeE1DQk5ZWGs3TWpnb05TazZOREl4TFRNOEwxSmxabE52ZFhKalpUNDhVRTFKUkNCV1pYSnphVzl1UFNJeElqNHlNRFExT0RNd016d3ZVRTFKUkQ0OEwwTnZiVzFsYm5SelEyOXljbVZqZEdsdmJuTStQRU52YlcxbGJuUnpRMjl5Y21WamRHbHZibk1nVW1WbVZIbHdaVDBpUlhKeVlYUjFiVWx1SWo0OFVtVm1VMjkxY21ObFBrNWhkQ0JDYVc5MFpXTm9ibTlzTGlBeU1ERXdJRXAxYkRzeU9DZzNLVG8zTlRZOEwxSmxabE52ZFhKalpUNDhMME52YlcxbGJuUnpRMjl5Y21WamRHbHZibk0rUEM5RGIyMXRaVzUwYzBOdmNuSmxZM1JwYjI1elRHbHpkRDQ4VFdWemFFaGxZV1JwYm1kTWFYTjBQanhOWlhOb1NHVmhaR2x1Wno0OFJHVnpZM0pwY0hSdmNrNWhiV1VnVFdGcWIzSlViM0JwWTFsT1BTSk9JajVCYm1sdFlXeHpQQzlFWlhOamNtbHdkRzl5VG1GdFpUNDhMMDFsYzJoSVpXRmthVzVuUGp4TlpYTm9TR1ZoWkdsdVp6NDhSR1Z6WTNKcGNIUnZjazVoYldVZ1RXRnFiM0pVYjNCcFkxbE9QU0pPSWo1RFpXeHNJRXhwYm1VOEwwUmxjMk55YVhCMGIzSk9ZVzFsUGp3dlRXVnphRWhsWVdScGJtYytQRTFsYzJoSVpXRmthVzVuUGp4RVpYTmpjbWx3ZEc5eVRtRnRaU0JOWVdwdmNsUnZjR2xqV1U0OUlrNGlQa052YlhCMWRHRjBhVzl1WVd3Z1FtbHZiRzluZVR3dlJHVnpZM0pwY0hSdmNrNWhiV1UrUEZGMVlXeHBabWxsY2s1aGJXVWdUV0ZxYjNKVWIzQnBZMWxPUFNKWklqNXRaWFJvYjJSelBDOVJkV0ZzYVdacFpYSk9ZVzFsUGp3dlRXVnphRWhsWVdScGJtYytQRTFsYzJoSVpXRmthVzVuUGp4RVpYTmpjbWx3ZEc5eVRtRnRaU0JOWVdwdmNsUnZjR2xqV1U0OUlrNGlQa1JPUVN3Z1NXNTBaWEpuWlc1cFl6d3ZSR1Z6WTNKcGNIUnZjazVoYldVK1BGRjFZV3hwWm1sbGNrNWhiV1VnVFdGcWIzSlViM0JwWTFsT1BTSlpJajVuWlc1bGRHbGpjend2VVhWaGJHbG1hV1Z5VG1GdFpUNDhMMDFsYzJoSVpXRmthVzVuUGp4TlpYTm9TR1ZoWkdsdVp6NDhSR1Z6WTNKcGNIUnZjazVoYldVZ1RXRnFiM0pVYjNCcFkxbE9QU0pPSWo1RmJXSnllVzl1YVdNZ1UzUmxiU0JEWld4c2N6d3ZSR1Z6WTNKcGNIUnZjazVoYldVK1BDOU5aWE5vU0dWaFpHbHVaejQ4VFdWemFFaGxZV1JwYm1jK1BFUmxjMk55YVhCMGIzSk9ZVzFsSUUxaGFtOXlWRzl3YVdOWlRqMGlUaUkrUjJWdVpTQkZlSEJ5WlhOemFXOXVJRkJ5YjJacGJHbHVaend2UkdWelkzSnBjSFJ2Y2s1aGJXVStQRkYxWVd4cFptbGxjazVoYldVZ1RXRnFiM0pVYjNCcFkxbE9QU0paSWo1dFpYUm9iMlJ6UEM5UmRXRnNhV1pwWlhKT1lXMWxQand2VFdWemFFaGxZV1JwYm1jK1BFMWxjMmhJWldGa2FXNW5QanhFWlhOamNtbHdkRzl5VG1GdFpTQk5ZV3B2Y2xSdmNHbGpXVTQ5SWs0aVBrZGxibVVnVEdsaWNtRnllVHd2UkdWelkzSnBjSFJ2Y2s1aGJXVStQQzlOWlhOb1NHVmhaR2x1Wno0OFRXVnphRWhsWVdScGJtYytQRVJsYzJOeWFYQjBiM0pPWVcxbElFMWhhbTl5Vkc5d2FXTlpUajBpVGlJK1RXbGpaVHd2UkdWelkzSnBjSFJ2Y2s1aGJXVStQQzlOWlhOb1NHVmhaR2x1Wno0OFRXVnphRWhsWVdScGJtYytQRVJsYzJOeWFYQjBiM0pPWVcxbElFMWhhbTl5Vkc5d2FXTlpUajBpVGlJK1RXOWtaV3h6TENCSFpXNWxkR2xqUEM5RVpYTmpjbWx3ZEc5eVRtRnRaVDQ4TDAxbGMyaElaV0ZrYVc1blBqeE5aWE5vU0dWaFpHbHVaejQ4UkdWelkzSnBjSFJ2Y2s1aGJXVWdUV0ZxYjNKVWIzQnBZMWxPUFNKT0lqNVNUa0VzSUUxbGMzTmxibWRsY2p3dlJHVnpZM0pwY0hSdmNrNWhiV1UrUEZGMVlXeHBabWxsY2s1aGJXVWdUV0ZxYjNKVWIzQnBZMWxPUFNKWklqNW5aVzVsZEdsamN6d3ZVWFZoYkdsbWFXVnlUbUZ0WlQ0OEwwMWxjMmhJWldGa2FXNW5QanhOWlhOb1NHVmhaR2x1Wno0OFJHVnpZM0pwY0hSdmNrNWhiV1VnVFdGcWIzSlViM0JwWTFsT1BTSk9JajVUWlhGMVpXNWpaU0JCYm1Gc2VYTnBjeXdnVWs1QlBDOUVaWE5qY21sd2RHOXlUbUZ0WlQ0OFVYVmhiR2xtYVdWeVRtRnRaU0JOWVdwdmNsUnZjR2xqV1U0OUlsa2lQbTFsZEdodlpITThMMUYxWVd4cFptbGxjazVoYldVK1BDOU5aWE5vU0dWaFpHbHVaejQ4VFdWemFFaGxZV1JwYm1jK1BFUmxjMk55YVhCMGIzSk9ZVzFsSUUxaGFtOXlWRzl3YVdOWlRqMGlUaUkrVkhKaGJuTmpjbWx3ZEdsdmJpd2dSMlZ1WlhScFl6d3ZSR1Z6WTNKcGNIUnZjazVoYldVK1BDOU5aWE5vU0dWaFpHbHVaejQ4TDAxbGMyaElaV0ZrYVc1blRHbHpkRDQ4VDNSb1pYSkpSQ0JUYjNWeVkyVTlJazVNVFNJK1RrbElUVk14T1RRME9UUThMMDkwYUdWeVNVUStQRTkwYUdWeVNVUWdVMjkxY21ObFBTSk9URTBpUGxCTlF6STROamd4TURBOEwwOTBhR1Z5U1VRK1BDOU5aV1JzYVc1bFEybDBZWFJwYjI0K1BGQjFZbTFsWkVSaGRHRStQRWhwYzNSdmNuaytQRkIxWWsxbFpGQjFZa1JoZEdVZ1VIVmlVM1JoZEhWelBTSnlaV05sYVhabFpDSStQRmxsWVhJK01qQXhNRHd2V1dWaGNqNDhUVzl1ZEdnK016d3ZUVzl1ZEdnK1BFUmhlVDR4TUR3dlJHRjVQand2VUhWaVRXVmtVSFZpUkdGMFpUNDhVSFZpVFdWa1VIVmlSR0YwWlNCUWRXSlRkR0YwZFhNOUltRmpZMlZ3ZEdWa0lqNDhXV1ZoY2o0eU1ERXdQQzlaWldGeVBqeE5iMjUwYUQ0MFBDOU5iMjUwYUQ0OFJHRjVQakEyUEM5RVlYaytQQzlRZFdKTlpXUlFkV0pFWVhSbFBqeFFkV0pOWldSUWRXSkVZWFJsSUZCMVlsTjBZWFIxY3owaVlXaGxZV1J2Wm5CeWFXNTBJajQ4V1dWaGNqNHlNREV3UEM5WlpXRnlQanhOYjI1MGFENDFQQzlOYjI1MGFENDhSR0Y1UGpBeVBDOUVZWGsrUEM5UWRXSk5aV1JRZFdKRVlYUmxQanhRZFdKTlpXUlFkV0pFWVhSbElGQjFZbE4wWVhSMWN6MGlaVzUwY21WNklqNDhXV1ZoY2o0eU1ERXdQQzlaWldGeVBqeE5iMjUwYUQ0MVBDOU5iMjUwYUQ0OFJHRjVQalE4TDBSaGVUNDhTRzkxY2o0MlBDOUliM1Z5UGp4TmFXNTFkR1UrTUR3dlRXbHVkWFJsUGp3dlVIVmlUV1ZrVUhWaVJHRjBaVDQ4VUhWaVRXVmtVSFZpUkdGMFpTQlFkV0pUZEdGMGRYTTlJbkIxWW0xbFpDSStQRmxsWVhJK01qQXhNRHd2V1dWaGNqNDhUVzl1ZEdnK05Ud3ZUVzl1ZEdnK1BFUmhlVDQwUEM5RVlYaytQRWh2ZFhJK05qd3ZTRzkxY2o0OFRXbHVkWFJsUGpBOEwwMXBiblYwWlQ0OEwxQjFZazFsWkZCMVlrUmhkR1UrUEZCMVlrMWxaRkIxWWtSaGRHVWdVSFZpVTNSaGRIVnpQU0p0WldSc2FXNWxJajQ4V1dWaGNqNHlNREV3UEM5WlpXRnlQanhOYjI1MGFENDRQQzlOYjI1MGFENDhSR0Y1UGpNeFBDOUVZWGsrUEVodmRYSStOand2U0c5MWNqNDhUV2x1ZFhSbFBqQThMMDFwYm5WMFpUNDhMMUIxWWsxbFpGQjFZa1JoZEdVK1BDOUlhWE4wYjNKNVBqeFFkV0pzYVdOaGRHbHZibE4wWVhSMWN6NXdjSFZpYkdsemFEd3ZVSFZpYkdsallYUnBiMjVUZEdGMGRYTStQRUZ5ZEdsamJHVkpaRXhwYzNRK1BFRnlkR2xqYkdWSlpDQkpaRlI1Y0dVOUluQnBhU0krYm1KMExqRTJNek04TDBGeWRHbGpiR1ZKWkQ0OFFYSjBhV05zWlVsa0lFbGtWSGx3WlQwaVpHOXBJajR4TUM0eE1ETTRMMjVpZEM0eE5qTXpQQzlCY25ScFkyeGxTV1ErUEVGeWRHbGpiR1ZKWkNCSlpGUjVjR1U5SW5CMVltMWxaQ0krTWpBME16WTBOakk4TDBGeWRHbGpiR1ZKWkQ0OFFYSjBhV05zWlVsa0lFbGtWSGx3WlQwaWNHMWpJajVRVFVNeU9EWTRNVEF3UEM5QmNuUnBZMnhsU1dRK1BFRnlkR2xqYkdWSlpDQkpaRlI1Y0dVOUltMXBaQ0krVGtsSVRWTXhPVFEwT1RROEwwRnlkR2xqYkdWSlpENDhMMEZ5ZEdsamJHVkpaRXhwYzNRK1BDOVFkV0p0WldSRVlYUmhQand2VUhWaWJXVmtRWEowYVdOc1pUNDhMMUIxWW0xbFpFRnlkR2xqYkdWVFpYUSseBVN0YXRlBYQBQndnSEFBSUFCd0FDQUFjQkFnQUhBQUlCQndFQ0FRY0RBZ0VIQWdJQkJ3UUNBQWNBQndBSEFnY0FCd1VIQWdjQUJ3UUhBUWNBQlFBQUFJQUpBZ3hNYVhSbGNtRjBkWEpsU1VRSkFnQUNBQU1IQkFJQUJ3QUNBUWNBQndBQ0FRY0FCd0E9" /></td>
+	</tr>
+</table><script id="dxss_1406445860" type="text/javascript">
+<!--
+
+var dxo = new ASPxClientGridView('ctl00_cphMain_gvLit');
+window['gvlit'] = dxo;
+dxo.callBack = function(arg) { WebForm_DoCallback('ctl00$cphMain$gvLit',arg,aspxCallback,'ctl00_cphMain_gvLit',aspxCallbackError,true); };
+dxo.uniqueID = 'ctl00$cphMain$gvLit';
+dxo.renderIFrameForPopupElements = true;
+dxo.callBacksEnabled=true;
+dxo.pageRowCount=3;
+dxo.pageRowSize=10;
+dxo.pageIndex=0;
+dxo.pageCount=1;
+dxo.selectedWithoutPageRowCount=0;
+dxo.visibleStartIndex=0;
+dxo.focusedRowIndex=-1;
+dxo.allowFocusedRow=false;
+dxo.isColumnsResizable=false;
+dxo.isVerticalScrolling=false;
+dxo.isHorizontalScrolling=false;
+dxo.isMainControlResizable=false;
+dxo.callbackOnFocusedRowChanged=false;
+dxo.callbackOnSelectionChanged=false;
+dxo.autoFilterDelay='1200';
+dxo.ClearColumns();
+dxo.CreateColumn('',0,null,0,'');
+dxo.CreateColumn('',1,'LiteratureID',0,'');
+dxo.CreateColumn('',2,'TranscriptID!Key',0,'');
+dxo.CreateColumn('',3,'PubMedID',1,'');
+dxo.CreateColumn('',4,'Author',1,'');
+dxo.CreateColumn('',5,'Year',1,'');
+dxo.CreateColumn('',6,'Title',1,'');
+dxo.CreateColumn('',7,'DocSum',0,'');
+dxo.keys=['801','763','764'];
+dxo.editState=0;
+dxo.InlineInitialize();
+
+//-->
+</script>
+        <h2 style="width: 50%">
+            Species</h2>
+            <table class="dxgvControl_BlackGlass" cellspacing="0" cellpadding="0" id="ctl00_cphMain_gvSpecies" border="0" width="100%" style="border-collapse:separate;">
+	<tr>
+		<td><table id="ctl00_cphMain_gvSpecies_DXMainTable" class="dxgvTable_BlackGlass" cellspacing="0" cellpadding="0" border="0" width="100%" style="empty-cells:show;">
+			<tr id="ctl00_cphMain_gvSpecies_DXHeadersRow">
+				<td id="ctl00_cphMain_gvSpecies_DX-GSDT-col3" class="dxgvHeader_BlackGlass" onmousedown="aspxGVHeaderMouseDown(&#39;ctl00_cphMain_gvSpecies&#39;, this, event);" width="40%" style="border-top-width:0px;border-left-width:0px;"><table cellspacing="0" cellpadding="0" border="0" width="100%">
+					<tr>
+						<td>Species</td>
+					</tr>
+				</table></td><td id="ctl00_cphMain_gvSpecies_DX-GSDT-col4" class="dxgvHeader_BlackGlass" onmousedown="aspxGVHeaderMouseDown(&#39;ctl00_cphMain_gvSpecies&#39;, this, event);" style="border-top-width:0px;border-left-width:0px;"><table cellspacing="0" cellpadding="0" border="0" width="100%">
+					<tr>
+						<td>NRED Link</td>
+					</tr>
+				</table></td><td id="ctl00_cphMain_gvSpecies_DX-GSDT-col5" class="dxgvHeader_BlackGlass" onmousedown="aspxGVHeaderMouseDown(&#39;ctl00_cphMain_gvSpecies&#39;, this, event);" style="border-top-width:0px;border-left-width:0px;border-right-width:0px;"><table cellspacing="0" cellpadding="0" border="0" width="100%">
+					<tr>
+						<td>UCSC Browser Link</td>
+					</tr>
+				</table></td>
+			</tr><tr id="ctl00_cphMain_gvSpecies_DXDataRow0" class="dxgvDataRow_BlackGlass">
+				<td class="dxgv" align="left" style="border-bottom-width:0px;">Mus musculus (Mouse)</td><td class="dxgv" style="border-bottom-width:0px;"><a href="http://jsm-research.imb.uq.edu.au/nred/cgi-bin/ncrnadb.pl?ProbeSearchTerm=AK144624">AK144624</a></td><td class="dxgv" style="border-right-width:0px;border-bottom-width:0px;"><a href="http://genome.ucsc.edu/cgi-bin/hgTracks?db=mm9&position=chr16:50,526,343-50,559,543">mm9 chr16:50,526,343-50,559,543</a></td>
+			</tr>
+		</table><img id="ctl00_cphMain_gvSpecies_IADD" class="dxGridView_gvDragAndDropArrowDown_BlackGlass" src="/DXR.axd?r=1_3-2bqz2" alt="|" title="" border="0" border="0" style="position:absolute;visibility:hidden;top:-100px;" /><img id="ctl00_cphMain_gvSpecies_IADU" class="dxGridView_gvDragAndDropArrowUp_BlackGlass" src="/DXR.axd?r=1_3-2bqz2" alt="|" title="" border="0" border="0" style="position:absolute;visibility:hidden;top:-100px;" /><img id="ctl00_cphMain_gvSpecies_IDHF" class="dxGridView_gvDragAndDropHideColumn_BlackGlass" src="/DXR.axd?r=1_3-2bqz2" alt="Hide" title="" border="0" border="0" style="position:absolute;visibility:hidden;top:-100px;" /><table id="ctl00_cphMain_gvSpecies_LP" class="dxgvLoadingPanel_BlackGlass" cellspacing="0" cellpadding="0" border="0" style="left:0px;top:0px;z-index:30000;display:none;">
+			<tr>
+				<td class="dx"><img src="/DXR.axd?r=0_308-2bqz2" alt="" align="middle" border="0" border="0" /></td><td class="dx" style="padding-left:0px;">Loading&hellip;</td>
+			</tr>
+		</table><div id="ctl00_cphMain_gvSpecies_LD" class="dxgvLoadingDiv_BlackGlass" style="display:none;z-index:29999;position:absolute;">
+
+		</div><input type="hidden" name="ctl00$cphMain$gvSpecies$DXSelInput" id="ctl00_cphMain_gvSpecies_DXSelInput" /><table id="ctl00_cphMain_gvSpecies_DXStyleTable" border="0" style="display:none;">
+			<tr>
+				<td></td>
+			</tr><tr class="dxgvEditingErrorRow_BlackGlass">
+				<td class="dxgv" colspan="3" style="border-right-width:0px;"></td>
+			</tr><tr class="dxgvSelectedRow_BlackGlass">
+				<td></td>
+			</tr><tr class="dxgvFocusedRow_BlackGlass">
+				<td></td>
+			</tr><tr class="dxgvFocusedGroupRow_BlackGlass">
+				<td></td>
+			</tr><tr class="dxgvDataRow_BlackGlass">
+				<td></td>
+			</tr>
+		</table><input type="hidden" name="ctl00$cphMain$gvSpecies$CallbackState" id="ctl00_cphMain_gvSpecies_CallbackState" value="/wEWBB4ERGF0YQWMBUFBQUFBQUVBQUFBQkFBQUFBQUFBQUFFQUFBQUFCUUFBQUExVGNHVmphV1Z6VEdsdWEwbEVEMU53WldOcFpYTWdUR2x1YXlCSlJBTUFBQkJVY21GdWMyTnlhWEIwU1VRaFMyVjVERlJ5WVc1elkzSnBjSFJKUkFNQUFBMVRjR1ZqYVdWelNVUWhTMlY1Q1ZOd1pXTnBaWE5KUkFNQUFBNXVjbVZrUVdOalpYTnBiMjVKUkJCdWNtVmtJRUZqWTJWemFXOXVJRWxFQndBQUQzVmpjMk5DY205M2MyVnlUR2x1YXhGMVkzTmpJRUp5YjNkelpYSWdUR2x1YXdjQUFBTUFBQUFFVkdocGN3MVVjbUZ1YzJOeWFYQjBTVVFoQ2xOd1pXTnBaWE5KUkNFSEFBY0FCd0FIQUFiLy93TUdjd0VEQmdNQkF3Y0lCd0pwUEdFZ2FISmxaajBpYUhSMGNEb3ZMMnB6YlMxeVpYTmxZWEpqYUM1cGJXSXVkWEV1WldSMUxtRjFMMjV5WldRdlkyZHBMV0pwYmk5dVkzSnVZV1JpTG5Cc1AxQnliMkpsVTJWaGNtTm9WR1Z5YlQxQlN6RTBORFl5TkNJK1FVc3hORFEyTWpROEwyRStCd0tCQVR4aElHaHlaV1k5SW1oMGRIQTZMeTluWlc1dmJXVXVkV056WXk1bFpIVXZZMmRwTFdKcGJpOW9aMVJ5WVdOcmN6OWtZajF0YlRrbWNHOXphWFJwYjI0OVkyaHlNVFk2TlRBc05USTJMRE0wTXkwMU1DdzFOVGtzTlRReklqNXRiVGtnWTJoeU1UWTZOVEFzTlRJMkxETTBNeTAxTUN3MU5Ua3NOVFF6UEM5aFBnPT0eBVN0YXRlBWxCd1lIQUFJQUJ3QUNBQWNBQWdBSEFBSUJCd0VDQVFjQ0FnRUhBQWNBQndBSEFBVUFBQUNBQ1FJTlUzQmxZMmxsYzB4cGJtdEpSQWtDQUFJQUF3Y0VBZ0FIQUFJQkJ3QUhBQUlCQndBSEFBPT0=" /></td>
+	</tr>
+</table><script id="dxss_1833803835" type="text/javascript">
+<!--
+
+var dxo = new ASPxClientGridView('ctl00_cphMain_gvSpecies');
+window['ctl00_cphMain_gvSpecies'] = dxo;
+dxo.callBack = function(arg) { WebForm_DoCallback('ctl00$cphMain$gvSpecies',arg,aspxCallback,'ctl00_cphMain_gvSpecies',aspxCallbackError,true); };
+dxo.uniqueID = 'ctl00$cphMain$gvSpecies';
+dxo.renderIFrameForPopupElements = true;
+dxo.callBacksEnabled=true;
+dxo.pageRowCount=1;
+dxo.pageRowSize=10;
+dxo.pageIndex=0;
+dxo.pageCount=1;
+dxo.selectedWithoutPageRowCount=0;
+dxo.visibleStartIndex=0;
+dxo.focusedRowIndex=-1;
+dxo.allowFocusedRow=false;
+dxo.isColumnsResizable=false;
+dxo.isVerticalScrolling=false;
+dxo.isHorizontalScrolling=false;
+dxo.isMainControlResizable=false;
+dxo.callbackOnFocusedRowChanged=false;
+dxo.callbackOnSelectionChanged=false;
+dxo.autoFilterDelay='1200';
+dxo.ClearColumns();
+dxo.CreateColumn('',0,null,0,'');
+dxo.CreateColumn('',1,'SpeciesLinkID',0,'');
+dxo.CreateColumn('',2,'TranscriptID!Key',0,'');
+dxo.CreateColumn('',3,'SpeciesID!Key',1,'');
+dxo.CreateColumn('',4,'nredAccesionID',1,'');
+dxo.CreateColumn('ucscBrowserLink',5,'ucscBrowserLink',1,'');
+dxo.keys=['371'];
+dxo.editState=0;
+dxo.InlineInitialize();
+
+//-->
+</script>
+
+        <h2>
+            Associated Components</h2>
+            <table class="dxgvControl_BlackGlass" cellspacing="0" cellpadding="0" id="ctl00_cphMain_gvAssoc" border="0" width="100%" style="border-collapse:separate;">
+	<tr>
+		<td><table id="ctl00_cphMain_gvAssoc_DXMainTable" class="dxgvTable_BlackGlass" cellspacing="0" cellpadding="0" border="0" width="100%" style="empty-cells:show;">
+			<tr id="ctl00_cphMain_gvAssoc_DXHeadersRow">
+				<td id="ctl00_cphMain_gvAssoc_DX-GSDT-col3" class="dxgvHeader_BlackGlass" onmousedown="aspxGVHeaderMouseDown(&#39;ctl00_cphMain_gvAssoc&#39;, this, event);" width="10%" style="border-top-width:0px;border-left-width:0px;"><table cellspacing="0" cellpadding="0" border="0" width="100%">
+					<tr>
+						<td>Comp. Type</td>
+					</tr>
+				</table></td><td id="ctl00_cphMain_gvAssoc_DX-GSDT-col4" class="dxgvHeader_BlackGlass" onmousedown="aspxGVHeaderMouseDown(&#39;ctl00_cphMain_gvAssoc&#39;, this, event);" width="10%" style="border-top-width:0px;border-left-width:0px;"><table cellspacing="0" cellpadding="0" border="0" width="100%">
+					<tr>
+						<td>Component ID</td>
+					</tr>
+				</table></td><td id="ctl00_cphMain_gvAssoc_DX-GSDT-col5" class="dxgvHeader_BlackGlass" onmousedown="aspxGVHeaderMouseDown(&#39;ctl00_cphMain_gvAssoc&#39;, this, event);" style="border-top-width:0px;border-left-width:0px;"><table cellspacing="0" cellpadding="0" border="0" width="100%">
+					<tr>
+						<td>Description</td>
+					</tr>
+				</table></td><td id="ctl00_cphMain_gvAssoc_DX-GSDT-col6" class="dxgvHeader_BlackGlass" onmousedown="aspxGVHeaderMouseDown(&#39;ctl00_cphMain_gvAssoc&#39;, this, event);" width="10%" style="border-top-width:0px;border-left-width:0px;"><table cellspacing="0" cellpadding="0" border="0" width="100%">
+					<tr>
+						<td>Status</td>
+					</tr>
+				</table></td><td id="ctl00_cphMain_gvAssoc_DX-GSDT-col7" class="dxgvHeader_BlackGlass" onmousedown="aspxGVHeaderMouseDown(&#39;ctl00_cphMain_gvAssoc&#39;, this, event);" width="10%" style="border-top-width:0px;border-left-width:0px;border-right-width:0px;"><table cellspacing="0" cellpadding="0" border="0" width="100%">
+					<tr>
+						<td>Pub Med ID</td>
+					</tr>
+				</table></td>
+			</tr><tr id="ctl00_cphMain_gvAssoc_DXDataRow0" class="dxgvDataRow_BlackGlass">
+				<td class="dxgv" align="left">Transcript</td><td class="dxgv">Nanog</td><td class="dxgv">linc1610 required for normal expression of Nanog in mESCs</td><td class="dxgv" align="left">Known</td><td class="dxgv" style="border-right-width:0px;"><a class="dxeHyperlink_BlackGlass" href="http://www.ncbi.nlm.nih.gov/pubmed/21874018" target="_blank">21874018</a></td>
+			</tr><tr id="ctl00_cphMain_gvAssoc_DXDataRow1" class="dxgvDataRow_BlackGlass">
+				<td class="dxgv" align="left">Transcript</td><td class="dxgv">Oct4</td><td class="dxgv">linc1610 required for normal expression of Oct4 in mESCs</td><td class="dxgv" align="left">Known</td><td class="dxgv" style="border-right-width:0px;"><a class="dxeHyperlink_BlackGlass" href="http://www.ncbi.nlm.nih.gov/pubmed/21874018" target="_blank">21874018</a></td>
+			</tr><tr id="ctl00_cphMain_gvAssoc_DXDataRow2" class="dxgvDataRow_BlackGlass">
+				<td class="dxgv" align="left">Transcript</td><td class="dxgv">Sox2</td><td class="dxgv">linc1610 required for normal expression of Sox2 in mESCs</td><td class="dxgv" align="left">Known</td><td class="dxgv" style="border-right-width:0px;"><a class="dxeHyperlink_BlackGlass" href="http://www.ncbi.nlm.nih.gov/pubmed/21874018" target="_blank">21874018</a></td>
+			</tr><tr id="ctl00_cphMain_gvAssoc_DXDataRow3" class="dxgvDataRow_BlackGlass">
+				<td class="dxgv" align="left">Transcript</td><td class="dxgv">Klf4</td><td class="dxgv">linc1610 required for normal expression of Klf4 in mESCs</td><td class="dxgv" align="left">Known</td><td class="dxgv" style="border-right-width:0px;"><a class="dxeHyperlink_BlackGlass" href="http://www.ncbi.nlm.nih.gov/pubmed/21874018" target="_blank">21874018</a></td>
+			</tr><tr id="ctl00_cphMain_gvAssoc_DXDataRow4" class="dxgvDataRow_BlackGlass">
+				<td class="dxgv" align="left">Transcript</td><td class="dxgv">Zfp42</td><td class="dxgv">linc1610 required for normal expression of Zfp42 in mESCs</td><td class="dxgv" align="left">Known</td><td class="dxgv" style="border-right-width:0px;"><a class="dxeHyperlink_BlackGlass" href="http://www.ncbi.nlm.nih.gov/pubmed/21874018" target="_blank">21874018</a></td>
+			</tr><tr id="ctl00_cphMain_gvAssoc_DXDataRow5" class="dxgvDataRow_BlackGlass">
+				<td class="dxgv" align="left">Protein</td><td class="dxgv">PRC2</td><td class="dxgv">Interacts with protein(s) of the Polycomb Repressive Complex 2</td><td class="dxgv" align="left">Known</td><td class="dxgv" style="border-right-width:0px;"><a class="dxeHyperlink_BlackGlass" href="http://www.ncbi.nlm.nih.gov/pubmed/21874018" target="_blank">21874018</a></td>
+			</tr><tr id="ctl00_cphMain_gvAssoc_DXDataRow6" class="dxgvDataRow_BlackGlass">
+				<td class="dxgv" align="left">Protein</td><td class="dxgv">RING1B</td><td class="dxgv">Interacts with protein(s) of the Polycomb Repressive Complex 1. Interacts with E3 ubiquitin-protein ligase RING2 (RING1B) either directly or through the PRC1 complex.</td><td class="dxgv" align="left">Known</td><td class="dxgv" style="border-right-width:0px;"><a class="dxeHyperlink_BlackGlass" href="http://www.ncbi.nlm.nih.gov/pubmed/21874018" target="_blank">21874018</a></td>
+			</tr><tr id="ctl00_cphMain_gvAssoc_DXDataRow7" class="dxgvDataRow_BlackGlass">
+				<td class="dxgv" align="left" style="border-bottom-width:0px;">Protein</td><td class="dxgv" style="border-bottom-width:0px;">JARID1C</td><td class="dxgv" style="border-bottom-width:0px;">Interacts with Lysine-specific demethylase 5C (JARID1C) either directly or in a complex.</td><td class="dxgv" align="left" style="border-bottom-width:0px;">Known</td><td class="dxgv" style="border-right-width:0px;border-bottom-width:0px;"><a class="dxeHyperlink_BlackGlass" href="http://www.ncbi.nlm.nih.gov/pubmed/21874018" target="_blank">21874018</a></td>
+			</tr>
+		</table><img id="ctl00_cphMain_gvAssoc_IADD" class="dxGridView_gvDragAndDropArrowDown_BlackGlass" src="/DXR.axd?r=1_3-2bqz2" alt="|" title="" border="0" border="0" style="position:absolute;visibility:hidden;top:-100px;" /><img id="ctl00_cphMain_gvAssoc_IADU" class="dxGridView_gvDragAndDropArrowUp_BlackGlass" src="/DXR.axd?r=1_3-2bqz2" alt="|" title="" border="0" border="0" style="position:absolute;visibility:hidden;top:-100px;" /><img id="ctl00_cphMain_gvAssoc_IDHF" class="dxGridView_gvDragAndDropHideColumn_BlackGlass" src="/DXR.axd?r=1_3-2bqz2" alt="Hide" title="" border="0" border="0" style="position:absolute;visibility:hidden;top:-100px;" /><table id="ctl00_cphMain_gvAssoc_LP" class="dxgvLoadingPanel_BlackGlass" cellspacing="0" cellpadding="0" border="0" style="left:0px;top:0px;z-index:30000;display:none;">
+			<tr>
+				<td class="dx"><img src="/DXR.axd?r=0_308-2bqz2" alt="" align="middle" border="0" border="0" /></td><td class="dx" style="padding-left:0px;">Loading&hellip;</td>
+			</tr>
+		</table><div id="ctl00_cphMain_gvAssoc_LD" class="dxgvLoadingDiv_BlackGlass" style="display:none;z-index:29999;position:absolute;">
+
+		</div><input type="hidden" name="ctl00$cphMain$gvAssoc$DXSelInput" id="ctl00_cphMain_gvAssoc_DXSelInput" /><table id="ctl00_cphMain_gvAssoc_DXStyleTable" border="0" style="display:none;">
+			<tr>
+				<td></td>
+			</tr><tr class="dxgvEditingErrorRow_BlackGlass">
+				<td class="dxgv" colspan="5" style="border-right-width:0px;"></td>
+			</tr><tr class="dxgvSelectedRow_BlackGlass">
+				<td></td>
+			</tr><tr class="dxgvFocusedRow_BlackGlass">
+				<td></td>
+			</tr><tr class="dxgvFocusedGroupRow_BlackGlass">
+				<td></td>
+			</tr><tr class="dxgvDataRow_BlackGlass">
+				<td></td>
+			</tr><tr class="dxgvDataRow_BlackGlass">
+				<td></td>
+			</tr><tr class="dxgvDataRow_BlackGlass">
+				<td></td>
+			</tr><tr class="dxgvDataRow_BlackGlass">
+				<td></td>
+			</tr><tr class="dxgvDataRow_BlackGlass">
+				<td></td>
+			</tr><tr class="dxgvDataRow_BlackGlass">
+				<td></td>
+			</tr><tr class="dxgvDataRow_BlackGlass">
+				<td></td>
+			</tr><tr class="dxgvDataRow_BlackGlass">
+				<td></td>
+			</tr>
+		</table><input type="hidden" name="ctl00$cphMain$gvAssoc$CallbackState" id="ctl00_cphMain_gvAssoc_CallbackState" value="/wEWBB4ERGF0YQW4DEFBQUFBQWdBQUFBSUFBQUFBQUFBQUFnQUFBQUFCd0FBQUFkQmMzTnZZMGxFQ0VGemMyOWpJRWxFQXdBQURFRmpZMlZ6YzJsdmJrbEVNUTFCWTJObGMzTnBiMjRnU1VReEJ3QUFERUZqWTJWemMybHZia2xFTWcxQlkyTmxjM05wYjI0Z1NVUXlCd0FBQmxOMFlYUjFjd1pUZEdGMGRYTUJBQUFJVUhWaVRXVmtTVVFLVUhWaUlFMWxaQ0JKUkFjQUFBWkpSRlI1Y0dVSFNVUWdWSGx3WlFFQUFBdEVaWE5qY21sd2RHbHZiZ3RFWlhOamNtbHdkR2x2YmdjQUFBRUFBQUFFVkdocGN3Y0FCd0FIQUFjQUJ2Ly9Bd2ZMQndJSWJHbHVZekUyTVRBSEFnVk9ZVzV2WndFQ0FBY0NDREl4T0RjME1ERTRBUUlBQndJNWJHbHVZekUyTVRBZ2NtVnhkV2x5WldRZ1ptOXlJRzV2Y20xaGJDQmxlSEJ5WlhOemFXOXVJRzltSUU1aGJtOW5JR2x1SUcxRlUwTnpCd0FIQUFiLy93TUh6QWNDQ0d4cGJtTXhOakV3QndJRVQyTjBOQUVDQUFjQ0NESXhPRGMwTURFNEFRSUFCd0k0YkdsdVl6RTJNVEFnY21WeGRXbHlaV1FnWm05eUlHNXZjbTFoYkNCbGVIQnlaWE56YVc5dUlHOW1JRTlqZERRZ2FXNGdiVVZUUTNNSEFBY0FCdi8vQXdmTkJ3SUliR2x1WXpFMk1UQUhBZ1JUYjNneUFRSUFCd0lJTWpFNE56UXdNVGdCQWdBSEFqaHNhVzVqTVRZeE1DQnlaWEYxYVhKbFpDQm1iM0lnYm05eWJXRnNJR1Y0Y0hKbGMzTnBiMjRnYjJZZ1UyOTRNaUJwYmlCdFJWTkRjd2NBQndBRy8vOERCODRIQWdoc2FXNWpNVFl4TUFjQ0JFdHNaalFCQWdBSEFnZ3lNVGczTkRBeE9BRUNBQWNDT0d4cGJtTXhOakV3SUhKbGNYVnBjbVZrSUdadmNpQnViM0p0WVd3Z1pYaHdjbVZ6YzJsdmJpQnZaaUJMYkdZMElHbHVJRzFGVTBOekJ3QUhBQWIvL3dNSHp3Y0NDR3hwYm1NeE5qRXdCd0lGV21ad05ESUJBZ0FIQWdneU1UZzNOREF4T0FFQ0FBY0NPV3hwYm1NeE5qRXdJSEpsY1hWcGNtVmtJR1p2Y2lCdWIzSnRZV3dnWlhod2NtVnpjMmx2YmlCdlppQmFabkEwTWlCcGJpQnRSVk5EY3djQUJ3QUcvLzhEQi9vSEFnaHNhVzVqTVRZeE1BY0NCRkJTUXpJQkFnQUhBZ2d5TVRnM05EQXhPQUVDQWdjQ1BrbHVkR1Z5WVdOMGN5QjNhWFJvSUhCeWIzUmxhVzRvY3lrZ2IyWWdkR2hsSUZCdmJIbGpiMjFpSUZKbGNISmxjM05wZG1VZ1EyOXRjR3hsZUNBeUJ3QUhBQWIvL3dNSCt3Y0NDR3hwYm1NeE5qRXdCd0lHVWtsT1J6RkNBUUlBQndJSU1qRTROelF3TVRnQkFnSUhBcVlCU1c1MFpYSmhZM1J6SUhkcGRHZ2djSEp2ZEdWcGJpaHpLU0J2WmlCMGFHVWdVRzlzZVdOdmJXSWdVbVZ3Y21WemMybDJaU0JEYjIxd2JHVjRJREV1SUVsdWRHVnlZV04wY3lCM2FYUm9JRVV6SUhWaWFYRjFhWFJwYmkxd2NtOTBaV2x1SUd4cFoyRnpaU0JTU1U1SE1pQW9Va2xPUnpGQ0tTQmxhWFJvWlhJZ1pHbHlaV04wYkhrZ2IzSWdkR2h5YjNWbmFDQjBhR1VnVUZKRE1TQmpiMjF3YkdWNExnY0FCd0FHLy84REIvd0hBZ2hzYVc1ak1UWXhNQWNDQjBwQlVrbEVNVU1CQWdBSEFnZ3lNVGczTkRBeE9BRUNBZ2NDV0VsdWRHVnlZV04wY3lCM2FYUm9JRXg1YzJsdVpTMXpjR1ZqYVdacFl5QmtaVzFsZEdoNWJHRnpaU0ExUXlBb1NrRlNTVVF4UXlrZ1pXbDBhR1Z5SUdScGNtVmpkR3g1SUc5eUlHbHVJR0VnWTI5dGNHeGxlQzQ9HgVTdGF0ZQVsQndnSEFBSUFCd0FDQUFjQkFnQUhBQUlCQndFQ0FRY0NBZ0VIQXdJQkJ3UUNBUWNBQndBSEFBY0FCUUFBQUlBSkFnZEJjM052WTBsRUNRSUFBZ0FEQndRQ0FBY0FBZ0VIQUFjQUFnRUhBQWNB" /></td>
+	</tr>
+</table><script id="dxss_1106869656" type="text/javascript">
+<!--
+
+var dxo = new ASPxClientGridView('ctl00_cphMain_gvAssoc');
+window['ctl00_cphMain_gvAssoc'] = dxo;
+dxo.callBack = function(arg) { WebForm_DoCallback('ctl00$cphMain$gvAssoc',arg,aspxCallback,'ctl00_cphMain_gvAssoc',aspxCallbackError,true); };
+dxo.uniqueID = 'ctl00$cphMain$gvAssoc';
+dxo.renderIFrameForPopupElements = true;
+dxo.callBacksEnabled=true;
+dxo.pageRowCount=8;
+dxo.pageRowSize=10;
+dxo.pageIndex=0;
+dxo.pageCount=1;
+dxo.selectedWithoutPageRowCount=0;
+dxo.visibleStartIndex=0;
+dxo.focusedRowIndex=-1;
+dxo.allowFocusedRow=false;
+dxo.isColumnsResizable=false;
+dxo.isVerticalScrolling=false;
+dxo.isHorizontalScrolling=false;
+dxo.isMainControlResizable=false;
+dxo.callbackOnFocusedRowChanged=false;
+dxo.callbackOnSelectionChanged=false;
+dxo.autoFilterDelay='1200';
+dxo.ClearColumns();
+dxo.CreateColumn('',0,null,0,'');
+dxo.CreateColumn('',1,'AssocID',0,'');
+dxo.CreateColumn('',2,'AccessionID1',0,'');
+dxo.CreateColumn('',3,'IDType',1,'');
+dxo.CreateColumn('',4,'AccessionID2',1,'');
+dxo.CreateColumn('',5,'Description',1,'');
+dxo.CreateColumn('',6,'Status',1,'');
+dxo.CreateColumn('',7,'PubMedID',1,'');
+dxo.keys=['203','204','205','206','207','250','251','252'];
+dxo.editState=0;
+dxo.InlineInitialize();
+
+//-->
+</script>
+
+        <h2>
+            Sequence
+        </h2>
+        <p style=" word-wrap: break-word; text-align: left;">
+            > Mouse (long genomic isoform)
+AAAAGGATTCTCGAAATAGAACTCTTTTCCCCCTACCCCCAAAACGAAAGTAGAATAGCTCAGCAAATCACTCCCATTTCTTTCTTATTTTCCCGGCGTCTTAATTATCACCAGCGGGATGGACAGGAAGAAAAGTCTGGAAGACACATTTAGGAACTTTGTCATCGATGCAGTTGTTTCCTGATAACGGATGGAGTGCCTGCTGTATTGAGATTATGGGTGTGGGCCACAGTGCCCAGCCAGATGTATCTTCTAATCCACCAAGGGAATCTGAACTGTTAATTAATTGTTAATTGTTAAAACATTGCTGGGCAAAATAGCCCCGACATGCCGCTTGAAGCACCTGGGCAGCTCAGACATGAACTTCCTAAACCATGAAAAACAAGACAACAAAGAGGATGGAAGACAGGGAGGAAAAAGTCATCAAAGGAAAGCAGCGAGAAACCGAGAAACTGGTGTGTACTGGATCAGAGTGAATAAGCAGATGTGGTTGGAAGCATACTATTGATGAAAATCACCTCAGCTAATAGACGTAGCTCAACCAAAACATTGGCTTACACAATTTGCTGGAATTCTCTGTCTTCCACTAGCGGGCTTCAGCAGAAGATCTGAACTCTCAGCTCCTCCTGCACCATGCCTGTCTGGATGCTGCCATGCTGCCACCTTGATGATAATGGACTCCTGCACCATGCCTGCCTGGATGCTGCCATGCTGCCACCTTGATGATAATGGACTCCTGCACCATGCCTGCCTGGATGCTGCCATGCTGCCACCTTGATGATAATGGACTCCTGCGCCATGCCTGTCTGGATGCTGCCATGCTGCCACCTTGATGATAATGGACTCCTGCACCATGCCTGCCTGGATGCTGCCATGCTGCCACCTTGATGATAATGGACTCCTGCACCATGCCTGCCTGGATGCTGCCATGCTGCCACCTTGATGATAATGGACTCCTGCACCATGCCTGTCTGGATGCTGCCATGCTGTCACCTTGATGATAATGGACTCCTGCACCATGCCTGCCTGGATGCTGCCATGCTGCCACCTTGATGATAATGGACTCCTGCACCATGCCTGTCTGGATGCTGCCATGCTGTCACCTTGATGATAATGGACTCCTGCACCATGCCTGCCTGGATGCTGCCATGCTGCCACCTTGATGATAATGGACTCCTGCACCATGCCTGTCTGGATGCTGCCATGCTGTCACCTTGATGATAATGGACTCCTGCACCATGCCTGCCTGGATGCTGCCATGCTGTCACCTTGATGATAATGGACTGAACCTCTGAACCTGTAAGCCAGCCCCAATTACATGTTGTCCTTATAAGAGTTGCCTTGGTCATGGTGTCTGTTCACAGCAGTGAAACCCTAGCTAAGAGAGTGAATTCAGATGTAGAAATCTCCTTCATCAGCATCATGTCTGCCTGCACGCTGCCGTGCTTTCCTCCGTGATGACACGGATTGATCCTCTGAAACTGTAAACCAGCCCCAATCAAACGCTTTTTAATACAAGAGTTGCCATGGTAATGTGTTTCTTCATAGCAATAGGTCGCTAAGACCAGTGGTGTCTTGTTTTCCTGGTTATTCATGTTTCTTAGAGTCTTTTGTAGTTATCTGTACATTTGCACAAGAGATTCTTTCCTCCAGGGTTTATCAACTATCTCTGACATAGTGATTAACTTTACCTCTGAGCTGGGGTGCATTAAAGCATACTTTGACTCTAAACCTAGTGAGCCAGGGCACGTGTGGAGGCTTTCAGTTCAGAGGGTAATGAATGTGTCTATCAGCTCACACAGCTGGTATCCAAAGTGTTGACAACTTGGCAGTCCTATGCTGCGAGGACTGTTAGGGATCCAGTGGCAAGGGCAGCAATGGAGACATGGGACACTCAGATGCGTACACTTGGCCTCAAAGGCCAGCTGCAGGTATCTGCTGGGTGACAAGTTTGGTGGCAGGCAAGTGCACAGCGGGAAAGTTTAGAGCACGAGAGGCTCAGAAGCCATAGCTTGTAAAGGCAAATAAAGACTCTTGGCTACAGATTAATGGAGTCCTCTTTGGAGCAATGTTTTAATTCTGTCACATTAAATATTGTGAGTCCTCAGTGGTGAAAGTGTGAGGAGTTTGCAGCAGCTCCTGGGTCTGTTAAGTTTCCAGCAAAGATGGCTCCAGAGTCCTCTTCTGAGGAGACTCTAAGGACAGCCAAGTCACATACTCTATTGCTGTCTCTTTTGCTCCGAGCTATTTCCAGATGCATACTATGCCATTCTTCCTTAGTGATCTGGGGAGATCACCAGGCGAGTCTTTGAAAAGGTGTTCTGAAAGTTTGTGGGATATGGCTGTTCACCCAGCCTTTCTTTTTCTTAAGAGGGCAGTTCATGGGCTGGTTAGTTTCTTCTCAGCCAGGGTAGTGATGGGTTGGGGAGAGGTGTGTGAGTCAGGCAAAATGAACCATTTGCCCATTGTTTTGAGGCATTTTACTTGGGCGTTCTTCCTCCACCGTATGCCTATATCTTTTACAATGATCACCCCCCAGTACTTCCAGAGATATTTACCTTCCTCGATAGTTCATTTGGTGGGGAGGGAGGATGTTGTAAAATCTGATATCTTACTCCAATGTATTGCTGTCATCGATTGCTACTGCCTGATTGGAAAGCGTGACTCTAAATCCCAGCCCTGCCTATAACTCCAGTTTCAGTGAGTTTGGCACCCTCTCTTGGTCTTTAAAGCTCTTGCACATACTCTCTTGTACACGTGCTCATAAACTCATGCAGGCTCGAACAGGTTCACAT
+<br></br><br></br>
+
+>Mouse (medium genomic isoform)
+AAAAGGATTCTCGAAATAGAACTCTTTTCCCCCTACCCCCAAAACGAAAGTAGAATAGCTCAGCAAATCACTCCCATTTCTTTCTTATTTTCCCGGCGTCTTAATTATCACCAGCGGGATGGACAGGAAGAAAAGTCTGGAAGACACATTTAGGAACTTTGTCATCGATGCAGTTGTTTCCTGATAACGGATGGAGTGCCTGCTGTATTGAGATTATGGGTGTGGGCCACAGTGCCCAGCCAGATGTATCTTCTAATCCACCAAGGGAATCTGAACTGTTAATTAATTGTTAATTGTTAAAACATTGCTGGGCAAAATAGCCCCGACATGCCGCTTGAAGCACCTGGGCAGCTCAGACATGAACTTCCTAAACCATGAAAAACAAGACAACAAAGAGGATGGAAGACAGGGAGGAAAAAGTCATCAAAGGAAAGCAGCGAGAAACCGAGAAACTGGTGTGTACTGGATCAGAGGGCAGTGGTTTGCGCTGTGGCCTCAGAATAACTTGCTGGACTTCTACTTTGGTGTGCGTTTTACTTTGTTGTTAGGAAGAATCACAACCTCTCAATTCTTTGCACGCAAGACCAGAAATCAGAACTCTTCACAATTTAGTCACAGATATACAGGGAAGCATTGAAGCAATTGTCATGTAGCCATTTAATCTTCATAACTGCTTCTTTGGGAGACTTTACAGCAACAGTGTAAGAGTGTGATATGATCTTACATTAGCCTGGAACGCAACAAAACAAGAGGAAAAGAAGTTCTGCGTAAGTCAGTACTCATGCTCACAGGTGCTTTCTGATGTACGAAAGTACAGCTTTGGAAATCATTCACTAGCTTTGTGCA
+<br></br><br></br>
+
+>Mouse (short genomic isoform)
+AAAAGGATTCTCGAAATAGAACTCTTTTCCCCCTACCCCCAAAACGAAAGTAGAATAGCTCAGCAAATCACTCCCATTTCTTTCTTATTTTCCCGGCGTCTTAATTATCACCAGCGGGATGGACAGGAAGAAAAGTCTGGAAGACACATTTAGGAACTTTGTCATCGATGCAGTTGTTTCCTGATAACGGATGGAGTGCCTGCTGTATTGAGATTATGGGTGTGGGCCACAGTGCCCAGCCAGATGTATCTTCTAATCCACCAAGGGAATCTGAACTGTTAATTAATTGTTAATTGTTAAAACATTGCTGGGGACATTTAAACTATGCCTAAGAAATCAGAGAGCAAGATTAGAGAGATGGGTCAGTGGTGAAGAGCATGCTTTATTCACATAGAGGACATGAGTTCAGGTCTTCACATCCTTGACGGAAGATTAACAACTACCTTAACTCTTGATACATGGGAACCTGATACATCTGGCCTCTCCCAGGTACCTGCACTCACAGACACCTGCACTCCCAAGCACCTGTACTTACAGACAACTGCACTCCCAGGCACCTGCACTCACATGCACCTGCACTCCCAAGCAGCTGCACTCCCAGGCACCTGCATTCATATGTACCTGCACTTGCAGGCACCTACACTCACAGGCACCTGTACTCATAGGCACCAGTCACCTACATCAACATAAATAAAAATAAAACCATAATAGAAAGAGAATTCAGAGTCAAGGGTAAGTATATTATGAATGTGAACTCAGGGCTATCTAAATGGCTCAGTTGGTAGAGGTGCATGCCACTAAAACTTGATGGCCTGATTTCAGTGCCCAGTCCCTCATCTTTCCATATCTTCTTTTTAATTATGTTGCAATACAACGAATAGTCACAATAATAGCAGGTATTATAATAGTAGATATTATCTGATTCTTGGTTGGTTTATTATTTTCATTTGGGACTTGCAGTTTTTATTTAGCTTAGACTGGCCCAGACTCAC
+        </p>
+    </div>
+    
+    <div style="clear: both;">
+        <br />
+        
+        
+        
+        
+        
+    </div>
+
+        </div>
+        
+
+                                <a class="dxeHyperlink_BlackGlass" onclick="aspxSEClick(&#39;ctl00_hlLogin&#39;, event)" id="ctl00_hlLogin"><font color="White">Administrator Login</font></a><script id="dxss_1392135757" type="text/javascript">
+<!--
+aspxAddDisabledItems('ctl00_hlLogin',[[['dxeDisabled_BlackGlass'],[''],['']]]);
+
+var dxo = new ASPxClientHyperLink('ctl00_hlLogin');
+window['ctl00_hlLogin'] = dxo;
+dxo.uniqueID = 'ctl00$hlLogin';
+dxo.renderIFrameForPopupElements = true;
+dxo.Click.AddHandler(function(s, e) {ShowLoginWindow();});
+dxo.InlineInitialize();
+
+//-->
+</script>
+        <div>
+            
+        </div>
+        <input type="hidden" id="ctl00_pcLoginWS" name="ctl00_pcLoginWS" value="0:0:-1:-10000:-10000:0:400px:-10000:1" /><table id="ctl00_pcLogin_PW-1" cellspacing="0" cellpadding="0" border="0" style="border-collapse:separate;position:absolute;left:0px;top:0px;z-index:10000;visibility:hidden;display:none;">
+	<tr>
+		<td class="dxpcControl_BlackGlass" onmousedown="aspxPWMDown(event,&#39;ctl00_pcLogin&#39;,-1,false)" width="400" style="cursor:default;"><table id="ctl00_pcLogin_CLW-1" cellspacing="0" cellpadding="0" border="0" width="400" style="border-collapse:separate;">
+			<tr>
+				<td id="ctl00_pcLogin_PWH-1" class="dxpcHeader_BlackGlass" onmousedown="aspxPWDGMDown(event,&#39;ctl00_pcLogin&#39;,-1)" style="cursor:move;padding-left:15px;padding-right:6px;padding-top:3px;padding-bottom:6px;"><table cellspacing="0" cellpadding="0" border="0" width="100%" style="border-collapse:separate;">
+					<tr>
+						<td id="ctl00_pcLogin_PWH-1T" class="dxpc" width="100%">Login</td><td style="padding-left:4px;"><table cellspacing="0" cellpadding="0" border="0" style="border-collapse:separate;">
+							<tr>
+								<td id="ctl00_pcLogin_HCB-1" class="dxpcCloseButton_BlackGlass" onclick="aspxPWCBClick(event, &#39;ctl00_pcLogin&#39;,-1)" onmousedown="return aspxPWCBMDown(event);" style="cursor:pointer;"><img id="ctl00_pcLogin_HCB-1Img" class="dxWeb_pcCloseButton_BlackGlass" src="/DXR.axd?r=1_3-2bqz2" alt="[Close]" title="" border="0" border="0" /></td>
+							</tr>
+						</table></td>
+					</tr>
+				</table></td>
+			</tr><tr>
+				<td id="ctl00_pcLogin_PWC-1" class="dxpcContent_BlackGlass" style="border-top-width:0px;text-align:Left;vertical-align:Top;padding-bottom:5px;">
+                    <div style="margin-left: auto; margin-right: auto">
+                        <div style="clear: both;">
+                            <div style="padding: 10px 5px 0px 5px; float: left; width: 90px;">
+                                e-mail
+                            </div>
+                            <div style="padding: 10px 0px 0px 0px; float: left">
+                                <table id="ctl00_pcLogin_tbLogin_ET" class="dxeErrorFrame_BlackGlass" cellspacing="0" cellpadding="0" border="0" style="visibility:hidden;">
+					<tr>
+						<td class="dxeControlsCell_BlackGlass" style="visibility:visible;"><table class="dxeTextBox_BlackGlass dxeTextBoxSys" cellspacing="0" cellpadding="0" onKeyPress="return disableEnterKey(event)" id="ctl00_pcLogin_tbLogin" border="0" width="250">
+							<tr>
+								<td class="dxic" width="100%"><input class="dxeEditArea_BlackGlass dxeEditAreaSys" onkeydown="aspxEKeyDown(&#39;ctl00_pcLogin_tbLogin&#39;, event)" name="ctl00$pcLogin$tbLogin" onkeyup="aspxEKeyUp(&#39;ctl00_pcLogin_tbLogin&#39;, event)" id="ctl00_pcLogin_tbLogin_I" onblur="aspxELostFocus(&#39;ctl00_pcLogin_tbLogin&#39;)" onfocus="aspxEGotFocus(&#39;ctl00_pcLogin_tbLogin&#39;)" type="text" onchange="aspxEValueChanged(&#39;ctl00_pcLogin_tbLogin&#39;)" style="margin-left:2px;margin-right:1px;margin-top:0px;margin-bottom:1px;padding-right:1px;" /></td>
+							</tr>
+						</table></td>
+					</tr><tr>
+						<td id="ctl00_pcLogin_tbLogin_EC" class="dxeErrorCell_BlackGlass" style="padding-left:4px;white-space:nowrap;">Invalid value</td>
+					</tr>
+				</table><script id="dxss_518416265" type="text/javascript">
+<!--
+aspxAddDisabledItems('ctl00_pcLogin_tbLogin',[[['dxeDisabled_BlackGlass'],[''],['','I']]]);
+document.getElementById("ctl00_pcLogin_tbLogin_ET").setAttribute("errorFrame", "errorFrame");
+
+var dxo = new ASPxClientTextBox('ctl00_pcLogin_tbLogin');
+window['tbLogin'] = dxo;
+dxo.uniqueID = 'ctl00$pcLogin$tbLogin';
+dxo.renderIFrameForPopupElements = true;
+dxo.widthCorrectionRequired = true;
+dxo.validationGroup = "entryGroup";
+dxo.customValidationEnabled = true;
+dxo.isValid = true;
+dxo.errorText = 'Invalid value';
+dxo.validationPatterns = [ new ASPxRequiredFieldValidationPattern('Username required') ];
+dxo.causesValidation = true;
+dxo.setFocusOnError = true;
+dxo.errorDisplayMode = "t";
+dxo.RequireStyleDecoration();
+dxo.styleDecoration.AddStyle('I','dxeInvalid_BlackGlass','');
+dxo.styleDecoration.AddStyle('F','dxeFocused_BlackGlass','');
+dxo.InlineInitialize();
+
+//-->
+</script>
+                            </div>
+                        </div>
+                        <div style="clear: both;">
+                            <div style="padding: 10px 5px 0px 5px; float: left; width: 90px;">
+                                Password
+                            </div>
+                            <div style="padding: 10px 0px 0px 0px; float: left">
+                                <table id="ctl00_pcLogin_tbPassword_ET" class="dxeErrorFrame_BlackGlass" cellspacing="0" cellpadding="0" border="0" style="visibility:hidden;">
+					<tr>
+						<td class="dxeControlsCell_BlackGlass" style="visibility:visible;"><table class="dxeTextBox_BlackGlass dxeTextBoxSys" cellspacing="0" cellpadding="0" onKeyPress="return disableEnterKey(event)" id="ctl00_pcLogin_tbPassword" border="0" width="250">
+							<tr>
+								<td class="dxic" width="100%"><input class="dxeEditArea_BlackGlass dxeEditAreaSys" onkeydown="aspxEKeyDown(&#39;ctl00_pcLogin_tbPassword&#39;, event)" name="ctl00$pcLogin$tbPassword" onkeyup="aspxEKeyUp(&#39;ctl00_pcLogin_tbPassword&#39;, event)" id="ctl00_pcLogin_tbPassword_I" onblur="aspxELostFocus(&#39;ctl00_pcLogin_tbPassword&#39;)" onfocus="aspxEGotFocus(&#39;ctl00_pcLogin_tbPassword&#39;)" type="password" onchange="aspxEValueChanged(&#39;ctl00_pcLogin_tbPassword&#39;)" style="margin-left:2px;margin-right:1px;margin-top:0px;margin-bottom:1px;padding-right:1px;" /></td>
+							</tr>
+						</table></td>
+					</tr><tr>
+						<td id="ctl00_pcLogin_tbPassword_EC" class="dxeErrorCell_BlackGlass" style="padding-left:4px;white-space:nowrap;">Invalid value</td>
+					</tr>
+				</table><script id="dxss_101031466" type="text/javascript">
+<!--
+aspxAddDisabledItems('ctl00_pcLogin_tbPassword',[[['dxeDisabled_BlackGlass'],[''],['','I']]]);
+document.getElementById("ctl00_pcLogin_tbPassword_ET").setAttribute("errorFrame", "errorFrame");
+
+var dxo = new ASPxClientTextBox('ctl00_pcLogin_tbPassword');
+window['tbPassword'] = dxo;
+dxo.uniqueID = 'ctl00$pcLogin$tbPassword';
+dxo.renderIFrameForPopupElements = true;
+dxo.widthCorrectionRequired = true;
+dxo.validationGroup = "entryGroup";
+dxo.customValidationEnabled = true;
+dxo.isValid = true;
+dxo.errorText = 'Invalid value';
+dxo.validationPatterns = [ new ASPxRequiredFieldValidationPattern('Password required') ];
+dxo.setFocusOnError = true;
+dxo.errorDisplayMode = "t";
+dxo.RequireStyleDecoration();
+dxo.styleDecoration.AddStyle('I','dxeInvalid_BlackGlass','');
+dxo.styleDecoration.AddStyle('F','dxeFocused_BlackGlass','');
+dxo.InlineInitialize();
+
+//-->
+</script>
+                            </div>
+                        </div>
+                        <div style="clear: both; width: 350px;">
+                        </div>
+                        <div style="width: 350px;">
+                            <div style="padding: 10px 5px 0px 5px; float: left; width: 90px; margin-right: auto;
+                                text-align: left;">
+                                <!--<a href="javascript:ShowCreateAccountWindow();">Create Account</a>-->
+                                &nbsp;
+                            </div>
+                            <div style="float: right">
+                                <div style="padding: 10px 0px 0px 10px; float: right; text-align: right; margin-left: auto">
+                                    <table cellspacing="0" cellpadding="0" id="ctl00_pcLogin_btOKLogin" border="0" width="60" style="border-collapse:separate;">
+					<tr>
+						<td id="ctl00_pcLogin_btOKLogin_B" class="dxbButton_BlackGlass" align="center"><div id="ctl00_pcLogin_btOKLogin_CD" class="dxb">
+							<span>OK</span>
+						</div></td><td width="0%"><input value="" onfocus="aspxBGotFocus(&#39;ctl00_pcLogin_btOKLogin&#39;)" name="ctl00$pcLogin$btOKLogin" type="submit" border="0" style="padding:0px;" /></td>
+					</tr>
+				</table><script id="dxss_2029121368" type="text/javascript">
+<!--
+aspxAddHoverItems('ctl00_pcLogin_btOKLogin',[[['dxbButtonHover_BlackGlass'],[''],['B'],['','TC'],[['']],['Img']]]);
+aspxAddPressedItems('ctl00_pcLogin_btOKLogin',[[['dxbButtonPressed_BlackGlass'],[''],['B'],['','TC'],[['']],['Img']]]);
+aspxAddDisabledItems('ctl00_pcLogin_btOKLogin',[[['dxbDisabled_BlackGlass'],[''],['B'],['','TC'],[['']],['Img']]]);
+
+var dxo = new ASPxClientButton('ctl00_pcLogin_btOKLogin');
+window['ctl00_pcLogin_btOKLogin'] = dxo;
+dxo.uniqueID = 'ctl00$pcLogin$btOKLogin';
+dxo.renderIFrameForPopupElements = true;
+dxo.Click.AddHandler(function(s, e) {
+	if (ASPxClientEdit.ValidateGroup('entryGroup'))
+		cbLogin.PerformCallback();
+});
+aspxAddSelectedItems('ctl00_pcLogin_btOKLogin',[[['dxbf'],[''],['CD']]]);
+dxo.InlineInitialize();
+
+//-->
+</script>
+                                </div>
+                                <div style="padding: 10px 0px 0px 0px; float: right">
+                                    <table cellspacing="0" cellpadding="0" id="ctl00_pcLogin_btCancelLogin" border="0" width="60" style="border-collapse:separate;">
+					<tr>
+						<td id="ctl00_pcLogin_btCancelLogin_B" class="dxbButton_BlackGlass" align="center"><div id="ctl00_pcLogin_btCancelLogin_CD" class="dxb">
+							<span>Cancel</span>
+						</div></td><td width="0%"><input value="" onfocus="aspxBGotFocus(&#39;ctl00_pcLogin_btCancelLogin&#39;)" name="ctl00$pcLogin$btCancelLogin" type="submit" border="0" style="padding:0px;" /></td>
+					</tr>
+				</table><script id="dxss_1914520082" type="text/javascript">
+<!--
+aspxAddHoverItems('ctl00_pcLogin_btCancelLogin',[[['dxbButtonHover_BlackGlass'],[''],['B'],['','TC'],[['']],['Img']]]);
+aspxAddPressedItems('ctl00_pcLogin_btCancelLogin',[[['dxbButtonPressed_BlackGlass'],[''],['B'],['','TC'],[['']],['Img']]]);
+aspxAddDisabledItems('ctl00_pcLogin_btCancelLogin',[[['dxbDisabled_BlackGlass'],[''],['B'],['','TC'],[['']],['Img']]]);
+
+var dxo = new ASPxClientButton('ctl00_pcLogin_btCancelLogin');
+window['ctl00_pcLogin_btCancelLogin'] = dxo;
+dxo.uniqueID = 'ctl00$pcLogin$btCancelLogin';
+dxo.renderIFrameForPopupElements = true;
+dxo.Click.AddHandler(function(s, e) {pcLogin.Hide();});
+aspxAddSelectedItems('ctl00_pcLogin_btCancelLogin',[[['dxbf'],[''],['CD']]]);
+dxo.InlineInitialize();
+
+//-->
+</script>
+                                </div>
+                            </div>
+                        </div>
+                        <div style="clear: both;">
+                            &nbsp;
+                        </div>
+                    </div>
+                </td>
+			</tr>
+		</table></td><td id="ail343459579" style="background:url('/DXR.axd?r=1_18-2bqz2') no-repeat left top;//background:none;"><script id="dxss_1421001554" type="text/javascript">
+<!--
+
+    _aspxEnsureAlphaImageLoaderApplierRegistered();    
+    _aspxAddAlphaImageLoaderTarget("ail343459579", "/DXR.axd?r=1_18-2bqz2");
+
+//-->
+</script></td>
+	</tr><tr>
+		<td id="ail914458306" style="background:url('/DXR.axd?r=1_17-2bqz2') no-repeat left top;//background:none;"><script id="dxss_188090062" type="text/javascript">
+<!--
+
+    _aspxEnsureAlphaImageLoaderApplierRegistered();    
+    _aspxAddAlphaImageLoaderTarget("ail914458306", "/DXR.axd?r=1_17-2bqz2");
+
+//-->
+</script></td><td id="ail262345046" style="background:url('/DXR.axd?r=1_19-2bqz2') no-repeat left top;//background:none;"><div>
+
+		</div><script id="dxss_104662732" type="text/javascript">
+<!--
+
+    _aspxEnsureAlphaImageLoaderApplierRegistered();    
+    _aspxAddAlphaImageLoaderTarget("ail262345046", "/DXR.axd?r=1_19-2bqz2");
+
+//-->
+</script></td>
+	</tr>
+</table><iframe id="ctl00_pcLogin_DXPWIF-1" src="javascript:false" scrolling="no" frameborder="0" style="position:absolute;display:none;z-index:9999;filter:progid:DXImageTransform.Microsoft.Alpha(Style=0, Opacity=0);">
+
+</iframe><div id="ctl00_pcLogin_DXPWMB-1" class="dxpcModalBackground_BlackGlass" style="position:absolute;visibility:hidden;left:0px;top:0px;z-index:9999;">
+
+</div><table id="ctl00_pcLogin_LP" class="dxpcLoadingPanel_BlackGlass" cellspacing="0" cellpadding="0" border="0" style="left:0px;top:0px;z-index:30000;display:none;">
+	<tr>
+		<td class="dx" style="padding-right:8px;"><img src="/DXR.axd?r=0_395-2bqz2" alt="" align="middle" border="0" border="0" /></td><td class="dx" style="padding-left:0px;">Loading&hellip;</td>
+	</tr>
+</table><div id="ctl00_pcLogin_LD" class="dxpcLoadingDiv_BlackGlass" style="left:0px;top:0px;z-index:29999;display:none;position:absolute;">
+
+</div><script id="dxss_330632293" type="text/javascript">
+<!--
+aspxAddHoverItems('ctl00_pcLogin',[[['dxpcCloseButtonHover_BlackGlass'],[''],['HCB-1'],,[['']],['Img']]]);
+
+var dxo = new ASPxClientPopupControl('ctl00_pcLogin');
+window['pcLogin'] = dxo;
+dxo.callBack = function(arg) { WebForm_DoCallback('ctl00$pcLogin',arg,aspxCallback,'ctl00_pcLogin',aspxCallbackError,true); };
+dxo.uniqueID = 'ctl00$pcLogin';
+dxo.renderIFrameForPopupElements = true;
+dxo.PopUp.AddHandler(function(s, e) {
+	ASPxClientEdit.ClearGroup('entryGroup');
+	tbLogin.Focus();
+});
+dxo.enableAnimation=false;
+dxo.popupAction='MouseOver';
+dxo.closeAction='CloseButton';
+dxo.popupHorizontalAlign='WindowCenter';
+dxo.popupVerticalAlign='WindowCenter';
+dxo.isPopupPositionCorrectionOn=false;
+dxo.width=400;
+dxo.height=0;
+dxo.SSLSecureBlankUrl='/DXR.axd?r=1_0-2bqz2';
+dxo.InlineInitialize();
+
+//-->
+</script>
+        <br />
+        <input type="hidden" id="ctl00_pcCreateAccountWS" name="ctl00_pcCreateAccountWS" value="0:0:-1:-10000:-10000:0:394px:262px:1" /><div id="ctl00_pcCreateAccount_PW-1" style="position:absolute;left:0px;top:0px;z-index:10000;visibility:hidden;display:none;">
+	<table id="ctl00_pcCreateAccount_PWST-1" cellspacing="0" cellpadding="0" border="0" style="border-collapse:separate;position:relative;">
+		<tr>
+			<td class="dxpcControl_BlackGlass" onmousedown="aspxPWMDown(event,&#39;ctl00_pcCreateAccount&#39;,-1,false)" height="262" width="394" style="cursor:default;"><table id="ctl00_pcCreateAccount_CLW-1" cellspacing="0" cellpadding="0" border="0" width="394" style="border-collapse:separate;">
+				<tr>
+					<td id="ctl00_pcCreateAccount_PWH-1" class="dxpcHeader_BlackGlass" onmousedown="aspxPWDGMDown(event,&#39;ctl00_pcCreateAccount&#39;,-1)" style="cursor:move;padding-left:15px;padding-right:6px;padding-top:3px;padding-bottom:6px;"><table cellspacing="0" cellpadding="0" border="0" width="100%" style="border-collapse:separate;">
+						<tr>
+							<td id="ctl00_pcCreateAccount_PWH-1T" class="dxpc" width="100%">Create Account</td><td style="padding-left:4px;"><table cellspacing="0" cellpadding="0" border="0" style="border-collapse:separate;">
+								<tr>
+									<td id="ctl00_pcCreateAccount_HCB-1" class="dxpcCloseButton_BlackGlass" onclick="aspxPWCBClick(event, &#39;ctl00_pcCreateAccount&#39;,-1)" onmousedown="return aspxPWCBMDown(event);" style="cursor:pointer;"><img id="ctl00_pcCreateAccount_HCB-1Img" class="dxWeb_pcCloseButton_BlackGlass" src="/DXR.axd?r=1_3-2bqz2" alt="[Close]" title="" width="17" border="0" border="0" /></td>
+								</tr>
+							</table></td>
+						</tr>
+					</table></td>
+				</tr><tr>
+					<td id="ctl00_pcCreateAccount_PWC-1" class="dxpcContent_BlackGlass" style="border-top-width:0px;text-align:Left;vertical-align:Top;">
+                    <div style="margin-left: auto; margin-right: auto">
+                        <div style="clear: left; height: 35px;">
+                            <div style="padding: 10px 5px 0px 5px; float: left; width: 70px;">
+                                First Name
+                            </div>
+                            <div style="padding: 10px 0px 0px 0px; float: left">
+                                <table id="ctl00_pcCreateAccount_tbFirstName_ET" class="dxeErrorFrame_BlackGlass" cellspacing="0" cellpadding="0" border="0" style="visibility:hidden;">
+						<tr>
+							<td class="dxeControlsCell_BlackGlass" style="visibility:visible;"><table class="dxeTextBox_BlackGlass dxeTextBoxSys" cellspacing="0" cellpadding="0" onKeyPress="return disableEnterKey(event)" id="ctl00_pcCreateAccount_tbFirstName" border="0" width="250">
+								<tr>
+									<td class="dxic" width="100%"><input class="dxeEditArea_BlackGlass dxeEditAreaSys" onkeydown="aspxEKeyDown(&#39;ctl00_pcCreateAccount_tbFirstName&#39;, event)" name="ctl00$pcCreateAccount$tbFirstName" onkeyup="aspxEKeyUp(&#39;ctl00_pcCreateAccount_tbFirstName&#39;, event)" id="ctl00_pcCreateAccount_tbFirstName_I" onblur="aspxELostFocus(&#39;ctl00_pcCreateAccount_tbFirstName&#39;)" onfocus="aspxEGotFocus(&#39;ctl00_pcCreateAccount_tbFirstName&#39;)" type="text" onchange="aspxEValueChanged(&#39;ctl00_pcCreateAccount_tbFirstName&#39;)" style="margin-left:2px;margin-right:1px;margin-top:0px;margin-bottom:1px;padding-right:1px;" /></td>
+								</tr>
+							</table></td>
+						</tr><tr>
+							<td id="ctl00_pcCreateAccount_tbFirstName_EC" class="dxeErrorCell_BlackGlass" style="padding-left:4px;white-space:nowrap;">Invalid value</td>
+						</tr>
+					</table><script id="dxss_1583984993" type="text/javascript">
+<!--
+aspxAddDisabledItems('ctl00_pcCreateAccount_tbFirstName',[[['dxeDisabled_BlackGlass'],[''],['','I']]]);
+document.getElementById("ctl00_pcCreateAccount_tbFirstName_ET").setAttribute("errorFrame", "errorFrame");
+
+var dxo = new ASPxClientTextBox('ctl00_pcCreateAccount_tbFirstName');
+window['tbFirstName'] = dxo;
+dxo.uniqueID = 'ctl00$pcCreateAccount$tbFirstName';
+dxo.renderIFrameForPopupElements = true;
+dxo.widthCorrectionRequired = true;
+dxo.validationGroup = "createAccountGroup";
+dxo.customValidationEnabled = true;
+dxo.isValid = true;
+dxo.errorText = 'Invalid value';
+dxo.validationPatterns = [ new ASPxRequiredFieldValidationPattern('First Name is required') ];
+dxo.setFocusOnError = true;
+dxo.errorDisplayMode = "t";
+dxo.RequireStyleDecoration();
+dxo.styleDecoration.AddStyle('I','dxeInvalid_BlackGlass','');
+dxo.styleDecoration.AddStyle('F','dxeFocused_BlackGlass','');
+dxo.InlineInitialize();
+
+//-->
+</script>
+                            </div>
+                        </div>
+                        <div style="clear: left; height: 35px;">
+                            <div style="padding: 10px 5px 0px 5px; float: left; width: 70px;">
+                                Last Name
+                            </div>
+                            <div style="padding: 10px 0px 0px 0px; float: left">
+                                <table id="ctl00_pcCreateAccount_tbLastName_ET" class="dxeErrorFrame_BlackGlass" cellspacing="0" cellpadding="0" border="0" style="visibility:hidden;">
+						<tr>
+							<td class="dxeControlsCell_BlackGlass" style="visibility:visible;"><table class="dxeTextBox_BlackGlass dxeTextBoxSys" cellspacing="0" cellpadding="0" onKeyPress="return disableEnterKey(event)" id="ctl00_pcCreateAccount_tbLastName" border="0" width="250">
+								<tr>
+									<td class="dxic" width="100%"><input class="dxeEditArea_BlackGlass dxeEditAreaSys" onkeydown="aspxEKeyDown(&#39;ctl00_pcCreateAccount_tbLastName&#39;, event)" name="ctl00$pcCreateAccount$tbLastName" onkeyup="aspxEKeyUp(&#39;ctl00_pcCreateAccount_tbLastName&#39;, event)" id="ctl00_pcCreateAccount_tbLastName_I" onblur="aspxELostFocus(&#39;ctl00_pcCreateAccount_tbLastName&#39;)" onfocus="aspxEGotFocus(&#39;ctl00_pcCreateAccount_tbLastName&#39;)" type="text" onchange="aspxEValueChanged(&#39;ctl00_pcCreateAccount_tbLastName&#39;)" style="margin-left:2px;margin-right:1px;margin-top:0px;margin-bottom:1px;text-align:Left;padding-right:1px;" /></td>
+								</tr>
+							</table></td>
+						</tr><tr>
+							<td id="ctl00_pcCreateAccount_tbLastName_EC" class="dxeErrorCell_BlackGlass" style="padding-left:4px;white-space:nowrap;">Invalid value</td>
+						</tr>
+					</table><script id="dxss_267302797" type="text/javascript">
+<!--
+aspxAddDisabledItems('ctl00_pcCreateAccount_tbLastName',[[['dxeDisabled_BlackGlass'],[''],['','I']]]);
+document.getElementById("ctl00_pcCreateAccount_tbLastName_ET").setAttribute("errorFrame", "errorFrame");
+
+var dxo = new ASPxClientTextBox('ctl00_pcCreateAccount_tbLastName');
+window['tbLastName'] = dxo;
+dxo.uniqueID = 'ctl00$pcCreateAccount$tbLastName';
+dxo.renderIFrameForPopupElements = true;
+dxo.widthCorrectionRequired = true;
+dxo.validationGroup = "createAccountGroup";
+dxo.customValidationEnabled = true;
+dxo.isValid = true;
+dxo.errorText = 'Invalid value';
+dxo.validationPatterns = [ new ASPxRequiredFieldValidationPattern('Last Name is required') ];
+dxo.setFocusOnError = true;
+dxo.errorDisplayMode = "t";
+dxo.RequireStyleDecoration();
+dxo.styleDecoration.AddStyle('I','dxeInvalid_BlackGlass','');
+dxo.styleDecoration.AddStyle('F','dxeFocused_BlackGlass','');
+dxo.InlineInitialize();
+
+//-->
+</script>
+                            </div>
+                        </div>
+                        <div style="clear: left; height: 35px;">
+                            <div style="padding: 10px 5px 0px 5px; float: left; width: 70px;">
+                                email
+                            </div>
+                            <div style="padding: 10px 0px 0px 0px; float: left">
+                                <table id="ctl00_pcCreateAccount_tbEmail_ET" class="dxeErrorFrame_BlackGlass" cellspacing="0" cellpadding="0" border="0" style="visibility:hidden;">
+						<tr>
+							<td class="dxeControlsCell_BlackGlass" style="visibility:visible;"><table class="dxeTextBox_BlackGlass dxeTextBoxSys" cellspacing="0" cellpadding="0" onKeyPress="return disableEnterKey(event)" id="ctl00_pcCreateAccount_tbEmail" border="0" width="250">
+								<tr>
+									<td class="dxic" width="100%"><input class="dxeEditArea_BlackGlass dxeEditAreaSys" onkeydown="aspxEKeyDown(&#39;ctl00_pcCreateAccount_tbEmail&#39;, event)" name="ctl00$pcCreateAccount$tbEmail" onkeyup="aspxEKeyUp(&#39;ctl00_pcCreateAccount_tbEmail&#39;, event)" id="ctl00_pcCreateAccount_tbEmail_I" onblur="aspxELostFocus(&#39;ctl00_pcCreateAccount_tbEmail&#39;)" onfocus="aspxEGotFocus(&#39;ctl00_pcCreateAccount_tbEmail&#39;)" type="text" onchange="aspxEValueChanged(&#39;ctl00_pcCreateAccount_tbEmail&#39;)" style="margin-left:2px;margin-right:1px;margin-top:0px;margin-bottom:1px;padding-right:1px;" /></td>
+								</tr>
+							</table></td>
+						</tr><tr>
+							<td id="ctl00_pcCreateAccount_tbEmail_EC" class="dxeErrorCell_BlackGlass" style="padding-left:4px;white-space:nowrap;">Invalid value</td>
+						</tr>
+					</table><script id="dxss_5599294" type="text/javascript">
+<!--
+aspxAddDisabledItems('ctl00_pcCreateAccount_tbEmail',[[['dxeDisabled_BlackGlass'],[''],['','I']]]);
+document.getElementById("ctl00_pcCreateAccount_tbEmail_ET").setAttribute("errorFrame", "errorFrame");
+
+var dxo = new ASPxClientTextBox('ctl00_pcCreateAccount_tbEmail');
+window['tbEmail'] = dxo;
+dxo.uniqueID = 'ctl00$pcCreateAccount$tbEmail';
+dxo.renderIFrameForPopupElements = true;
+dxo.widthCorrectionRequired = true;
+dxo.validationGroup = "createAccountGroup";
+dxo.customValidationEnabled = true;
+dxo.isValid = true;
+dxo.errorText = 'Invalid value';
+dxo.validationPatterns = [ new ASPxRequiredFieldValidationPattern('E-mail is required'), new ASPxRegularExpressionValidationPattern('Invalid e-mail', '\\w+([-+.\']\\w+)*@\\w+([-.]\\w+)*\\.\\w+([-.]\\w+)*') ];
+dxo.setFocusOnError = true;
+dxo.errorDisplayMode = "t";
+dxo.RequireStyleDecoration();
+dxo.styleDecoration.AddStyle('I','dxeInvalid_BlackGlass','');
+dxo.styleDecoration.AddStyle('F','dxeFocused_BlackGlass','');
+dxo.InlineInitialize();
+
+//-->
+</script>
+                            </div>
+                        </div>
+                        <div style="clear: left; height: 35px;">
+                            <div style="padding: 10px 5px 0px 5px; float: left; width: 70px;">
+                                Password
+                            </div>
+                            <div style="padding: 10px 0px 0px 0px; float: left">
+                                <table id="ctl00_pcCreateAccount_tbPass1_ET" class="dxeErrorFrame_BlackGlass" cellspacing="0" cellpadding="0" border="0" style="visibility:hidden;">
+						<tr>
+							<td class="dxeControlsCell_BlackGlass" style="visibility:visible;"><table class="dxeTextBox_BlackGlass dxeTextBoxSys" cellspacing="0" cellpadding="0" onKeyPress="return disableEnterKey(event)" id="ctl00_pcCreateAccount_tbPass1" border="0" width="250">
+								<tr>
+									<td class="dxic" width="100%"><input class="dxeEditArea_BlackGlass dxeEditAreaSys" onkeydown="aspxEKeyDown(&#39;ctl00_pcCreateAccount_tbPass1&#39;, event)" name="ctl00$pcCreateAccount$tbPass1" onkeyup="aspxEKeyUp(&#39;ctl00_pcCreateAccount_tbPass1&#39;, event)" id="ctl00_pcCreateAccount_tbPass1_I" onblur="aspxELostFocus(&#39;ctl00_pcCreateAccount_tbPass1&#39;)" onfocus="aspxEGotFocus(&#39;ctl00_pcCreateAccount_tbPass1&#39;)" type="password" onchange="aspxEValueChanged(&#39;ctl00_pcCreateAccount_tbPass1&#39;)" style="margin-left:2px;margin-right:1px;margin-top:0px;margin-bottom:1px;padding-right:1px;" /></td>
+								</tr>
+							</table></td>
+						</tr><tr>
+							<td id="ctl00_pcCreateAccount_tbPass1_EC" class="dxeErrorCell_BlackGlass" style="padding-left:4px;white-space:nowrap;">Invalid value</td>
+						</tr>
+					</table><script id="dxss_504412370" type="text/javascript">
+<!--
+aspxAddDisabledItems('ctl00_pcCreateAccount_tbPass1',[[['dxeDisabled_BlackGlass'],[''],['','I']]]);
+document.getElementById("ctl00_pcCreateAccount_tbPass1_ET").setAttribute("errorFrame", "errorFrame");
+
+var dxo = new ASPxClientTextBox('ctl00_pcCreateAccount_tbPass1');
+window['pass1'] = dxo;
+dxo.uniqueID = 'ctl00$pcCreateAccount$tbPass1';
+dxo.renderIFrameForPopupElements = true;
+dxo.widthCorrectionRequired = true;
+dxo.validationGroup = "createAccountGroup";
+dxo.customValidationEnabled = true;
+dxo.isValid = true;
+dxo.errorText = 'Invalid value';
+dxo.validationPatterns = [ new ASPxRequiredFieldValidationPattern('Password is required') ];
+dxo.setFocusOnError = true;
+dxo.errorDisplayMode = "t";
+dxo.RequireStyleDecoration();
+dxo.styleDecoration.AddStyle('I','dxeInvalid_BlackGlass','');
+dxo.styleDecoration.AddStyle('F','dxeFocused_BlackGlass','');
+dxo.InlineInitialize();
+
+//-->
+</script>
+                            </div>
+                        </div>
+                        <div style="clear: left;">
+                            <div style="padding: 10px 5px 0px 5px; float: left; width: 70px;">
+                                Password Confirm
+                            </div>
+                            <div style="padding: 10px 0px 0px 0px; float: left">
+                                <table id="ctl00_pcCreateAccount_tbConfPass2_ET" class="dxeErrorFrame_BlackGlass" cellspacing="0" cellpadding="0" border="0" style="visibility:hidden;">
+						<tr>
+							<td class="dxeControlsCell_BlackGlass" style="visibility:visible;"><table class="dxeTextBox_BlackGlass dxeTextBoxSys" cellspacing="0" cellpadding="0" onKeyPress="return disableEnterKey(event)" id="ctl00_pcCreateAccount_tbConfPass2" border="0" width="250">
+								<tr>
+									<td class="dxic" width="100%"><input class="dxeEditArea_BlackGlass dxeEditAreaSys" onkeydown="aspxEKeyDown(&#39;ctl00_pcCreateAccount_tbConfPass2&#39;, event)" name="ctl00$pcCreateAccount$tbConfPass2" onkeyup="aspxEKeyUp(&#39;ctl00_pcCreateAccount_tbConfPass2&#39;, event)" id="ctl00_pcCreateAccount_tbConfPass2_I" onblur="aspxELostFocus(&#39;ctl00_pcCreateAccount_tbConfPass2&#39;)" onfocus="aspxEGotFocus(&#39;ctl00_pcCreateAccount_tbConfPass2&#39;)" type="password" onchange="aspxEValueChanged(&#39;ctl00_pcCreateAccount_tbConfPass2&#39;)" style="margin-left:2px;margin-right:1px;margin-top:0px;margin-bottom:1px;padding-right:1px;" /></td>
+								</tr>
+							</table></td>
+						</tr><tr>
+							<td id="ctl00_pcCreateAccount_tbConfPass2_EC" class="dxeErrorCell_BlackGlass" style="padding-left:4px;white-space:nowrap;">Password does not match</td>
+						</tr>
+					</table><script id="dxss_1417705840" type="text/javascript">
+<!--
+aspxAddDisabledItems('ctl00_pcCreateAccount_tbConfPass2',[[['dxeDisabled_BlackGlass'],[''],['','I']]]);
+document.getElementById("ctl00_pcCreateAccount_tbConfPass2_ET").setAttribute("errorFrame", "errorFrame");
+
+var dxo = new ASPxClientTextBox('ctl00_pcCreateAccount_tbConfPass2');
+window['pass2'] = dxo;
+dxo.uniqueID = 'ctl00$pcCreateAccount$tbConfPass2';
+dxo.renderIFrameForPopupElements = true;
+dxo.Validation.AddHandler(function(s, e) {e.isValid = (pass1.GetText()== pass2.GetText());    });
+dxo.widthCorrectionRequired = true;
+dxo.validationGroup = "createAccountGroup";
+dxo.customValidationEnabled = true;
+dxo.isValid = true;
+dxo.errorText = 'Password does not match';
+dxo.validationPatterns = [ new ASPxRequiredFieldValidationPattern('Please, confirm your password') ];
+dxo.setFocusOnError = true;
+dxo.errorDisplayMode = "t";
+dxo.RequireStyleDecoration();
+dxo.styleDecoration.AddStyle('I','dxeInvalid_BlackGlass','');
+dxo.styleDecoration.AddStyle('F','dxeFocused_BlackGlass','');
+dxo.InlineInitialize();
+
+//-->
+</script>
+                            </div>
+                        </div>
+                        <div style="clear: both; height: 35px; width: 330px;">
+                            <div style="padding: 10px 0px 0px 10px; float: right; text-align: right; margin-left: auto;">
+                                <table cellspacing="0" cellpadding="0" id="ctl00_pcCreateAccount_btCreate" border="0" width="80" style="border-collapse:separate;">
+						<tr>
+							<td id="ctl00_pcCreateAccount_btCreate_B" class="dxbButton_BlackGlass" align="center"><div id="ctl00_pcCreateAccount_btCreate_CD" class="dxb">
+								<span>Create</span>
+							</div></td><td width="0%"><input value="" onfocus="aspxBGotFocus(&#39;ctl00_pcCreateAccount_btCreate&#39;)" name="ctl00$pcCreateAccount$btCreate" type="submit" border="0" style="padding:0px;" /></td>
+						</tr>
+					</table><script id="dxss_559883655" type="text/javascript">
+<!--
+aspxAddHoverItems('ctl00_pcCreateAccount_btCreate',[[['dxbButtonHover_BlackGlass'],[''],['B'],['','TC'],[['']],['Img']]]);
+aspxAddPressedItems('ctl00_pcCreateAccount_btCreate',[[['dxbButtonPressed_BlackGlass'],[''],['B'],['','TC'],[['']],['Img']]]);
+aspxAddDisabledItems('ctl00_pcCreateAccount_btCreate',[[['dxbDisabled_BlackGlass'],[''],['B'],['','TC'],[['']],['Img']]]);
+
+var dxo = new ASPxClientButton('ctl00_pcCreateAccount_btCreate');
+window['ctl00_pcCreateAccount_btCreate'] = dxo;
+dxo.uniqueID = 'ctl00$pcCreateAccount$btCreate';
+dxo.renderIFrameForPopupElements = true;
+dxo.Click.AddHandler(function(s, e) 
+{        
+if(ASPxClientEdit.ValidateGroup('createAccountGroup')) 
+	{
+		ASPxClientEdit.ClearGroup('entryGroup');
+		tbLogin.SetText(tbEmail.GetText());
+		pcCreateAccount.Hide();
+	 }
+else
+	{		
+		e.processOnServer = false;
+	}
+});
+dxo.RegisterServerEventAssigned(['Click']);
+aspxAddSelectedItems('ctl00_pcCreateAccount_btCreate',[[['dxbf'],[''],['CD']]]);
+dxo.InlineInitialize();
+
+//-->
+</script>
+                            </div>
+                            <div style="padding: 10px 0px 0px 0px; float: right">
+                                <table cellspacing="0" cellpadding="0" id="ctl00_pcCreateAccount_btCancelCreate" border="0" width="80" style="border-collapse:separate;">
+						<tr>
+							<td id="ctl00_pcCreateAccount_btCancelCreate_B" class="dxbButton_BlackGlass" align="center"><div id="ctl00_pcCreateAccount_btCancelCreate_CD" class="dxb">
+								<span>Cancel</span>
+							</div></td><td width="0%"><input value="" onfocus="aspxBGotFocus(&#39;ctl00_pcCreateAccount_btCancelCreate&#39;)" name="ctl00$pcCreateAccount$btCancelCreate" type="submit" border="0" style="padding:0px;" /></td>
+						</tr>
+					</table><script id="dxss_795821190" type="text/javascript">
+<!--
+aspxAddHoverItems('ctl00_pcCreateAccount_btCancelCreate',[[['dxbButtonHover_BlackGlass'],[''],['B'],['','TC'],[['']],['Img']]]);
+aspxAddPressedItems('ctl00_pcCreateAccount_btCancelCreate',[[['dxbButtonPressed_BlackGlass'],[''],['B'],['','TC'],[['']],['Img']]]);
+aspxAddDisabledItems('ctl00_pcCreateAccount_btCancelCreate',[[['dxbDisabled_BlackGlass'],[''],['B'],['','TC'],[['']],['Img']]]);
+
+var dxo = new ASPxClientButton('ctl00_pcCreateAccount_btCancelCreate');
+window['ctl00_pcCreateAccount_btCancelCreate'] = dxo;
+dxo.uniqueID = 'ctl00$pcCreateAccount$btCancelCreate';
+dxo.renderIFrameForPopupElements = true;
+dxo.Click.AddHandler(function(s, e) {
+		pcCreateAccount.Hide();
+	});
+aspxAddSelectedItems('ctl00_pcCreateAccount_btCancelCreate',[[['dxbf'],[''],['CD']]]);
+dxo.InlineInitialize();
+
+//-->
+</script>
+                            </div>
+                        </div>
+                        <div style="clear: both;">
+                        </div>
+                    </div>
+                </td>
+				</tr>
+			</table></td><td id="ail1953239280" style="background:url('/DXR.axd?r=1_18-2bqz2') no-repeat left top;//background:none;"><script id="dxss_859536579" type="text/javascript">
+<!--
+
+    _aspxEnsureAlphaImageLoaderApplierRegistered();    
+    _aspxAddAlphaImageLoaderTarget("ail1953239280", "/DXR.axd?r=1_18-2bqz2");
+
+//-->
+</script></td>
+		</tr><tr>
+			<td id="ail1313058726" style="background:url('/DXR.axd?r=1_17-2bqz2') no-repeat left top;//background:none;"><script id="dxss_1334787580" type="text/javascript">
+<!--
+
+    _aspxEnsureAlphaImageLoaderApplierRegistered();    
+    _aspxAddAlphaImageLoaderTarget("ail1313058726", "/DXR.axd?r=1_17-2bqz2");
+
+//-->
+</script></td><td id="ail1967953035" style="background:url('/DXR.axd?r=1_19-2bqz2') no-repeat left top;//background:none;"><div>
+
+			</div><script id="dxss_45387572" type="text/javascript">
+<!--
+
+    _aspxEnsureAlphaImageLoaderApplierRegistered();    
+    _aspxAddAlphaImageLoaderTarget("ail1967953035", "/DXR.axd?r=1_19-2bqz2");
+
+//-->
+</script></td>
+		</tr>
+	</table>
+</div><iframe id="ctl00_pcCreateAccount_DXPWIF-1" src="javascript:false" scrolling="no" frameborder="0" style="position:absolute;display:none;z-index:9999;filter:progid:DXImageTransform.Microsoft.Alpha(Style=0, Opacity=0);">
+
+</iframe><div id="ctl00_pcCreateAccount_DXPWMB-1" class="dxpcModalBackground_BlackGlass" style="position:absolute;visibility:hidden;left:0px;top:0px;z-index:9999;">
+
+</div><table id="ctl00_pcCreateAccount_LP" class="dxpcLoadingPanel_BlackGlass" cellspacing="0" cellpadding="0" border="0" style="left:0px;top:0px;z-index:30000;display:none;">
+	<tr>
+		<td class="dx" style="padding-right:8px;"><img src="/DXR.axd?r=0_395-2bqz2" alt="" align="middle" border="0" border="0" /></td><td class="dx" style="padding-left:0px;">Loading&hellip;</td>
+	</tr>
+</table><div id="ctl00_pcCreateAccount_LD" class="dxpcLoadingDiv_BlackGlass" style="left:0px;top:0px;z-index:29999;display:none;position:absolute;">
+
+</div><script id="dxss_691400541" type="text/javascript">
+<!--
+aspxAddHoverItems('ctl00_pcCreateAccount',[[['dxpcCloseButtonHover_BlackGlass'],[''],['HCB-1'],,[['']],['Img']]]);
+
+var dxo = new ASPxClientPopupControl('ctl00_pcCreateAccount');
+window['pcCreateAccount'] = dxo;
+dxo.callBack = function(arg) { WebForm_DoCallback('ctl00$pcCreateAccount',arg,aspxCallback,'ctl00_pcCreateAccount',aspxCallbackError,true); };
+dxo.uniqueID = 'ctl00$pcCreateAccount';
+dxo.renderIFrameForPopupElements = true;
+dxo.PopUp.AddHandler(function(s, e) { ASPxClientEdit.ClearGroup('createAccountGroup'); });
+dxo.closeAction='CloseButton';
+dxo.popupHorizontalAlign='WindowCenter';
+dxo.popupVerticalAlign='WindowCenter';
+dxo.popupHorizontalOffset=40;
+dxo.popupVerticalOffset=40;
+dxo.isPopupPositionCorrectionOn=false;
+dxo.width=394;
+dxo.height=262;
+dxo.SSLSecureBlankUrl='/DXR.axd?r=1_0-2bqz2';
+dxo.InlineInitialize();
+
+//-->
+</script>
+        <script id="dxss_1266739229" type="text/javascript">
+<!--
+
+var dxo = new ASPxClientCallback('ctl00_cbLogin');
+window['cbLogin'] = dxo;
+dxo.callBack = function(arg) { WebForm_DoCallback('ctl00$cbLogin',arg,aspxCallback,'ctl00_cbLogin',aspxCallbackError,true); };
+dxo.uniqueID = 'ctl00$cbLogin';
+dxo.renderIFrameForPopupElements = true;
+dxo.CallbackComplete.AddHandler(function(s, e) {
+if (s.cpLoginSuccess==1)
+	{
+		pcLogin.Hide();
+	}
+else
+{
+	alert("Login Failed.");
+}
+});
+dxo.InlineInitialize();
+
+//-->
+</script>
+        </form>
+    </div>
+</body>
+</html>

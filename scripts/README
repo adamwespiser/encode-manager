@@ -1,0 +1,9 @@
+
+convertLncsToBED.pl
+	take the lncRNA list and convert the files to BED for the different regions
+
+runIntersectBed.py
+	intersect the TF data with lncRNA 
+
+combinedIntersectBed.py
+	list of lncRNAs that are found in BED files

@@ -1,0 +1,81 @@
+ensembl_gene_id	hgnc_symbol	gene_biotype	description	external_gene_id
+ENSG00000202198	RN7SK	misc_RNA	RNA, 7SK small nuclear [Source:HGNC Symbol;Acc:10037]	RN7SK
+ENSG00000234883	MIR155HG	lincRNA	MIR155 host gene (non-protein coding) [Source:HGNC Symbol;Acc:35460]	MIR155HG
+ENSG00000229807	XIST	lincRNA	X (inactive)-specific transcript (non-protein coding) [Source:HGNC Symbol;Acc:12810]	XIST
+ENSG00000200182	TERC	misc_RNA	telomerase RNA component [Source:HGNC Symbol;Acc:11727]	TERC
+ENSG00000236824	BCYRN1	lincRNA	brain cytoplasmic RNA 1 [Source:HGNC Symbol;Acc:1022]	BCYRN1
+ENSG00000130600	H19	lincRNA	H19, imprinted maternally expressed transcript (non-protein coding) [Source:HGNC Symbol;Acc:4713]	H19
+ENSG00000253352	TUG1	lincRNA	taurine upregulated 1 (non-protein coding) [Source:HGNC Symbol;Acc:26066]	TUG1
+ENSG00000248492	ZFAT-AS1	antisense	ZFAT antisense RNA 1 [Source:HGNC Symbol;Acc:33992]	ZFAT-AS1
+ENSG00000234741	GAS5	processed_transcript	growth arrest-specific 5 (non-protein coding) [Source:HGNC Symbol;Acc:16355]	GAS5
+ENSG00000258486	RN7SL1	antisense	RNA, 7SL, cytoplasmic 1 [Source:HGNC Symbol;Acc:10038]	RN7SL1
+ENSG00000230223	ATXN8OS	antisense	ATXN8 opposite strand (non-protein coding) [Source:HGNC Symbol;Acc:10561]	ATXN8OS
+ENSG00000258492	KCNQ1OT1	antisense	KCNQ1 opposite strand/antisense transcript 1 (non-protein coding) [Source:HGNC Symbol;Acc:6295]	KCNQ1OT1
+ENSG00000214548	MEG3	lincRNA	maternally expressed 3 (non-protein coding) [Source:HGNC Symbol;Acc:14575]	MEG3
+ENSG00000227418	PCGEM1	processed_transcript	prostate-specific transcript 1 (non-protein coding) [Source:HGNC Symbol;Acc:30145]	PCGEM1
+ENSG00000251562	MALAT1	lincRNA	metastasis associated lung adenocarcinoma transcript 1 (non-protein coding) [Source:HGNC Symbol;Acc:29665]	MALAT1
+ENSG00000245573	BDNF-AS	lincRNA	BDNF antisense RNA [Source:HGNC Symbol;Acc:20608]	BDNF-AS
+ENSG00000015479	MATR3	protein_coding	matrin 3 [Source:HGNC Symbol;Acc:6912]	MATR3
+ENSG00000174365	SNHG11	lincRNA	small nucleolar RNA host gene 11 (non-protein coding) [Source:HGNC Symbol;Acc:25046]	SNHG11
+ENSG00000225978	HAR1A	lincRNA	highly accelerated region 1A (non-protein coding) [Source:HGNC Symbol;Acc:33117]	HAR1A
+ENSG00000231133	HAR1B	lincRNA	highly accelerated region 1B (non-protein coding) [Source:HGNC Symbol;Acc:33118]	HAR1B
+ENSG00000249859	PVT1	lincRNA	Pvt1 oncogene (non-protein coding) [Source:HGNC Symbol;Acc:9709]	PVT1
+ENSG00000225783	MIAT	lincRNA	myocardial infarction associated transcript (non-protein coding) [Source:HGNC Symbol;Acc:33425]	MIAT
+ENSG00000240498	CDKN2B-AS1	antisense	CDKN2B antisense RNA 1 [Source:HGNC Symbol;Acc:34341]	CDKN2B-AS1
+ENSG00000177410	ZNFX1-AS1	antisense	ZNFX1 antisense RNA 1 [Source:HGNC Symbol;Acc:33101]	ZNFX1-AS1
+ENSG00000242808	SOX2-OT	lincRNA	SOX2 overlapping transcript (non-protein coding) [Source:HGNC Symbol;Acc:20209]	SOX2-OT
+ENSG00000251164	HULC	lincRNA	highly up-regulated in liver cancer (non-protein coding) [Source:HGNC Symbol;Acc:34232]	HULC
+ENSG00000225937	PCA3	antisense	prostate cancer antigen 3 (non-protein coding) [Source:HGNC Symbol;Acc:8637]	PCA3
+ENSG00000224032	EPB41L4A-AS1	lincRNA	EPB41L4A antisense RNA 1 [Source:HGNC Symbol;Acc:30749]	EPB41L4A-AS1
+ENSG00000214049	UCA1	lincRNA	urothelial cancer associated 1 (non-protein coding) [Source:HGNC Symbol;Acc:37126]	UCA1
+ENSG00000243197	LSAMP-AS3	antisense	LSAMP antisense RNA 3 [Source:HGNC Symbol;Acc:27701]	LSAMP-AS3
+ENSG00000231764	DLX6-AS1	antisense	DLX6 antisense RNA 1 [Source:HGNC Symbol;Acc:37151]	DLX6-AS1
+ENSG00000183242	WT1-AS	antisense	WT1 antisense RNA [Source:HGNC Symbol;Acc:18135]	WT1-AS
+ENSG00000204091	TDRG1	antisense	testis development related 1 (non-protein coding) [Source:HGNC Symbol;Acc:43642]	TDRG1
+ENSG00000255794	RMST	lincRNA	rhabdomyosarcoma 2 associated transcript (non-protein coding) [Source:HGNC Symbol;Acc:29893]	RMST
+ENSG00000262117	BCAR4	lincRNA	breast cancer anti-estrogen resistance 4 (non-protein coding) [Source:HGNC Symbol;Acc:22170]	BCAR4
+ENSG00000237697	LINC00312	lincRNA	long intergenic non-protein coding RNA 312 [Source:HGNC Symbol;Acc:6662]	LINC00312
+ENSG00000237941	KCNQ1DN	antisense	KCNQ1 downstream neighbor (non-protein coding) [Source:HGNC Symbol;Acc:13335]	KCNQ1DN
+ENSG00000231459	LINC00032	lincRNA	long intergenic non-protein coding RNA 32 [Source:HGNC Symbol;Acc:16506]	LINC00032
+ENSG00000233718	MYCNOS	antisense	MYCN opposite strand/antisense RNA [Source:HGNC Symbol;Acc:16911]	MYCNOS
+ENSG00000232416	BPESC1	processed_transcript	blepharophimosis, epicanthus inversus and ptosis, candidate 1 (non-protein coding) [Source:HGNC Symbol;Acc:13228]	BPESC1
+ENSG00000231028	LINC00271	lincRNA	long intergenic non-protein coding RNA 271 [Source:HGNC Symbol;Acc:32526]	LINC00271
+ENSG00000204528	PSORS1C3	sense_intronic	psoriasis susceptibility 1 candidate 3 (non-protein coding) [Source:HGNC Symbol;Acc:17203]	PSORS1C3
+ENSG00000177640	CASC2	lincRNA	cancer susceptibility candidate 2 (non-protein coding) [Source:HGNC Symbol;Acc:22933]	CASC2
+ENSG00000171889	MIR31HG	lincRNA	MIR31 host gene (non-protein coding) [Source:HGNC Symbol;Acc:37187]	MIR31HG
+ENSG00000265992	ESRG	sense_intronic	embryonic stem cell related (non-protein coding) [Source:HGNC Symbol;Acc:39079]	ESRG
+ENSG00000215417	MIR17HG	processed_transcript	miR-17-92 cluster host gene (non-protein coding) [Source:HGNC Symbol;Acc:23564]	MIR17HG
+ENSG00000245532	NEAT1	lincRNA	nuclear paraspeckle assembly transcript 1 (non-protein coding) [Source:HGNC Symbol;Acc:30815]	NEAT1
+ENSG00000187621	TCL6	lincRNA	T-cell leukemia/lymphoma 6 (non-protein coding) [Source:HGNC Symbol;Acc:13463]	TCL6
+ENSG00000234235	BOK-AS1	antisense	BOK antisense RNA 1 [Source:HGNC Symbol;Acc:35125]	BOK-AS1
+ENSG00000245694	CRNDE	antisense	colorectal neoplasia differentially expressed (non-protein coding) [Source:HGNC Symbol;Acc:37078]	CRNDE
+ENSG00000255389	NA	antisense	NA	C6orf3
+ENSG00000242125	SNHG3	processed_transcript	small nucleolar RNA host gene 3 (non-protein coding) [Source:HGNC Symbol;Acc:10118]	SNHG3
+ENSG00000242349	NPPA-AS1	antisense	NPPA antisense RNA 1 [Source:HGNC Symbol;Acc:37635]	NPPA-AS1
+ENSG00000241832	CECR3	processed_transcript	cat eye syndrome chromosome region, candidate 3 (non-protein coding) [Source:HGNC Symbol;Acc:1841]	CECR3
+ENSG00000236830	CBR3-AS1	lincRNA	CBR3 antisense RNA 1 [Source:HGNC Symbol;Acc:43664]	CBR3-AS1
+ENSG00000235123	DSCAM-AS1	antisense	DSCAM antisense RNA 1 [Source:HGNC Symbol;Acc:40197]	DSCAM-AS1
+ENSG00000232307	DAOA-AS1	antisense	DAOA antisense RNA 1 [Source:HGNC Symbol;Acc:30243]	DAOA-AS1
+ENSG00000206337	HCP5	processed_transcript	HLA complex P5 (non-protein coding) [Source:HGNC Symbol;Acc:21659]	HCP5
+ENSG00000253079	NRON	misc_RNA	non-protein coding RNA, repressor of NFAT [Source:HGNC Symbol;Acc:37079]	NRON
+ENSG00000253438	PCAT1	lincRNA	prostate cancer associated transcript 1 (non-protein coding) [Source:HGNC Symbol;Acc:43022]	PCAT1
+ENSG00000251075	HTT-AS1	antisense	HTT antisense RNA 1 [Source:HGNC Symbol;Acc:37118]	HTT-AS1
+ENSG00000229847	EMX2OS	processed_transcript	EMX2 opposite strand/antisense RNA [Source:HGNC Symbol;Acc:18511]	EMX2OS
+ENSG00000228630	HOTAIR	antisense	HOX transcript antisense RNA [Source:HGNC Symbol;Acc:33510]	HOTAIR
+ENSG00000240990	HOXA11-AS	antisense	HOXA11 antisense RNA [Source:HGNC Symbol;Acc:24957]	HOXA11-AS
+ENSG00000250366	LINC00617	lincRNA	long intergenic non-protein coding RNA 617 [Source:HGNC Symbol;Acc:44088]	LINC00617
+ENSG00000235590	GNAS-AS1	antisense	GNAS antisense RNA 1 [Source:HGNC Symbol;Acc:24872]	GNAS-AS1
+ENSG00000248550	OTX2-AS1	antisense	OTX2 antisense RNA 1 [Source:HGNC Symbol;Acc:43906]	OTX2-AS1
+ENSG00000237984	PTENP1	pseudogene	phosphatase and tensin homolog pseudogene 1 [Source:HGNC Symbol;Acc:9589]	PTENP1
+ENSG00000258399	MEG8	lincRNA	maternally expressed 8 (non-protein coding) [Source:HGNC Symbol;Acc:14574]	MEG8
+ENSG00000253230	LINC00599	lincRNA	long intergenic non-protein coding RNA 599 [Source:HGNC Symbol;Acc:27231]	LINC00599
+ENSG00000255717	SNHG1	processed_transcript	small nucleolar RNA host gene 1 (non-protein coding) [Source:HGNC Symbol;Acc:32688]	SNHG1
+ENSG00000245910	SNHG6	lincRNA	small nucleolar RNA host gene 6 (non-protein coding) [Source:HGNC Symbol;Acc:32965]	SNHG6
+ENSG00000225470	JPX	lincRNA	JPX transcript, XIST activator (non-protein coding) [Source:HGNC Symbol;Acc:37191]	JPX
+ENSG00000230590	FTX	lincRNA	FTX transcript, XIST regulator (non-protein coding) [Source:HGNC Symbol;Acc:37190]	FTX
+ENSG00000243766	HOTTIP	antisense	HOXA distal transcript antisense RNA [Source:HGNC Symbol;Acc:37461]	HOTTIP
+ENSG00000100181	TPTEP1	lincRNA	transmembrane phosphatase with tensin homology pseudogene 1 [Source:HGNC Symbol;Acc:43648]	TPTEP1
+ENSG00000163597	SNHG16	protein_coding	small nucleolar RNA host gene 16 (non-protein coding) [Source:HGNC Symbol;Acc:44352]	SNHG16
+ENSG00000258609	LINC-ROR	lincRNA	long intergenic non-protein coding RNA, regulator of reprogramming [Source:HGNC Symbol;Acc:43773]	LINC-ROR
+ENSG00000215256	DHRS4-AS1	processed_transcript	DHRS4 antisense RNA 1 [Source:HGNC Symbol;Acc:23175]	DHRS4-AS1
+ENSG00000223573	PLAC2	lincRNA	placenta-specific 2 (non-protein coding) [Source:HGNC Symbol;Acc:14607]	PLAC2

@@ -1,0 +1,48 @@
+Gencode_lncRNAsv7_summaryTable_05_02_2012.csv ~ derrien's list of lncRNA
+
+combinedExprWithStats_transEachSample.tab ~ expression of genes as max transcript for each sample
+
+Gencode_lncRNAsv7_summaryTable_05_02_2012_lncTranscriptsOnly.tab
+	all the derrien 2012 lncRNAs
+
+
+cat lncRNAdbExportSeq.fa|grep ">"|grep -i human | sed 's/>//g'| sed 's/\([Hh]uman\)//g'|sed 's/[\)\(]//g'| perl -e 'while(<>){ $_=~m/NR_[0-9]*/;print $&."\n";}' > lncRNAdbNrCodesHuman.list
+grep hg19 /Users/adam/sandbox/lncDB/* | perl -e 'while($line=<>){$line=~s/,//g;if($line=~m/hg19 chr[0-9]:[0-9]*-[0-9]*/g){$out=$&;$out=~s/-/:/g;print $out."\n";} }'| sed 's/hg19 //g' > lncRnaDbWebScrapForCoords.list
+
+
+
+geneNamesLNCRNA.tab ~ list of 'functional' lncRNA pulled from genenames website: http://www.genenames.org/cgi-bin/hgnc_downloads?title=Genefam+data&submit=submit&hgnc_dbtag=on&preset=genefam&status=Approved&status=Entry+Withdrawn&status_opt=2&=on&format=text&limit=&.cgifields=&.cgifields=chr&.cgifields=status&.cgifields=hgnc_dbtag&where=gd_gene_fam_name%20RLIKE%20'(%5E%7C%20)fLNCRNA(%24%7C%2C)'%20&order_by=gd_app_sym_sort
+cat geneNamesLNCRNA.tab| perl -e 'while(<>){if($_=~m/NR_[0-9]*/g){print $&."\n"}}' > geneNamesLNCRNA.list
+cat geneNamesLNCRNA.tab| cut -f 1|perl -e 'while(<>){if($_=~m/HGNC:[0-9]*/g){print $&."\n"}}' | tee geneNamesLNCRNA_hgnc_id.list
+
+
+note use quote in wget grab command
+
+
+lncdlist.csv & lncdlist_parsed.tab - lncdlist.csv is manually curated
+cat ../data/lncdList.csv | cut -d ',' -f 1,2,3|sed 's/,/x0x0x/g'|perl -e 'while(my $line = <>){$line=~s/x0x0x/\t/g;print $line;}'| tee lncdList_parsed.tab 
+
+funcLncRnaDb_scrape.txt
+wget http://www.valadkhanlab.org/web/cgi-bin/browse.cgi?genome=human -O funcLncRnaDb_scrape.txt
+cat funcLncRnaDb_scrape.txt | grep "<td>"|grep -B 1 -i "human"|grep -vi "human"|grep "td"|sed 's/<td>//g'|sed 's/<\/td>//g' > funcLncRnaDb_scrape.list
+
+
+lncRnaLitSearch.tab ~ literature search for lncRNAs
+
+
+data/lncRnaPcaTransLength.tab ~ ml dataset with averaged transcript length, and PCA of espression data.  Transcripts assigned by max expression in a sample for a given gene. 
+
+/Users/adam/work/research/researchProjects/encode/encode-manager/data/lncRnaExpr_ml.tab
+data.frame with labelled functional lncRNAs
+
+lncRnaExpr_ml.tab
+lncRNA expression data use cols 3:34 for expression data
+
+CRG's has a website where derrien et. al's lncRNA have information: from that website is a list of lncRNA with overlap to lncRnaDb
+ http://genome.crg.eu/~rjohnson/lncrna_webpage_data/Human_lncRNAdb_hg19_representative_isoform.gencodev7
+
+
+
+cat Gencode_lncRNAsv7_summaryTable_05_02_2012.tab | cut -f 1,2,3| perl -e 'while($l=<>){$l =~ s/[-:]/\t/g;print $l;}'|awk '{print $3,"\t",$4,"\t",$5,"\t",$1,"\t",$2}' > derrien_trans_coords.bed
+cat derrien_trans_coords.bed | perl -e 'while($l=<>){$l =~ s/ //g;print $l;}'> tmp
+1381@local:data$ cp tmp derrien_trans_coords.bed 

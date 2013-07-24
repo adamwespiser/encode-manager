@@ -1,0 +1,86 @@
+(ns encode-manager.core
+  (:gen-class)
+  (:use clojure.tools.cli)
+ 
+(:use [clojure.java.shell :only [sh]])
+(:import java.io.File)
+(:use [clojure.core.match :rename {compile match-compile}]))
+
+
+(def h (parseCsvIntoArrayHash "/home/wespisea/work/research/researchProjects/encode/data/TfPeakSeq-X-lncRnaRegions.tab" "\t"))  
+
+
+
+(searchFileArrayHash ["key" "value"] h)
+
+;;;; start ....
+
+(defn filterByLncRegion[regionTerm col]
+  (map (fn[x](vector (first x) (filter  (fn[y](= regionTerm (y "lncRegion")))   (second x)) )   )  
+   col))
+
+
+(let 
+  [labs   (rest (distinct (sort(map #(% "lab") h))))
+   cells  (distinct (sort(map #(% "cell") h)))
+   TFs   (distinct (sort(map #(% "antibody") h)))
+   col {}
+   lab-cell (reduce #(let[res (searchFAnotNil %2 h)] (if (not (nil? res)) (cons [%2 res] %1) %1 ))  []  (for [x cells y labs] ["cell" x "lab" y]))
+   lab-tf (reduce #(let[res (searchFAnotNil %2 h)] (if (not (nil? res)) (cons [%2 res] %1) %1 ))  []  (for [x TFs y labs] ["antibody" x "lab" y]))
+   lncRegions ["body" "promoter_proximal" "promoter_distal"]]
+	
+   (for[x [[lab-cell "TF"][lab-tf "cell"]] y lncRegions] (map (fn[x](joinTogetherExpr x "cell" "body" )) (filterByLncRegion "body" lab-tf))))
+
+
+
+(defn getEntryInfo[entry]
+  (let [titleVec (first entry)
+        acc (map (fn[x](x "dccAccession")(second entry)))
+	filename (map (fn[x](x "filename")(second entry)))
+	cell (distinct (map (fn[x](x "cell"))(second entry)))
+	antibody (distinct (map (fn[x](x "antibody"))(second entry)))
+	]))
+
+
+;;(map (fn[x](joinTogetherExpr x "cell" "body"))(filterByLncRegion "body" lab-tf))
+(let [op (apply str (interpose "\n" (map #(getEntryInfo % ",") (filterByLncRegion "body" lab-tf))))]
+  (spit "/home/wespisea/scratch/tfSmash.csv" op))
+
+
+(defn joinTogetherExpr[entry headCol lncRegionFileName]
+   (let [head (first entry)
+         body (second entry)
+         outDir (str "/home/wespisea/scratch/encodeTFcomb/" (head 3) "/" (head 1) "/") 
+	files (map (fn[x](x "crossFileLoc")) (second entry))
+	headers (map (fn[x](x headCol)) (second entry))
+	target (str outDir lncRegionFileName)]
+	(cmdfnList files headers target)))
+
+
+
+(defn cmdfnHelperList[ filelist tmp curr]
+  (if (= 0 (count filelist))
+	curr
+	(cmdfnHelperList (rest filelist) tmp (list curr ";join " tmp " " (first filelist) " > " (str tmp ".1") "; mv " (str tmp ".1") tmp ";"))))
+
+
+(defn cmdfnList[filelist headers target] ;;headers need "lncRNA in their name, for col=1
+  (apply str (flatten (list "cat \"" (interpose "\t" headers) " \"  > " target " "
+  (cond 
+     (= 1 (count filelist))  ( list ";cat " (first filelist) " >>" target)
+     (= 2 (count filelist))  ( list ";join " (first filelist) " " (second filelist) ">>" target)
+     (< 2 (count filelist))  (let [ tmp (str "/home/wespisea/tmp" (rand-int 1000000000))
+				    tmp (str "/home/wespisea/tmp" (rand-int 1000000000))]
+				(list 
+				(cmdfnHelperList (-> filelist rest rest) 
+						tmp
+						(list ";join " (first filelist) " " (second filelist) ">" tmp))
+				"; cat " tmp " >> " target ";rm " tmp ";")))))))
+
+
+
+
+(print (cmdfnList '("test1" "test2" "test3" "test4" "test4") '("c1" "c2" "c3" "c4" "c5") "/home/adam/sandbox/target"))
+
+
+

@@ -1,0 +1,1345 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en" dir="ltr">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>Custom Downloads | HUGO Gene Nomenclature Committee</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<link rel="shortcut icon" href="http://www.genenames.org/sites/genenames.org/files/genenames_favicon_0.ico" type="image/x-icon" />
+  <link type="text/css" rel="stylesheet" media="all" href="http://www.genenames.org/sites/genenames.org/files/css/css_f6477ba4a4779acab1b96a9ee87eb401.css" />
+<link type="text/css" rel="stylesheet" media="print" href="http://www.genenames.org/sites/genenames.org/files/css/css_be259db2cf097bbbac01eb2f6696a3ba.css" />
+<!--[if IE]>
+<link type="text/css" rel="stylesheet" media="all" href="/sites/genenames.org/themes/contrib/zen/zen/ie.css?I" />
+<![endif]-->
+  <script type="text/javascript" src="http://www.genenames.org/sites/genenames.org/files/js/js_cefcf0a01f7c8a62baaa06c0f62531da.js"></script>
+<script type="text/javascript">
+<!--//--><![CDATA[//><!--
+jQuery.extend(Drupal.settings, {"basePath":"\/","googleanalytics":{"trackOutgoing":1,"trackMailto":1,"trackDownload":1,"trackDownloadExtensions":"7z|aac|arc|arj|asf|asx|avi|bin|csv|doc|exe|flv|gif|gz|gzip|hqx|jar|jpe?g|js|mp(2|3|4|e?g)|mov(ie)?|msi|msp|pdf|phps|png|ppt|qtm?|ra(m|r)?|sea|sit|tar|tgz|torrent|txt|wav|wma|wmv|wpd|xls|xml|z|zip"}});
+//--><!]]>
+</script>
+  <script type="text/javascript"> 
+    $(document).ready(function(){ 
+        $("ul.sf-menu").superfish(); 
+        // default text for main search box
+        var websearch_def='Search Website';
+        // default text for gene search box
+        var genesearch_def='Search Genes';
+
+        $(".gene-search-form #gntext").val(genesearch_def).css('color', '#f0b460');
+        $('.gene-search-form #gntext').focus(function() {
+            if( $('.gene-search-form #gntext').val() == genesearch_def ){
+                 $('.gene-search-form #gntext').val('').css('color', '#000');
+            }
+        });
+        $('.gene-search-form #gntext').blur(function() {
+            if( $('.gene-search-form #gntext').val() == '' ){
+                 $('.gene-search-form #gntext').val(genesearch_def).css('color', '#f0b460');
+            }
+        });
+        $('.gene-search-form #gnsubmit')[0].title = 'Search';
+
+        // adjust for control panel
+        var cpwidth = $('#controlpanel').eq(0).width();
+        if (cpwidth) $('body').css('margin-left', cpwidth);
+
+            }); 
+  </script>
+  <meta http-equiv="X-UA-Compatible" content="IE=8" />
+  </head>
+<body class="not-front not-logged-in node-type-page no-sidebars page-template-custom-downloads-tt section-template">
+  <div id="skip-to-nav"><a href="#navigation">Skip to Navigation</a></div>
+  <div id="page"><div id="page-inner">
+    <a name="navigation-top" id="navigation-top"></a>
+    <div id="header"><div id="header-inner" class="clear-block">
+              <div id="logo-title">
+                      <div id="logo"><a href="/" title="Home" rel="home"><img src="/sites/genenames.org/themes/custom/genenames/genenames_logo.png" alt="Home" id="logo-image" /></a></div>
+                                      </div> <!-- /#logo-title -->
+                        <div id="header-blocks" class="region region-header">
+            <div id="block-block-5" class="block block-block region-odd odd region-count-1 count-1"><div class="block-inner">
+
+  
+  <div class="content">
+        <form class="gene-search-form" method="get" action="/cgi-bin/quick_search.pl" enctype="application/x-www-form-urlencoded">
+      <input type="hidden" name=".cgifields" value="type"/>
+      <input type="hidden" name="type" value="contains"/>
+      <input type="hidden" name="num" value="50"/>
+      <p>
+        <input type="text" name="search" size="25" id="gntext" />
+        <input type="submit" name="submit" value="Submit" id="gnsubmit" />
+      </p>
+    </form>  </div>
+
+  
+</div></div> <!-- /block-inner, /block -->
+        </div> <!-- /#header-blocks -->
+                <div id='sf-menu-container'><a name="navigation"></a><ul class="sf-menu"><li class="leaf first"><a href="/" title="">Home</a></li>
+<li class="expanded"><a href="/hgnc-searches" title="">Search Genes</a><ul class="sf-menu"><li class="leaf first"><a href="http://www.genenames.org/cgi-bin/quick_search.pl" title="">Quick Gene Search</a></li>
+<li class="leaf"><a href="http://www.genenames.org/cgi-bin/advanced_search.pl" title="">Advanced Gene Search</a></li>
+<li class="leaf"><a href="http://www.genenames.org/cgi-bin/hgnc_bulkcheck.pl" title="">List Search</a></li>
+<li class="leaf last"><a href="/searchgenes/search-genes-documentation" title="">Documentation</a></li>
+</ul></li>
+<li class="expanded"><a href="http://www.genenames.org/cgi-bin/hgnc_stats" title="">Downloads</a><ul class="sf-menu"><li class="leaf first"><a href="http://www.genenames.org/cgi-bin/hgnc_stats" title="">Statistics and Downloads</a></li>
+<li class="leaf"><a href="http://www.genenames.org/cgi-bin/hgnc_downloads" title="">Custom Downloads</a></li>
+<li class="leaf"><a href="http://www.genenames.org/biomart/" title="">Biomart</a></li>
+<li class="leaf last"><a href="/data/gdlw_columndef.html" title="">Documentation</a></li>
+</ul></li>
+<li class="expanded"><a href="/genefamilies/hgnc-gene-familiesgroupings-nomenclature" title="">Gene Families</a><ul class="sf-menu"><li class="leaf first"><a href="/genefamilies/hgnc-gene-familiesgroupings-nomenclature" title="HGNC Gene Families/Groupings Nomenclature">Full Listing</a></li>
+<li class="leaf"><a href="/genefamilies/a-c" title="">A to C</a></li>
+<li class="leaf"><a href="/genefamilies/d-g" title="">D to G</a></li>
+<li class="leaf"><a href="/genefamilies/gene-familiesgroupings-h-l" title="">H to L</a></li>
+<li class="leaf"><a href="/genefamilies/m-p" title="">M to P</a></li>
+<li class="leaf"><a href="/genefamilies/r-s" title="">R to S</a></li>
+<li class="leaf"><a href="/genefamilies/t-z" title="">T to Z</a></li>
+<li class="leaf last"><a href="/genefamilies/hgnc-specialist-advisors" title="HGNC Specialist Advisors">Specialist Advisors</a></li>
+</ul></li>
+<li class="expanded"><a href="http://www.genenames.org/cgi-bin/hcop.pl" title="">HCOP</a><ul class="sf-menu"><li class="leaf first"><a href="http://www.genenames.org/cgi-bin/hcop.pl" title="">Search Tool</a></li>
+<li class="leaf last"><a href="/data/hcop-documentation" title="">Documentation</a></li>
+</ul></li>
+<li class="expanded"><a href="/useful/useful-links" title="">Useful Links</a><ul class="sf-menu"><li class="leaf first"><a href="/useful/genome-databases-and-browsers" title="">Genome Databases</a></li>
+<li class="leaf"><a href="/useful/orthology-and-comparative-genomics-resources" title="">Comparative Resources</a></li>
+<li class="leaf"><a href="/useful/gene-and-nucleic-acid-resources" title="Gene and Nucleic Acid Resources">Gene Resources</a></li>
+<li class="leaf"><a href="/useful/protein-resources" title="Protein Resources">Protein Resources</a></li>
+<li class="leaf"><a href="/useful/bioinformatics-tools" title="Bioinformatics Tools">Bioinformatics Tools</a></li>
+<li class="leaf"><a href="/useful/journals" title="Journals">Journals</a></li>
+<li class="leaf"><a href="/useful/PES" title="Education Resources">Education Resources</a></li>
+<li class="leaf last"><a href="/useful/other-resources" title="Other Resources">Other Resources</a></li>
+</ul></li>
+<li class="expanded"><a href="/about/overview" title="">About</a><ul class="sf-menu"><li class="leaf first"><a href="/about/overview" title="">About the HGNC</a></li>
+<li class="leaf"><a href="/about/team" title="HGNC Team">HGNC Team</a></li>
+<li class="leaf"><a href="/about/iac" title="">Advisory Committee</a></li>
+<li class="leaf"><a href="/hgnc-guidelines" title="">Guidelines</a></li>
+<li class="leaf"><a href="/publications" title="">Publications</a></li>
+<li class="leaf"><a href="/hgncnews/hgnc-newsletter-spring-2013" title="HGNC Newsletter Spring 2013">Newsletter</a></li>
+<li class="leaf"><a href="/activities/meetings" title="">Meeting Attendance</a></li>
+<li class="leaf last"><a href="/activities/hgnc-workshops" title="HGNC Workshops">Workshops</a></li>
+</ul></li>
+<li class="expanded"><a href="/about/contact-details" title="">Contact Us</a><ul class="sf-menu"><li class="leaf first"><a href="/about/contact-details" title="">Contact Details</a></li>
+<li class="leaf last"><a href="http://www.genenames.org/cgi-bin/hgnc_feedback.pl" title="">Feedback Form</a></li>
+</ul></li>
+<li class="leaf last"><a href="http://www.genenames.org/cgi-bin/hgnc_request.pl" title="Request Symbol">Request Symbol</a></li>
+</ul></div>
+        </div>
+    </div> <!-- /#header-inner, /#header -->
+    <div id="main"><div id="main-inner" class="clear-block">
+      <div id="content"><div id="content-inner">
+                                  <div id="content-header">
+                                      <h1 class="title">Custom Downloads                            </h1>
+                                                          </div> <!-- /#content-header -->
+                
+                  <div id="content-area">            <div id="node-824" class="node">
+
+
+
+  
+  <div class="content clear-block">
+    <form method="get" action="/cgi-bin/hgnc_downloads" enctype="application/x-www-form-urlencoded" id="download">
+  <table border="0" cellpadding="3" width="100%">
+    <tr><th style="color: #003366; font-size: 16px" colspan="4">SELECT COLUMN DATA</th></tr>
+    <tr><td colspan="4"><strong>Curated by the HGNC</strong></td></tr>
+
+  
+    <tr>
+  
+      <td width="25%">
+  
+        <input type="checkbox" name="col" value="gd_hgnc_id" checked="checked" />
+  
+        HGNC ID
+        <a class="dialog Information gd_hgnc_id" href="/data/gdlw_columndef.html" style="text-decoration:none;">
+          <img title="Click for information about this field" src="/sites/genenames.org/files/images/info_14x14.png" style="vertical-align: bottom;" alt="info" />
+        </a>
+      </td>
+  
+
+  
+      <td width="25%">
+  
+        <input type="checkbox" name="col" value="gd_app_sym" checked="checked" />
+  
+        Approved Symbol
+        <a class="dialog Information gd_app_sym" href="/data/gdlw_columndef.html" style="text-decoration:none;">
+          <img title="Click for information about this field" src="/sites/genenames.org/files/images/info_14x14.png" style="vertical-align: bottom;" alt="info" />
+        </a>
+      </td>
+  
+
+  
+      <td width="25%">
+  
+        <input type="checkbox" name="col" value="gd_app_name" checked="checked" />
+  
+        Approved Name
+        <a class="dialog Information gd_app_name" href="/data/gdlw_columndef.html" style="text-decoration:none;">
+          <img title="Click for information about this field" src="/sites/genenames.org/files/images/info_14x14.png" style="vertical-align: bottom;" alt="info" />
+        </a>
+      </td>
+  
+
+  
+      <td width="25%">
+  
+        <input type="checkbox" name="col" value="gd_status" checked="checked" />
+  
+        Status
+        <a class="dialog Information gd_status" href="/data/gdlw_columndef.html" style="text-decoration:none;">
+          <img title="Click for information about this field" src="/sites/genenames.org/files/images/info_14x14.png" style="vertical-align: bottom;" alt="info" />
+        </a>
+      </td>
+  
+    </tr>
+  
+
+  
+    <tr>
+  
+      <td width="25%">
+  
+        <input type="checkbox" name="col" value="gd_locus_type" />
+  
+        Locus Type
+        <a class="dialog Information gd_locus_type" href="/data/gdlw_columndef.html" style="text-decoration:none;">
+          <img title="Click for information about this field" src="/sites/genenames.org/files/images/info_14x14.png" style="vertical-align: bottom;" alt="info" />
+        </a>
+      </td>
+  
+
+  
+      <td width="25%">
+  
+        <input type="checkbox" name="col" value="gd_locus_group" />
+  
+        Locus Group
+        <a class="dialog Information gd_locus_group" href="/data/gdlw_columndef.html" style="text-decoration:none;">
+          <img title="Click for information about this field" src="/sites/genenames.org/files/images/info_14x14.png" style="vertical-align: bottom;" alt="info" />
+        </a>
+      </td>
+  
+
+  
+      <td width="25%">
+  
+        <input type="checkbox" name="col" value="gd_prev_sym" checked="checked" />
+  
+        Previous Symbols
+        <a class="dialog Information gd_prev_sym" href="/data/gdlw_columndef.html" style="text-decoration:none;">
+          <img title="Click for information about this field" src="/sites/genenames.org/files/images/info_14x14.png" style="vertical-align: bottom;" alt="info" />
+        </a>
+      </td>
+  
+
+  
+      <td width="25%">
+  
+        <input type="checkbox" name="col" value="gd_prev_name" />
+  
+        Previous Names
+        <a class="dialog Information gd_prev_name" href="/data/gdlw_columndef.html" style="text-decoration:none;">
+          <img title="Click for information about this field" src="/sites/genenames.org/files/images/info_14x14.png" style="vertical-align: bottom;" alt="info" />
+        </a>
+      </td>
+  
+    </tr>
+  
+
+  
+    <tr>
+  
+      <td width="25%">
+  
+        <input type="checkbox" name="col" value="gd_aliases" checked="checked" />
+  
+        Synonyms
+        <a class="dialog Information gd_aliases" href="/data/gdlw_columndef.html" style="text-decoration:none;">
+          <img title="Click for information about this field" src="/sites/genenames.org/files/images/info_14x14.png" style="vertical-align: bottom;" alt="info" />
+        </a>
+      </td>
+  
+
+  
+      <td width="25%">
+  
+        <input type="checkbox" name="col" value="gd_name_aliases" />
+  
+        Name Synonyms
+        <a class="dialog Information gd_name_aliases" href="/data/gdlw_columndef.html" style="text-decoration:none;">
+          <img title="Click for information about this field" src="/sites/genenames.org/files/images/info_14x14.png" style="vertical-align: bottom;" alt="info" />
+        </a>
+      </td>
+  
+
+  
+      <td width="25%">
+  
+        <input type="checkbox" name="col" value="gd_pub_chrom_map" checked="checked" />
+  
+        Chromosome
+        <a class="dialog Information gd_pub_chrom_map" href="/data/gdlw_columndef.html" style="text-decoration:none;">
+          <img title="Click for information about this field" src="/sites/genenames.org/files/images/info_14x14.png" style="vertical-align: bottom;" alt="info" />
+        </a>
+      </td>
+  
+
+  
+      <td width="25%">
+  
+        <input type="checkbox" name="col" value="gd_date2app_or_res" />
+  
+        Date Approved
+        <a class="dialog Information gd_date2app_or_res" href="/data/gdlw_columndef.html" style="text-decoration:none;">
+          <img title="Click for information about this field" src="/sites/genenames.org/files/images/info_14x14.png" style="vertical-align: bottom;" alt="info" />
+        </a>
+      </td>
+  
+    </tr>
+  
+
+  
+    <tr>
+  
+      <td width="25%">
+  
+        <input type="checkbox" name="col" value="gd_date_mod" />
+  
+        Date Modified
+        <a class="dialog Information gd_date_mod" href="/data/gdlw_columndef.html" style="text-decoration:none;">
+          <img title="Click for information about this field" src="/sites/genenames.org/files/images/info_14x14.png" style="vertical-align: bottom;" alt="info" />
+        </a>
+      </td>
+  
+
+  
+      <td width="25%">
+  
+        <input type="checkbox" name="col" value="gd_date_sym_change" />
+  
+        Date Symbol Changed
+        <a class="dialog Information gd_date_sym_change" href="/data/gdlw_columndef.html" style="text-decoration:none;">
+          <img title="Click for information about this field" src="/sites/genenames.org/files/images/info_14x14.png" style="vertical-align: bottom;" alt="info" />
+        </a>
+      </td>
+  
+
+  
+      <td width="25%">
+  
+        <input type="checkbox" name="col" value="gd_date_name_change" />
+  
+        Date Name Changed
+        <a class="dialog Information gd_date_name_change" href="/data/gdlw_columndef.html" style="text-decoration:none;">
+          <img title="Click for information about this field" src="/sites/genenames.org/files/images/info_14x14.png" style="vertical-align: bottom;" alt="info" />
+        </a>
+      </td>
+  
+
+  
+      <td width="25%">
+  
+        <input type="checkbox" name="col" value="gd_pub_acc_ids" checked="checked" />
+  
+        Accession Numbers
+        <a class="dialog Information gd_pub_acc_ids" href="/data/gdlw_columndef.html" style="text-decoration:none;">
+          <img title="Click for information about this field" src="/sites/genenames.org/files/images/info_14x14.png" style="vertical-align: bottom;" alt="info" />
+        </a>
+      </td>
+  
+    </tr>
+  
+
+  
+    <tr>
+  
+      <td width="25%">
+  
+        <input type="checkbox" name="col" value="gd_enz_ids" />
+  
+        Enzyme IDs
+        <a class="dialog Information gd_enz_ids" href="/data/gdlw_columndef.html" style="text-decoration:none;">
+          <img title="Click for information about this field" src="/sites/genenames.org/files/images/info_14x14.png" style="vertical-align: bottom;" alt="info" />
+        </a>
+      </td>
+  
+
+  
+      <td width="25%">
+  
+        <input type="checkbox" name="col" value="gd_pub_eg_id" />
+  
+        Entrez Gene ID
+        <a class="dialog Information gd_pub_eg_id" href="/data/gdlw_columndef.html" style="text-decoration:none;">
+          <img title="Click for information about this field" src="/sites/genenames.org/files/images/info_14x14.png" style="vertical-align: bottom;" alt="info" />
+        </a>
+      </td>
+  
+
+  
+      <td width="25%">
+  
+        <input type="checkbox" name="col" value="gd_pub_ensembl_id" />
+  
+        Ensembl Gene ID
+        <a class="dialog Information gd_pub_ensembl_id" href="/data/gdlw_columndef.html" style="text-decoration:none;">
+          <img title="Click for information about this field" src="/sites/genenames.org/files/images/info_14x14.png" style="vertical-align: bottom;" alt="info" />
+        </a>
+      </td>
+  
+
+  
+      <td width="25%">
+  
+        <input type="checkbox" name="col" value="gd_mgd_id" />
+  
+        Mouse Genome Database ID
+        <a class="dialog Information gd_mgd_id" href="/data/gdlw_columndef.html" style="text-decoration:none;">
+          <img title="Click for information about this field" src="/sites/genenames.org/files/images/info_14x14.png" style="vertical-align: bottom;" alt="info" />
+        </a>
+      </td>
+  
+    </tr>
+  
+
+  
+    <tr>
+  
+      <td width="25%">
+  
+        <input type="checkbox" name="col" value="gd_other_ids" />
+  
+        Specialist Database Links
+        <a class="dialog Information gd_other_ids" href="/data/gdlw_columndef.html" style="text-decoration:none;">
+          <img title="Click for information about this field" src="/sites/genenames.org/files/images/info_14x14.png" style="vertical-align: bottom;" alt="info" />
+        </a>
+      </td>
+  
+
+  
+      <td width="25%">
+  
+        <input type="checkbox" name="col" value="gd_other_ids_list" />
+  
+        Specialist Database IDs
+        <a class="dialog Information gd_other_ids_list" href="/data/gdlw_columndef.html" style="text-decoration:none;">
+          <img title="Click for information about this field" src="/sites/genenames.org/files/images/info_14x14.png" style="vertical-align: bottom;" alt="info" />
+        </a>
+      </td>
+  
+
+  
+      <td width="25%">
+  
+        <input type="checkbox" name="col" value="gd_pubmed_ids" />
+  
+        Pubmed IDs
+        <a class="dialog Information gd_pubmed_ids" href="/data/gdlw_columndef.html" style="text-decoration:none;">
+          <img title="Click for information about this field" src="/sites/genenames.org/files/images/info_14x14.png" style="vertical-align: bottom;" alt="info" />
+        </a>
+      </td>
+  
+
+  
+      <td width="25%">
+  
+        <input type="checkbox" name="col" value="gd_pub_refseq_ids" checked="checked" />
+  
+        RefSeq IDs
+        <a class="dialog Information gd_pub_refseq_ids" href="/data/gdlw_columndef.html" style="text-decoration:none;">
+          <img title="Click for information about this field" src="/sites/genenames.org/files/images/info_14x14.png" style="vertical-align: bottom;" alt="info" />
+        </a>
+      </td>
+  
+    </tr>
+  
+
+  
+    <tr>
+  
+      <td width="25%">
+  
+        <input type="checkbox" name="col" value="gd_gene_fam_name" />
+  
+        Gene Family Tag
+        <a class="dialog Information gd_gene_fam_name" href="/data/gdlw_columndef.html" style="text-decoration:none;">
+          <img title="Click for information about this field" src="/sites/genenames.org/files/images/info_14x14.png" style="vertical-align: bottom;" alt="info" />
+        </a>
+      </td>
+  
+
+  
+      <td width="25%">
+  
+        <input type="checkbox" name="col" value="gd_gene_fam_pagename" />
+  
+        Gene family description
+        <a class="dialog Information gd_gene_fam_pagename" href="/data/gdlw_columndef.html" style="text-decoration:none;">
+          <img title="Click for information about this field" src="/sites/genenames.org/files/images/info_14x14.png" style="vertical-align: bottom;" alt="info" />
+        </a>
+      </td>
+  
+
+  
+      <td width="25%">
+  
+        <input type="checkbox" name="col" value="gd_record_type" />
+  
+        Record Type
+        <a class="dialog Information gd_record_type" href="/data/gdlw_columndef.html" style="text-decoration:none;">
+          <img title="Click for information about this field" src="/sites/genenames.org/files/images/info_14x14.png" style="vertical-align: bottom;" alt="info" />
+        </a>
+      </td>
+  
+
+  
+      <td width="25%">
+  
+        <input type="checkbox" name="col" value="gd_primary_ids" />
+  
+        Primary IDs
+        <a class="dialog Information gd_primary_ids" href="/data/gdlw_columndef.html" style="text-decoration:none;">
+          <img title="Click for information about this field" src="/sites/genenames.org/files/images/info_14x14.png" style="vertical-align: bottom;" alt="info" />
+        </a>
+      </td>
+  
+    </tr>
+  
+
+  
+    <tr>
+  
+      <td width="25%">
+  
+        <input type="checkbox" name="col" value="gd_secondary_ids" />
+  
+        Secondary IDs
+        <a class="dialog Information gd_secondary_ids" href="/data/gdlw_columndef.html" style="text-decoration:none;">
+          <img title="Click for information about this field" src="/sites/genenames.org/files/images/info_14x14.png" style="vertical-align: bottom;" alt="info" />
+        </a>
+      </td>
+  
+
+  
+      <td width="25%">
+  
+        <input type="checkbox" name="col" value="gd_ccds_ids" />
+  
+        CCDS IDs
+        <a class="dialog Information gd_ccds_ids" href="/data/gdlw_columndef.html" style="text-decoration:none;">
+          <img title="Click for information about this field" src="/sites/genenames.org/files/images/info_14x14.png" style="vertical-align: bottom;" alt="info" />
+        </a>
+      </td>
+  
+
+  
+      <td width="25%">
+  
+        <input type="checkbox" name="col" value="gd_vega_ids" />
+  
+        VEGA IDs
+        <a class="dialog Information gd_vega_ids" href="/data/gdlw_columndef.html" style="text-decoration:none;">
+          <img title="Click for information about this field" src="/sites/genenames.org/files/images/info_14x14.png" style="vertical-align: bottom;" alt="info" />
+        </a>
+      </td>
+  
+
+  
+      <td width="25%">
+  
+        <input type="checkbox" name="col" value="gd_lsdb_links" />
+  
+        Locus Specific Databases
+        <a class="dialog Information gd_lsdb_links" href="/data/gdlw_columndef.html" style="text-decoration:none;">
+          <img title="Click for information about this field" src="/sites/genenames.org/files/images/info_14x14.png" style="vertical-align: bottom;" alt="info" />
+        </a>
+      </td>
+  
+    </tr>
+  
+
+    <tr>
+      <td colspan="4">&nbsp;</td>
+    </tr>
+    <tr>
+      <td colspan="4">
+        <strong>Downloaded from external sources</strong> (These IDs have not been manually curated by the HGNC)
+      </td>
+    </tr>
+
+  
+    <tr>
+  
+      <td width="25%">
+  
+        <input type="checkbox" name="col" value="md_eg_id" />
+  
+        Entrez Gene ID
+        <a class="dialog Information md_eg_id" href="/data/gdlw_columndef.html" style="text-decoration:none;">
+          <img title="Click for information about this field" src="/sites/genenames.org/files/images/info_14x14.png" style="vertical-align: bottom;" alt="info" />
+        </a>
+        <br/>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(supplied by NCBI)
+      </td>
+  
+
+  
+      <td width="25%">
+  
+        <input type="checkbox" name="col" value="md_mim_id" />
+  
+        OMIM ID
+        <a class="dialog Information md_mim_id" href="/data/gdlw_columndef.html" style="text-decoration:none;">
+          <img title="Click for information about this field" src="/sites/genenames.org/files/images/info_14x14.png" style="vertical-align: bottom;" alt="info" />
+        </a>
+        <br/>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(supplied by NCBI)
+      </td>
+  
+
+  
+      <td width="25%">
+  
+        <input type="checkbox" name="col" value="md_refseq_id" />
+  
+        RefSeq
+        <a class="dialog Information md_refseq_id" href="/data/gdlw_columndef.html" style="text-decoration:none;">
+          <img title="Click for information about this field" src="/sites/genenames.org/files/images/info_14x14.png" style="vertical-align: bottom;" alt="info" />
+        </a>
+        <br/>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(supplied by NCBI)
+      </td>
+  
+
+  
+      <td width="25%">
+  
+        <input type="checkbox" name="col" value="md_prot_id" />
+  
+        UniProt ID
+        <a class="dialog Information md_prot_id" href="/data/gdlw_columndef.html" style="text-decoration:none;">
+          <img title="Click for information about this field" src="/sites/genenames.org/files/images/info_14x14.png" style="vertical-align: bottom;" alt="info" />
+        </a>
+        <br/>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(supplied by UniProt)
+      </td>
+  
+    </tr>
+  
+
+  
+    <tr>
+  
+      <td width="25%">
+  
+        <input type="checkbox" name="col" value="md_ensembl_id" />
+  
+        Ensembl ID
+        <a class="dialog Information md_ensembl_id" href="/data/gdlw_columndef.html" style="text-decoration:none;">
+          <img title="Click for information about this field" src="/sites/genenames.org/files/images/info_14x14.png" style="vertical-align: bottom;" alt="info" />
+        </a>
+        <br/>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(supplied by Ensembl)
+      </td>
+  
+
+  
+      <td width="25%">
+  
+        <input type="checkbox" name="col" value="md_ucsc_id" />
+  
+        UCSC ID
+        <a class="dialog Information md_ucsc_id" href="/data/gdlw_columndef.html" style="text-decoration:none;">
+          <img title="Click for information about this field" src="/sites/genenames.org/files/images/info_14x14.png" style="vertical-align: bottom;" alt="info" />
+        </a>
+        <br/>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(supplied by UCSC)
+      </td>
+  
+
+  
+      <td width="25%">
+  
+        <input type="checkbox" name="col" value="md_mgd_id" />
+  
+        Mouse Genome Database ID
+        <a class="dialog Information md_mgd_id" href="/data/gdlw_columndef.html" style="text-decoration:none;">
+          <img title="Click for information about this field" src="/sites/genenames.org/files/images/info_14x14.png" style="vertical-align: bottom;" alt="info" />
+        </a>
+        <br/>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(supplied by MGI)
+      </td>
+  
+
+  
+      <td width="25%">
+  
+        <input type="checkbox" name="col" value="md_rgd_id" />
+  
+        Rat Genome Database ID
+        <a class="dialog Information md_rgd_id" href="/data/gdlw_columndef.html" style="text-decoration:none;">
+          <img title="Click for information about this field" src="/sites/genenames.org/files/images/info_14x14.png" style="vertical-align: bottom;" alt="info" />
+        </a>
+        <br/>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(supplied by RGD)
+      </td>
+  
+    </tr>
+  
+
+    <tr><td colspan="4">&nbsp;</td></tr>
+    <tr><th style="color: #003366; font-size: 16px" colspan="4">SELECT STATUS</th></tr>
+    <tr>
+      <td width="25%">&nbsp;</td>
+      <td width="25%">
+        <input type="checkbox" name="status" value="Approved" checked="checked" />
+        Approved
+      </td>
+      <td>
+        <input type="checkbox" name="status" value="Entry Withdrawn" checked="checked" />
+        Entry and Symbol Withdrawn
+      </td>
+      <td width="25%">&nbsp;</td>
+    </tr>
+    <tr>
+      <td colspan="4"><input type="hidden" name="status_opt" value="2" />&nbsp;</td>
+    </tr>
+    <tr>
+      <th style="color: #003366; font-size: 16px" colspan="4">SELECT CHROMOSOMES</th>
+    </tr>
+    <tr>
+      <td colspan="1">
+        Use the check boxes adjacent to filter the results by chromosome.<br/>
+        (<strong>Default = all chromosomes</strong>).
+      </td>
+      <td colspan="3">
+        <table>
+          <tbody style="border-top: 0px;">
+            <tr>
+              <td>
+                <input type="checkbox" name="chr" value="1" />1
+              </td>
+              <td>
+                <input type="checkbox" name="chr" value="2" />2
+              </td>
+              <td>
+                <input type="checkbox" name="chr" value="3" />3
+              </td>
+              <td>
+                <input type="checkbox" name="chr" value="4" />4
+              </td>
+              <td>
+                <input type="checkbox" name="chr" value="5" />5
+              </td>
+              <td>
+                <input type="checkbox" name="chr" value="6" />6
+              </td>
+              <td>
+                <input type="checkbox" name="chr" value="7" />7
+              </td>
+              <td>
+                <input type="checkbox" name="chr" value="8" />8
+              </td>
+              <td>
+                <input type="checkbox" name="chr" value="9" />9
+              </td>
+              <td>
+                <input type="checkbox" name="chr" value="10" />10
+              </td>
+              <td>
+                <input type="checkbox" name="chr" value="11" />11
+              </td>
+              <td>
+                <input type="checkbox" name="chr" value="12" />12
+              </td>
+              <td>
+                <input type="checkbox" name="chr" value="13" />13
+              </td>
+              <td>
+                <input type="checkbox" name="chr" value="14" />14
+              </td>
+              <td>
+                <input type="checkbox" name="chr" value="15" />15
+              </td>
+              <td>
+                <input type="checkbox" name="chr" value="16" />16
+              </td>
+              <td>
+                <input type="checkbox" name="chr" value="17" />17
+              </td>
+            </tr>
+            <tr>
+              <td colspan="17"></td>
+            </tr>
+            <tr>
+              <td>
+                <input type="checkbox" name="chr" value="18" />18
+              </td>
+              <td>
+                <input type="checkbox" name="chr" value="19" />19
+              </td>
+              <td>
+                <input type="checkbox" name="chr" value="20" />20
+              </td>
+              <td>
+                <input type="checkbox" name="chr" value="21" />21
+              </td>
+              <td>
+                <input type="checkbox" name="chr" value="22" />22
+              </td>
+              <td>
+                <input type="checkbox" name="chr" value="X" />X
+              </td>
+              <td>
+                <input type="checkbox" name="chr" value="Y" />Y
+              </td>
+              <td colspan="4">
+                <input type="checkbox" name="chr" value="XandY" />pseudoautosomal
+              </td>
+              <td colspan="3">
+                <input type="checkbox" name="chr" value="mito" />mitochondrial
+              </td>
+              <td colspan="3">
+                <input type="checkbox" name="chr" value="reserved" />reserved loci
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </td>
+    </tr>
+    <tr><td colspan="4">&nbsp;</td></tr>
+    <tr>
+      <th style="color: #003366; font-size: 16px" colspan="4">ADVANCED FILTERING</th>
+    </tr>
+    <tr>
+      <td align="left" colspan="1">
+        Please read the
+        <a class="dialog Information patmat" href="/data/gdlw_columndef.html">
+          <strong>Pattern Matching</strong>
+        </a>
+        information and the "Quick Column Reference" section below before using the advanced filter.
+      </td>
+      <td colspan="3">
+        <textarea name="where" rows="2" cols="77"></textarea>
+      </td>
+    </tr>
+    <tr>
+      <td colspan="4">&nbsp;</td>
+    </tr>
+    <tr>
+      <th style="color: #003366; font-size: 16px" colspan="4">OUTPUT SETTINGS</th>
+    </tr>
+    <tr>
+      <td colspan="1">
+        <strong>Order by</strong>
+      </td>
+      <td colspan="3">
+        <select name="order_by">
+
+  
+          <option value="gd_hgnc_id">HGNC ID </option>
+  
+
+  
+          <option value="gd_app_sym_sort">Approved Symbol </option>
+  
+
+  
+          <option value="gd_app_name">Approved Name </option>
+  
+
+  
+          <option value="gd_status">Status </option>
+  
+
+  
+          <option value="gd_locus_type">Locus Type </option>
+  
+
+  
+          <option value="gd_locus_group">Locus Group </option>
+  
+
+  
+          <option value="gd_prev_sym">Previous Symbols </option>
+  
+
+  
+          <option value="gd_prev_name">Previous Names </option>
+  
+
+  
+          <option value="gd_aliases">Synonyms </option>
+  
+
+  
+          <option value="gd_name_aliases">Name Synonyms </option>
+  
+
+  
+          <option value="gd_pub_chrom_map_sort">Chromosome </option>
+  
+
+  
+          <option value="gd_date2app_or_res">Date Approved </option>
+  
+
+  
+          <option value="gd_date_mod">Date Modified </option>
+  
+
+  
+          <option value="gd_date_sym_change">Date Symbol Changed </option>
+  
+
+  
+          <option value="gd_date_name_change">Date Name Changed </option>
+  
+
+  
+          <option value="gd_pub_acc_ids">Accession Numbers </option>
+  
+
+  
+          <option value="gd_enz_ids">Enzyme IDs </option>
+  
+
+  
+          <option value="gd_pub_eg_id">Entrez Gene ID </option>
+  
+
+  
+          <option value="gd_pub_ensembl_id">Ensembl Gene ID </option>
+  
+
+  
+          <option value="gd_mgd_id">Mouse Genome Database ID </option>
+  
+
+  
+          <option value="gd_other_ids">Specialist Database Links </option>
+  
+
+  
+          <option value="gd_other_ids_list">Specialist Database IDs </option>
+  
+
+  
+          <option value="gd_pubmed_ids">Pubmed IDs </option>
+  
+
+  
+          <option value="gd_pub_refseq_ids">RefSeq IDs </option>
+  
+
+  
+          <option value="gd_gene_fam_name">Gene Family Tag </option>
+  
+
+  
+          <option value="gd_gene_fam_pagename">Gene family description </option>
+  
+
+  
+          <option value="gd_record_type">Record Type </option>
+  
+
+  
+          <option value="gd_primary_ids">Primary IDs </option>
+  
+
+  
+          <option value="gd_secondary_ids">Secondary IDs </option>
+  
+
+  
+          <option value="gd_ccds_ids">CCDS IDs </option>
+  
+
+  
+          <option value="gd_vega_ids">VEGA IDs </option>
+  
+
+  
+          <option value="gd_lsdb_links">Locus Specific Databases </option>
+  
+
+  
+          <option value="md_eg_id">Entrez Gene ID (supplied by NCBI)</option>
+  
+
+  
+          <option value="md_mim_id">OMIM ID (supplied by NCBI)</option>
+  
+
+  
+          <option value="md_refseq_id">RefSeq (supplied by NCBI)</option>
+  
+
+  
+          <option value="md_prot_id">UniProt ID (supplied by UniProt)</option>
+  
+
+  
+          <option value="md_ensembl_id">Ensembl ID (supplied by Ensembl)</option>
+  
+
+  
+          <option value="md_ucsc_id">UCSC ID (supplied by UCSC)</option>
+  
+
+  
+          <option value="md_mgd_id">Mouse Genome Database ID (supplied by MGI)</option>
+  
+
+  
+          <option value="md_rgd_id">Rat Genome Database ID (supplied by RGD)</option>
+  
+       
+        </select>
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <strong>Output format</strong>
+      </td>
+      <td colspan="3">
+        <select name="format">
+          <option selected="selected" value="text">Text</option>
+          <option value="LWP">Make perl code</option>
+          <option value="tiny">Make tiny url</option>
+        </select>
+      </td>
+    </tr>
+    <tr>
+      <td align="LEFT" valign="TOP">
+        <strong>Limit</strong>
+      </td>
+      <td colspan="3">
+        <input type="text" name="limit"  size="3" />
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <strong>Use HGNC Database Identifier</strong><br/>
+        (Prefixes the HGNC ID with "HGNC:")
+      </td>
+      <td colspan="3">
+        <input type="checkbox" name="hgnc_dbtag" value="on" checked="checked" />
+      </td>
+    </tr>
+    <tr>
+      <td style="text-align: right;"></td>
+      <td style="text-align: right;"></td>
+      <td style="text-align: right;"></td>
+      <td style="text-align: right;">
+        <input type="submit" name="submit" value="submit" />
+        <input type="reset" name=".reset" />
+      </td>
+    </tr>
+  </table>
+</form>
+<hr/>
+<p>If you have any problems using this page please feel free to contact up at <a href="mailto:hgnc@genenames.org">hgnc@genenames.org</a></p>
+<h2 style="color: #003366;">Quick Column Reference</h2>
+<p>
+  If limiting results using the 'ADVANCED FILTERING' field use the 'Database name' rather than the 'External Name'.
+  See the <a href="/data/gdlw_doc.html">Custom Downloads Documentation</a> for more information.
+</p>
+<ul>
+  <li>The gd_ prefix signifies data that has been curated by the HGNC</li>
+  <li>md_ prefix signifies <a href="/data/gdlw_doc.html#mapped_data">Mapped Data</a></li>
+  <li>The _id suffix indicates the field contains a single ID number</li>
+  <li>_ids indicates a comma delimited list of IDs</li>
+  <li>
+    Following the retirement of the NCBI's LocusLink database in 2005 and its replacement with
+    <a href="http://www.ncbi.nlm.nih.gov/entrez/query.fcgi?db=gene">Entrez Gene</a>. LocusLink IDs
+    have moved into the fields gd_eg_id and md_eg_id.
+  </li>
+</ul>
+<table border="0" cellpadding="3">
+  <tr>
+    <th>External name</th> <th>Database name</th> <th>External name</th> <th>Database name</th>
+  </tr>
+
+  
+  <tr>
+  
+    <td width="30%">HGNC ID </td> <td width="20%">gd_hgnc_id</td>
+  
+
+  
+    <td width="30%">Approved Symbol </td> <td width="20%">gd_app_sym</td>
+  
+  </tr>
+  
+
+  
+  <tr>
+  
+    <td width="30%">Approved Name </td> <td width="20%">gd_app_name</td>
+  
+
+  
+    <td width="30%">Status </td> <td width="20%">gd_status</td>
+  
+  </tr>
+  
+
+  
+  <tr>
+  
+    <td width="30%">Locus Type </td> <td width="20%">gd_locus_type</td>
+  
+
+  
+    <td width="30%">Locus Group </td> <td width="20%">gd_locus_group</td>
+  
+  </tr>
+  
+
+  
+  <tr>
+  
+    <td width="30%">Previous Symbols </td> <td width="20%">gd_prev_sym</td>
+  
+
+  
+    <td width="30%">Previous Names </td> <td width="20%">gd_prev_name</td>
+  
+  </tr>
+  
+
+  
+  <tr>
+  
+    <td width="30%">Synonyms </td> <td width="20%">gd_aliases</td>
+  
+
+  
+    <td width="30%">Name Synonyms </td> <td width="20%">gd_name_aliases</td>
+  
+  </tr>
+  
+
+  
+  <tr>
+  
+    <td width="30%">Chromosome </td> <td width="20%">gd_pub_chrom_map</td>
+  
+
+  
+    <td width="30%">Date Approved </td> <td width="20%">gd_date2app_or_res</td>
+  
+  </tr>
+  
+
+  
+  <tr>
+  
+    <td width="30%">Date Modified </td> <td width="20%">gd_date_mod</td>
+  
+
+  
+    <td width="30%">Date Symbol Changed </td> <td width="20%">gd_date_sym_change</td>
+  
+  </tr>
+  
+
+  
+  <tr>
+  
+    <td width="30%">Date Name Changed </td> <td width="20%">gd_date_name_change</td>
+  
+
+  
+    <td width="30%">Accession Numbers </td> <td width="20%">gd_pub_acc_ids</td>
+  
+  </tr>
+  
+
+  
+  <tr>
+  
+    <td width="30%">Enzyme IDs </td> <td width="20%">gd_enz_ids</td>
+  
+
+  
+    <td width="30%">Entrez Gene ID </td> <td width="20%">gd_pub_eg_id</td>
+  
+  </tr>
+  
+
+  
+  <tr>
+  
+    <td width="30%">Ensembl Gene ID </td> <td width="20%">gd_pub_ensembl_id</td>
+  
+
+  
+    <td width="30%">Mouse Genome Database ID </td> <td width="20%">gd_mgd_id</td>
+  
+  </tr>
+  
+
+  
+  <tr>
+  
+    <td width="30%">Specialist Database Links </td> <td width="20%">gd_other_ids</td>
+  
+
+  
+    <td width="30%">Specialist Database IDs </td> <td width="20%">gd_other_ids_list</td>
+  
+  </tr>
+  
+
+  
+  <tr>
+  
+    <td width="30%">Pubmed IDs </td> <td width="20%">gd_pubmed_ids</td>
+  
+
+  
+    <td width="30%">RefSeq IDs </td> <td width="20%">gd_pub_refseq_ids</td>
+  
+  </tr>
+  
+
+  
+  <tr>
+  
+    <td width="30%">Gene Family Tag </td> <td width="20%">gd_gene_fam_name</td>
+  
+
+  
+    <td width="30%">Gene family description </td> <td width="20%">gd_gene_fam_pagename</td>
+  
+  </tr>
+  
+
+  
+  <tr>
+  
+    <td width="30%">Record Type </td> <td width="20%">gd_record_type</td>
+  
+
+  
+    <td width="30%">Primary IDs </td> <td width="20%">gd_primary_ids</td>
+  
+  </tr>
+  
+
+  
+  <tr>
+  
+    <td width="30%">Secondary IDs </td> <td width="20%">gd_secondary_ids</td>
+  
+
+  
+    <td width="30%">CCDS IDs </td> <td width="20%">gd_ccds_ids</td>
+  
+  </tr>
+  
+
+  
+  <tr>
+  
+    <td width="30%">VEGA IDs </td> <td width="20%">gd_vega_ids</td>
+  
+
+  
+    <td width="30%">Locus Specific Databases </td> <td width="20%">gd_lsdb_links</td>
+  
+  </tr>
+  
+
+  
+  <tr>
+  
+    <td width="30%">Entrez Gene ID (supplied by NCBI)</td> <td width="20%">md_eg_id</td>
+  
+
+  
+    <td width="30%">OMIM ID (supplied by NCBI)</td> <td width="20%">md_mim_id</td>
+  
+  </tr>
+  
+
+  
+  <tr>
+  
+    <td width="30%">RefSeq (supplied by NCBI)</td> <td width="20%">md_refseq_id</td>
+  
+
+  
+    <td width="30%">UniProt ID (supplied by UniProt)</td> <td width="20%">md_prot_id</td>
+  
+  </tr>
+  
+
+  
+  <tr>
+  
+    <td width="30%">Ensembl ID (supplied by Ensembl)</td> <td width="20%">md_ensembl_id</td>
+  
+
+  
+    <td width="30%">UCSC ID (supplied by UCSC)</td> <td width="20%">md_ucsc_id</td>
+  
+  </tr>
+  
+
+  
+  <tr>
+  
+    <td width="30%">Mouse Genome Database ID (supplied by MGI)</td> <td width="20%">md_mgd_id</td>
+  
+
+  
+    <td width="30%">Rat Genome Database ID (supplied by RGD)</td> <td width="20%">md_rgd_id</td>
+  
+  </tr>
+  
+
+</table>  </div>
+
+  <div class="clear-block">
+    <div class="meta">
+        </div>
+
+      </div>
+
+</div>
+          </div>        
+        
+                
+      </div></div> <!-- /#content-inner, /#content -->
+                      </div></div> <!-- /#main-inner, /#main -->
+          <div id="footer"><div id="footer-inner" class="region region-footer">
+                  <!--<div id="footer-message"></div>-->
+                  <div id="block-block-1" class="block block-block region-odd even region-count-1 count-2"><div class="block-inner">
+
+  
+  <div class="content">
+    
+<div class="footerlogosdiv">
+ <a href="http://www.ebi.ac.uk/" target="_blank" class="footerlogoshref"><img class="footerlogosimage" src="/sites/genenames.org/files/resize/images/embl-ebi_logo_black_big-200x62.png" alt="The European Bioinformatics Institute (EBI)" title="The European Bioinformatics Institute (EBI)" style="border: 0px none; border: 0px;" height="62" width="200" /></a> <a href="http://www.genome.gov/" target="_blank" class="footerlogoshref"><img class="footerlogosimage" src="/sites/genenames.org/themes/custom/genenames/images/NHGRI.png" alt="The National Human Genome Research Institute (NHGRI)" title="The National Human Genome Research Institute (NHGRI)" width="171" height="65" style="border: 0px;" /></a> <a href="http://www.wellcome.ac.uk/" target="_blank" class="footerlogoshref"><img class="footerlogosimage" src="/sites/genenames.org/themes/custom/genenames/images/Wellcome-Trust.png" alt="Wellcome Trust" title="Wellcome Trust" width="171" height="65" style="border: 0px;" /></a> <a href="http://www.hugo-international.org/" target="_blank" class="footerlogoshref"><img class="footerlogosimage" src="/sites/genenames.org/themes/custom/genenames/images/hugo.png" alt="Human Genome Organisation (HUGO)" title="Human Genome Organisation (HUGO)" width="171" height="65" style="border: 0px;" /></a>
+</div>
+<div class="grantinfo">
+ The work of the HGNC is supported by National Human Genome Research Institute (NHGRI) grant P41 HG03345 <br />
+ and Wellcome Trust grant 099129/Z/12/Z
+</div>
+<div class="contactinfo">
+ Contact Us: <a href="mailto:hgnc@genenames.org">hgnc@genenames.org</a> <a href="#navigation-top" class="backtotop">Back to top</a> <a href="/user">Admin</a>
+</div>
+<div class="contactinfo">
+ Site maintained by the External Services team at <a href="http://www.ebi.ac.uk/">EMBL-EBI</a> | <a href="http://www.ebi.ac.uk/Information/termsofuse.html">Terms of Use</a> | <a href="http://www.ebi.ac.uk/Information/privacy.html">Privacy</a> | <a href="http://www.ebi.ac.uk/Information/e-directive.html">Cookies</a>
+</div>
+  </div>
+
+  
+</div></div> <!-- /block-inner, /block -->
+      </div></div> <!-- /#footer-inner, /#footer -->
+      </div></div> <!-- /#page-inner, /#page -->
+    <script type="text/javascript">
+<!--//--><![CDATA[//><!--
+var _gaq = _gaq || [];_gaq.push(["_setAccount", "UA-33040314-1"]);_gaq.push(["_trackPageview"]);(function() {var ga = document.createElement("script");ga.type = "text/javascript";ga.async = true;ga.src = ("https:" == document.location.protocol ? "https://ssl" : "http://www") + ".google-analytics.com/ga.js";var s = document.getElementsByTagName("script")[0];s.parentNode.insertBefore(ga, s);})();
+//--><!]]>
+</script>
+</body>
+</html>
