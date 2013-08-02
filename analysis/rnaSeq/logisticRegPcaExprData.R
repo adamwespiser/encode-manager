@@ -261,7 +261,7 @@ main <- function(){
   df.plot= plotDistanceAwayRatio(df,label=y.full)
   df.plot$type = "ellipse"
   
-  sample(y.full,length(y.full))
+  sample(y.full,length(y.full)) 
   df.random= plotDistanceAwayRatio(df,label=sample(y.full,length(y.full)))
   df.random$type = "randomLabel"
   

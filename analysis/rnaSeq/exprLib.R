@@ -515,3 +515,12 @@ getAnnotLncDf <- function(lncDf,annotDf,exprCol,annotColName){
   lncDf
 }
 
+makeDir <- function(dir,recursiveCreate=FALSE){
+  if (!file.exists(dir)){
+    dir.create(path=dir,showWarnings=TRUE,recursive=recursiveCreate,mode="0755")
+  }
+  
+}
+
+
+

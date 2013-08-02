@@ -46,9 +46,14 @@ getLncRNADiseasdbVec <- function(file=getFullPath("data/lncRnaAndDisease_refSeq.
   unique(as.data.frame(sapply(f.vec,function(x)x[1]))[,1])
 }
 
-getLncRNAdbDf <- function(file=getFullPath("data/lncRnaAndDisease_refSeq.txt")){
-  
-  
+getLncRNAdbInteract <- function(file=getFullPath("data/lncRNAdbInteract_REFSEQ.tab")){
+
+ df <- read.csv(file=file,sep="\t",stringsAsFactors=FALSE,header=FALSE)  
+ colnames(df) <- c("refseq","lncRnaName")
+ f.vec = sapply(df$refseq,function(x)getEnsGFromRef(value=splitOnDot(x),mart=mart))
+ f.out = as.character(unique(as.data.frame(sapply(f.vec,function(x)x[1]))[,1]))
+ f.out = f.out[!is.na(f.out)]
+ f.out
 } 
   
 getlncDiseaseDf <- function(f = "/Users/adam/work/research/researchProjects/encode/encode-manager/data/lncRnaAndDisease_LNC-REFSEQ.tab"){
@@ -125,8 +130,7 @@ getLncsFromLncRnaDbWebScrap <- function(file=getFullPath("/data/lncRnaDbWebScrap
   
   
   
-  lncDbScrape.df[which(lncDbScrape.df$gene_biotype != "snoRNA" & lncDbScrape.df$gene_biotype != "protein_coding"),] -> lncDbScrape.df
-  
+  lncDbScrape.df[which(lncDbScrape.df$gene_biotype != "snoRNA" & lncDbScrape.df$gene_biotype != "protein_coding"),] -> lncDbScrape.df  
 }
 
 getLncsFromLitSearch2 <- function(file=getFullPath("data/lncRnaLitSearch.tab")){
@@ -137,15 +141,7 @@ getLncsFromLitSearch2 <- function(file=getFullPath("data/lncRnaLitSearch.tab")){
                                                 filters= c("ensembl_gene_id"),
                                                 values=list(nd_code),
                                                 mart=mart))
-  
-  
 }
-
-
-
-
-
-
 
 getEnsFromGeneNameListFull <- function(genenameFile=getFullPath("data/geneNamesLNCRNA.list")){
   df <- readInTable(genenameFile)
@@ -156,6 +152,75 @@ getEnsFromGeneNameListFull <- function(genenameFile=getFullPath("data/geneNamesL
                                      mart=mart))
   gn.df
 }
+
+createSourcesForLnc <- function(in.f=getFullPath("data/lncList_ensemblIdsFoundLncRna2.list"),
+                                out.f=getFullPath("data/lncEvidenseOfFunction.tab")){
+  disease <-     getLncRNADiseasdbVec()
+  lncRnaDb <-    getLncRnaDbFromExport()
+  lncList <-     getlncdListDf()
+  genenames <-   getEnsFromGeneNameList()
+  funLncDb <-    getLncsGenesFromFunctionalLncDb()
+  lncDbScrape <- getLncsFromLncRnaDbWebScrap()
+  lit2 <-        getLncsFromLitSearch2()
+  interact <-    getLncRNAdbInteract()
+  all.found = c(lit2[["ensembl_gene_id"]],lncList[["gene_id"]],interact,lncDbScrape[["ensembl_gene_id"]],lncRnaDb,funLncDb[["ensembl_gene_id"]],as.character(disease),genenames)
+ 
+  
+  lnc.df <- readInTable(file=in.f)
+  
+  
+  evidense.df <- data.frame( ensembl_gene_id = unique(all.found))
+  derrien.df = read.csv(getFullPath("data/Gencode_lncRNAsv7_summaryTable_05_02_2012.csv"))
+  #annot.df = getAnnotLncDf()
+  evidense.df = within(evidense.df,{
+   
+    litSearch = (ensembl_gene_id %in% lit2[["ensembl_gene_id"]] | ensembl_gene_id %in% lncList[["gene_id"]])
+    lncInteract =  ensembl_gene_id %in% interact
+    lncRnaDb = (ensembl_gene_id %in% lncDbScrape[["ensembl_gene_id"]] | ensembl_gene_id %in% lncRnaDb)
+    lncFuncDb = ensembl_gene_id %in% funLncDb[["ensembl_gene_id"]]
+    lncDiseaseDb = ensembl_gene_id %in% as.character(disease)
+    lncGeneNamesDb = ensembl_gene_id %in% genenames
+    foundInDerrien = ensembl_gene_id %in% sapply(as.character(derrien.df$LncRNA_GeneId),function(x){as.vector(strsplit(x,"\\.")[[1]])[1]})
+    
+    sum = ifelse(foundInDerrien,1,0)*100+ ifelse(lncRnaDb,1,0)*1.4 + ifelse(lncFuncDb,1,0)*1.3 + ifelse(lncDiseaseDb,1,0)*1.2 + ifelse(lncGeneNamesDb,1,0) * 1.1 + ifelse(litSearch,1,0)*1.1 + ifelse(lncInteract,1,0)*1.05
+    
+  })
+  
+  unique(lnc.df$ensembl_gene_id)
+  
+  evidense.df[order(evidense.df$sum),"rank"] = seq_along(evidense.df$sum)
+
+  g <- getEnslist()
+  g = g[which(g$ensembl_gene_id %in% evidense.df$ensembl_gene_id),]
+  ename.df <- merge(evidense.df,unique(data.frame(name=g$external_gene_id,ensembl_gene_id=g$ensembl_gene_id)),by="ensembl_gene_id")
+  exportAsTable(ename.df,file=out.f)
+  
+  #ename.df <- transform( ename.df,
+  #                       ensembl_gene_id = ordered(ensembl_gene_id, levels = sort(-table(sum))))
+  
+  #ename.df <- arrange(ename.df,sum)
+  ename.df$ensembl_gene_id <- factor(ename.df$ensembl_gene_id , levels=arrange(ename.df,sum)[["ensembl_gene_id"]], ordered=TRUE)
+  ename.df$name <- factor(ename.df$name , levels=arrange(ename.df,sum)[["name"]], ordered=TRUE)
+  ename.melt = melt(ename.df,id.var=c("rank","ensembl_gene_id","name","sum"))
+  #ename.melt$ensembl_gene_id <- factor(ename.df$ensembl_gene_id , levels=arrange(ename.df,sum)[["ensembl_gene_id"]], ordered=TRUE)
+  ggplot(melt(ename.df,id.var=c("rank","ensembl_gene_id","name","sum")),aes(y=name,x=reorder(variable,sum),fill=ifelse(value,0,1))) + 
+    geom_tile()+scale_fill_gradient(low = "#00002A",high = "#E0F5FF") + 
+    theme(axis.text.y=element_text(size=3,color="black"),axis.text.x=element_text(size=3,color="black"))
+  
+  ggsave(file="/Users/adam/work/research/researchProjects/encode/encode-manager/plots/lncCompare/lncRnaFunctional/sourceOfLncs.pdf",,height=7,width=5)
+  
+  lncDb.count1 =  dim(read.csv(file=getFullPath("data/lncRNAdbNrCodesHuman.list"),stringsAsFactors=FALSE,header=FALSE))[1]
+  
+  lncLit.count = lncDb.count1 + dim(read.table(file="/Users/adam/work/research/researchProjects/encode/encode-manager/data/lncdList_parsed.tab",stringsAsFactors=FALSE,header=TRUE))[1]
+  lncDisease.count =dim(read.table(file= "/Users/adam/work/research/researchProjects/encode/encode-manager/data/lncRnaAndDisease_LNC-REFSEQ.tab",stringsAsFactors=FALSE,header=FALSE))[1]
+  lncDis.count =  dim(read.table(file=getFullPath("data/lncRnaAndDisease_refSeq.txt"),stringsAsFactors=FALSE,header=FALSE))[1]
+  
+  
+  
+}
+
+
+
 createEnsList <- function(f=getFullPath("data/lncList_ensemblIdsFoundLncRna.list")){
   out.f=getFullPath("data/lncList_ensemblIdsFoundLncRna.list")
  

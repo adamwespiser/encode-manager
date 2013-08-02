@@ -18,16 +18,14 @@ source( "/Users/adam/work/research/researchProjects/encode/encode-manager/analys
 
 
 
-makeShortGeneId <- function(df){
-  
-  df$
-  
-  df
-}
+
 
 #source("./analysis/rnaSeq/compareTopLncsToRest.R")
 
-makeComparisonsLnc <- function(lncDf=df.1,exprColIndex=2:33,transKeyword="annot",fileBase="",outDir="/Users/adam/test/", annotDf, annotColName,foundColword,verbose=TRUE){
+makeComparisonsLnc <- function(lncDf=df.1,exprColIndex=2:33,transKeyword="annot",
+                               fileBase="",outDir="/Users/adam/test/", annotDf, 
+                               annotColName,foundColword,verbose=TRUE,
+                               injectLncDf = FALSE, processedLncDf){
   #some local helper functions to print debug reports, create outfile names
   printReport <- function(report){ if(verbose == TRUE){print(report)}}
   makeOutFile <- function(x){outfile<-paste(paste(outDir,fileBase,sep="/"),x,sep="");print(paste("making",outfile));outfile} # requires outDir & fileBase
@@ -40,19 +38,27 @@ makeComparisonsLnc <- function(lncDf=df.1,exprColIndex=2:33,transKeyword="annot"
   #lncDf$gene_id_short <- apply(lncDf,1,function(x)as.vector(strsplit(x[c("gene_id")],"\\."))[[1]][1])
   
   # make which genes have been found in annotation
-  lncDf$withinSubset = "false"
-  lncDf[which(lncDf$gene_id_short %in% annotDf$gene_id_short),]$withinSubset = "true"
-  
-  n.subset = length(which(lncDf$withinSubset == "true"))
-  n.total = dim(lncDf)[1]
-  n.line = paste("subset =",foundColword,"\n",n.subset,foundColword,"lncRNAs out of",n.total,"total lncRNAs\n",sep=" ")
+
+  if (injectLncDf == FALSE){
+    lncDf$withinSubset = "false"
+    lncDf[which(lncDf$gene_id_short %in% annotDf$gene_id_short),]$withinSubset = "true"
+    
+    n.subset = length(which(lncDf$withinSubset == "true"))
+    n.total = dim(lncDf)[1]
+    n.line = paste("subset =",foundColword,"\n",n.subset,foundColword,"lncRNAs out of",n.total,"total lncRNAs\n",sep=" ")
     titleWithBanner = function(x)paste(n.line,x,sep="\n")
-  
-  
-  ddply(annotDf,.(gene_id),function(x)x[1]) -> ensLnc.df
-  getLncName <- function(x){y<-ensLnc.df[which(ensLnc.df$gene_id == x ), "lncRnaName"][1];if(is.na(y)){"notFound"}else{y}}
-  lncDf[[annotColName]] <- as.vector(sapply(lncDf[["gene_id_short"]],function(x)getLncName(x)))
-  #lncDf[is.na(lncDf[[annotColName]]),annotColName] <- "notFound"
+    
+    
+    ddply(annotDf,.(gene_id),function(x)x[1]) -> ensLnc.df
+    getLncName <- function(x){y<-ensLnc.df[which(ensLnc.df$gene_id == x ), "lncRnaName"][1];if(is.na(y)){"notFound"}else{y}}
+    lncDf[[annotColName]] <- as.vector(sapply(lncDf[["gene_id_short"]],function(x)getLncName(x)))
+    #lncDf[is.na(lncDf[[annotColName]]),annotColName] <- "notFound"
+    
+    print(colnames(lncDf))
+    str(lncDf) 
+    
+  }
+  else{lncDf = processedLncDf}
   
   expr.cols <- sort(colnames(lncDf[exprColIndex]))
   expr.uniq.cols <- unique(unlist(lapply(colnames(lncDf[exprColIndex]),function(x)strsplit(x,".long"))))
@@ -185,11 +191,19 @@ makeComparisonsLnc <- function(lncDf=df.1,exprColIndex=2:33,transKeyword="annot"
       xlab("JSD for each gene")
     ggsave(file=makeOutFile("lncRNA-JSD-density-plot.pdf"),height=8,width=8)
     
+    ggplot(lncDf,aes(x=tissSpec,fill=withinSubset))+geom_density(alpha=I(0.4)) + theme_bw()+ facet_wrap(~withinSubset)
+      ggtitle(titleWithBanner("expression accross all samples(cell-type/pulldown)"))+
+      xlab("JSD for each gene")
+    ggsave(file=makeOutFile("lncRNA-JSD-density-plot.pdf"),height=8,width=8)
+    
+    
     ggplot(lncDf,aes(x=log(tissSpec),y=log(nTimesRest)))+geom_point()+ theme_bw()+facet_wrap(~withinSubset)+
       ggtitle(titleWithBanner("tissue spec. vs. nTimesRest expression measure\nFacet by foundInDisease?"))+
       xlab("JSD for each Gene")+ylab("nTimesRest")
     ggsave(file=makeOutFile("lncRNA-nTimesRest-JSD-scatter-plot.pdf"),height=8,width=8)
     
+    
+    if (injectLncDf == FALSE){
     ggplot(melt.df[which(melt.df$withinSubset == "true"),],aes(x=variable,y=log2(value),group=gene_id,color=tissSpec)) + 
       geom_line()+coord_polar()+
       theme_bw()+
@@ -208,7 +222,7 @@ makeComparisonsLnc <- function(lncDf=df.1,exprColIndex=2:33,transKeyword="annot"
       ggtitle(titleWithBanner("star plot of total expression over all samples"))
     ggsave(file=makeOutFile("allEntries-ColorBySubset-polar.pdf"),height=16,width=16)
     
-    
+    }
     #  id.vec <- c("entropyExpr","threeTimesRest","maxExprType","tissSpec",annotColName,foundColword)
     #  melt.df <- melt(lncDf[c("gene_id",expr.cols,id.vec)], 
     #                  measure.vars=sort(expr.cols),
@@ -262,6 +276,8 @@ makeComparisonsLnc <- function(lncDf=df.1,exprColIndex=2:33,transKeyword="annot"
     ggsave(file=makeOutFile("lncRNA-derrien-allcols-box-plot.pdf"),height=8,width=8)
     
     #lets run some wilcox tests...
+    if (injectLncDf == FALSE){
+      
     print("starting statistical comparisons (pairwise)")
     allPairs.df <- merge(combinedDerr.df,lncDf[c("gene_id",measure)],by="gene_id")
     within.df  <- allPairs.df[allPairs.df$withinSubset == "true",]
@@ -285,6 +301,7 @@ makeComparisonsLnc <- function(lncDf=df.1,exprColIndex=2:33,transKeyword="annot"
       xlab("transcript feature")+
       ggtitle(titleWithBanner("wilcox pvalues from Derrien 2012 datasheet and expression data"))
     ggsave(file=makeOutFile("lncRNA-derrien-allcols-LOGpvalues.pdf"),height=8,width=8)
+    }
   } 
   
 dispersion.df <- merge(lncDf,combinedDerr.df[c("gene_id",der.cols)],by="gene_id")
@@ -443,7 +460,123 @@ getAnnotLncDf <- function(lncDf,annotDf,exprCol,annotColName){
   lncDf
 }
 
+withinFuntionalCompareBiotypes = function(){
+  
+  
+lnc.in.file = getFullPath("data/lncExprWithStats_transEachSample.tab")
+lncFound.df = getEnslist()
+lncExpr.df = readInTable(lnc.in.file)
+lncExpr.df[["gene_id_short"]] =  sapply(as.character(lncExpr.df$gene_id),function(x){as.vector(strsplit(x,"\\.")[[1]])[1]})
+lncFound.df = unique(data.frame(ensembl_gene_id=ens$ensembl_gene_id,external_gene_id=ens$external_gene_id,gene_biotype=ens$gene_biotype))
+lncFound.df = lncFound.df[which(lncFound.df$ensembl_gene_id %in% lncExpr.df[["gene_id_short"]]), ]
+lncFoundThree.df = lncFound.df[which(lncFound.df$gene_biotype %in% c("antisense","lincRNA","processed_transcript")),]
 
+lncExprFound.df = lncExpr.df[which(lncExpr.df$gene_id_short %in% lncFoundThree.df$ensembl_gene_id),]
+lncExprFound.df = merge(lncExprFound.df,lncFound.df,by.x="gene_id_short",by.y="ensembl_gene_id")
+
+exprCols = colnames(lncExprFound.df)[3:34]
+
+lncExprFound.df$withinSubset = lncExprFound.df$gene_biotype
+annotColName = "external_gene_id"
+lncExprFound.df$lncRnaName = lncExprFound.df[[annotColName]]
+
+
+lncExprFound.outdir = "/Users/adam/work/research/researchProjects/encode/encode-manager/plots/lncCompare/lncFunctional-BioTypes"
+print("start biotype")
+makeComparisonsLnc(lncDf=lncExpr.df,exprColIndex=exprCols,foundColword="biotypeOfFunctional",fileBase="func-biotype-",
+                   outDir=lncExprFound.outdir,annotDf=lncExprFound.df,annotColName="external_gene_id",
+                   injectLncDf = TRUE, processedLncDf=lncExprFound.df)
+
+
+lncExpr.df$external_gene_id = lncExpr.df$gene_id_short 
+lncExpr.df$withinSubset = "rest"
+lncExpr.df$lncRnaName = lncExpr.df[[annotColName]]
+lncExpr.df$gene_biotype = "nonFunctional"
+lncExpr.df$lncRnaName = lncExpr.df$gene_id_short
+lncExprMod.df = lncExpr.df[which(!lncExpr.df$gene_id_short %in% lncExprFound.df$gene_id_short),]
+lncExprMod.df = lncExprMod.df[colnames(lncExprFound.df)]
+lncExprFound.outdir = "/Users/adam/work/research/researchProjects/encode/encode-manager/plots/lncCompare/lncFunctional-BioTypesVsRest"
+print("start biotype")
+makeComparisonsLnc(lncDf=lncExpr.df,exprColIndex=exprCols,foundColword="biotypeOfFunctional",fileBase="func-biotype-",
+                   outDir=lncExprFound.outdir,annotDf=lncExprFound.df,annotColName="external_gene_id",
+                   injectLncDf = TRUE, processedLncDf=rbind(lncExprMod.df,lncExprFound.df))
+
+
+geneTxType.df = getBioTypesForDf()
+
+geneTxType.df = unique(derrien.df[c("LncRNA_GeneId","tx_biotype")])
+geneTxType.df[["gene_id_short"]] =  sapply(as.character(geneTxType.df$LncRNA_GeneId),function(x){as.vector(strsplit(x,"\\.")[[1]])[1]})
+geneTxTypeFunc.df = geneTxType.df[which(geneTxType.df$LncRNA_GeneId %in% lncExprFound.df$gene_id),]
+lncExprBmBioTypes.df = unique(merge(lncExpr.df,geneTxType.df[c("LncRNA_GeneId","bm_biotype")],by.x="gene_id",by.y="LncRNA_GeneId"))
+
+
+
+#antisense
+lncExprBmBioTypes.df$withinSubset = "unlabel-AS"
+lncExprBmBioTypes.df[which(lncExprBmBioTypes.df$gene_id_short %in% lncFound.df$ensembl_gene_id),"withinSubset"] = "functional-AS"
+lncExprFound.outdir = "/Users/adam/work/research/researchProjects/encode/encode-manager/plots/lncCompare/lncFunctional-BioTypes-AS"
+makeDir(lncExprFound.outdir)
+makeComparisonsLnc(lncDf=lncExpr.df,exprColIndex=exprCols,foundColword="antisense",fileBase="func-biotype-",
+                   outDir=lncExprFound.outdir,annotDf=lncExprFound.df,annotColName="external_gene_id",
+                   injectLncDf = TRUE, processedLncDf= lncExprBmBioTypes.df[which(lncExprBmBioTypes.df$bm_biotype == "antisense"), ])
+
+#processed_transcript
+lncExprBmBioTypes.df$withinSubset = "unlabel-procTrans"
+lncExprBmBioTypes.df[which(lncExprBmBioTypes.df$gene_id_short %in% lncFound.df$ensembl_gene_id),"withinSubset"] = "functional-procTrans"
+lncExprFound.outdir = "/Users/adam/work/research/researchProjects/encode/encode-manager/plots/lncCompare/lncFunctional-BioTypes-PT"
+makeDir(lncExprFound.outdir)
+makeComparisonsLnc(lncDf=lncExpr.df,exprColIndex=exprCols,foundColword="processed_transcript",fileBase="func-processed-transcript",
+                   outDir=lncExprFound.outdir,annotDf=lncExprFound.df,annotColName="external_gene_id",
+                   injectLncDf = TRUE, processedLncDf= lncExprBmBioTypes.df[which(lncExprBmBioTypes.df$bm_biotype == "processed_transcript"), ])
+
+
+
+#lincRNA
+lncExprBmBioTypes.df$withinSubset = "unlabel-lincRNA"
+lncExprBmBioTypes.df[which(lncExprBmBioTypes.df$gene_id_short %in% lncFound.df$ensembl_gene_id),"withinSubset"] = "functional-lincRNA"
+lncExprFound.outdir = "/Users/adam/work/research/researchProjects/encode/encode-manager/plots/lncCompare/lncFunctional-BioTypes-lincRNA"
+makeDir(lncExprFound.outdir)
+makeComparisonsLnc(lncDf=lncExpr.df,exprColIndex=exprCols,foundColword="lincRNA",fileBase="func-lincRNA-",
+                   outDir=lncExprFound.outdir,annotDf=lncExprFound.df,annotColName="external_gene_id",
+                   injectLncDf = TRUE, processedLncDf= lncExprBmBioTypes.df[which(lncExprBmBioTypes.df$bm_biotype == "lincRNA"), ])
+
+
+
+threeTypesTotal.df <- lncExprBmBioTypes.df[which(lncExprBmBioTypes.df$bm_biotype %in% c("lincRNA","processed_transcript","antisense")),]
+threeTypesTotal.df$functional <- "unLabel-"
+threeTypesTotal.df[which(threeTypesTotal.df$gene_id_short %in% lncFound.df$ensembl_gene_id),"functional"] <- "func-"
+threeTypesTotal.df$withinSubset = paste(threeTypesTotal.df$bm_biotype,threeTypesTotal.df$functional,sep="")
+lncExprFound.outdir = "/Users/adam/work/research/researchProjects/encode/encode-manager/plots/lncCompare/lncFunctional-BioTypes-fullCompare"
+makeDir(lncExprFound.outdir)
+makeComparisonsLnc(lncDf=lncExpr.df,exprColIndex=exprCols,foundColword="funcBioType",fileBase="func-biotype-",
+                   outDir=lncExprFound.outdir,annotDf=lncExprFound.df,annotColName="external_gene_id",
+                   injectLncDf = TRUE, processedLncDf= threeTypesTotal.df)
+
+
+}
+
+
+
+getBioTypesForDf <- function(df=geneTxType.df,file=getFullPath("data/lnc_biotype.tab")){
+  if (!file.exists(file)){
+    numberGroups = 50
+    df$group = cut(seq_along(df$LncRNA_GeneId),breaks=50,labels = 1:numberGroups)
+  geneBiotypes = sapply(1:numberGroups,function(x){sapply(geneTxType.df[which(df$group == x),"gene_id_short"],
+                                                          function(x){
+                                                            x = getBM(attributes=c("gene_biotype"),filters=c("ensembl_gene_id"),values=list(x),mart=mart)
+                                                            if (is.logical(x)){
+                                                              return("notfound")
+                                                            }
+                                                            return(x)
+                                                          }   )})
+    df$bm_biotype = unlist(geneBiotypes)
+  #lnc.biotype.out = 
+  exportAsTable(file=file,df=geneTxType.df)
+  } else{
+     d = readInTable(file=file) 
+  } 
+  
+}
 
 
 pcaAnalysis <- function(lncDf,exprCols,normalFun=FALSE,outDir,fileBase,foundColword){
