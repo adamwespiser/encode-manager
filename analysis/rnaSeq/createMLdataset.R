@@ -465,8 +465,6 @@ eigenRankSplitUp <- function(folder = getFullPath("plots/rnaSeq-eigenRank")){
   ggsave(file=getFullPath("plots/rnaSeq-eigenRank/eigenRanksBySubsetExpr.pdf"))
   
   
-  
-  
   eigen1.df=ddply(nolabel.df,.(group),function(x)calcEigenRankDf(lab=label.df,nolab=x,cols=c("LncRNA_tx_size","tissSpec","averageExpr","entropyExpr")))
   #eigenpvals.df=ddply(nolabel.df,.(group),function(x)data.frame(pval=wilcox.test(x[x$label == 0,"eigenVecValue"],x[x$label == 1,"eigenVecValue"])))
   ggplot(eigen1.df,aes(x=log(abs(eigenVecValue))^(1),fill=factor(label)))+geom_density(alpha=I(0.6))+facet_wrap(~group)+theme_bw()+ 
@@ -493,7 +491,7 @@ eigenRankSplitUpIteration <- function(folder = getFullPath("plots/rnaSeq-eigenRa
   nolabel.df$index = seq_along(nolabel.df$label)
   nolabel.df$group = cut(nolabel.df$index,pretty(nolabel.df$index,10))
   eigen.df=ddply(nolabel.df,.(group),function(x)calcEigenRankLabelNoLabel(lab=label.df,nolab=x))
-  eigenpvals.df=ddply(nolabel.df,.(group),function(x)data.frame(pval=wilcox.test(x[x$label == 0,"eigenVecValue"],x[x$label == 1,"eigenVecValue"])))
+  #eigenpvals.df=ddply(nolabel.df,.(group),function(x)data.frame(pval=wilcox.test(x[x$label == 0,"eigenVecValue"],x[x$label == 1,"eigenVecValue"])))
   ggplot(eigen.df,aes(x=log(rank),fill=factor(type)))+geom_density(alpha=I(0.6))+facet_wrap(~group)+theme_bw()+ 
     ggtitle("EigenRank of lncRNA subsets \nfeatures are expression data\nlabel: 1=functional, 0=unlabled ")
   ggsave(file=getFullPath("plots/rnaSeq-eigenRank/eigenRanksBySubsetExpr-iteration.pdf"))
@@ -569,9 +567,12 @@ calcEigenRankIter <- function(mat=as.matrix(dist(iris[,2:4])),label=iris$Species
   mat %*% eigen(x=mat)$vector[,1] -> x1
   
   vec <- x1;
+  i = 0;
  repeat {
+   i = i + 1;
     vec.tmp = mat %*% (vec/sum(vec))
-    if(abs(sum(vec - vec.tmp)) < 10^-10){
+   print(paste("iteration",i,"threshold = ",sum(vec - vec.tmp)))
+    if(abs(sum(vec - vec.tmp)) < 10^-10 || i > 4000){
       break;
     }
     vec = vec.tmp
