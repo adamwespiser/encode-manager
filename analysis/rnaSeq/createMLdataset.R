@@ -389,6 +389,16 @@ calcEigenRankLabelNoLabel <- function(lab,nolab,cols=3:34,scaleFun=function(x)x)
   df
 }
 
+calcEigenRankLabelNoLabelSwitch <- function(lab,nolab,cols=3:34,scaleFun=function(x)x){
+  
+  #mat.df = scaleFun(rbind(lab[,cols],nolab[,cols]))
+  mat.df = rbind(nolab[,cols],lab[,cols])
+  matFromDf = as.matrix(mat.df)
+  mat = matFromDf %*% t(matFromDf)
+  df <- calcEigenRankIter2(mat=mat,label = c(nolab$label,lab$label),norm=FALSE)
+  df$lncRnaName = c(nolab$lncRnaName,lab$lncRnaName)
+  df
+}
 
 
 plotAndCalcEigenRank <- function(df,
@@ -560,19 +570,22 @@ mat %*% eigen(x=mat)$vector[,1] -> x1
   df
 }
 
-calcEigenRankIter <- function(mat=as.matrix(dist(iris[,2:4])),label=iris$Species,norm=TRUE,diag=0){
+calcEigenRankIter <- function(mat=as.matrix(dist(iris[,2:4])),label=iris$Species,norm=TRUE,diag=0,printIteration=FALSE){
   mat = mat^(-1)
   diag(mat) = diag
   mat[which(mat == Inf)] = 0
   mat %*% eigen(x=mat)$vector[,1] -> x1
-  
+  #vec = runif(length(label))
   vec <- x1;
   i = 0;
  repeat {
    i = i + 1;
     vec.tmp = mat %*% (vec/sum(vec))
+   
+   if(printIteration == TRUE){ 
    print(paste("iteration",i,"threshold = ",sum(vec - vec.tmp)))
-    if(abs(sum(vec - vec.tmp)) < 10^-10 || i > 4000){
+   } 
+   if(abs(sum(vec - vec.tmp)) < 10^-10 || i > 4000){
       break;
     }
     vec = vec.tmp
@@ -583,6 +596,42 @@ calcEigenRankIter <- function(mat=as.matrix(dist(iris[,2:4])),label=iris$Species
   if (norm == TRUE){
      df$rank = (df$rank / sum(df$rank)) * length(df$rank)  ## (value / sum) * count = average value is one
      df
+  }else{
+    df
+  }
+  
+}
+calcEigenRankIter2 <- function(mat=as.matrix(dist(iris[,2:4])),label=iris$Species,norm=TRUE,diag=0,printIteration=FALSE){
+  mat = mat^(-1)
+  diag(mat) = diag
+  mat[which(mat == Inf)] = 0
+  mat %*% eigen(x=mat)$vector[,1] -> x1
+  
+  vec <- x1;
+  i = 0;
+ 
+  matR <<- mat
+  #mat = matC
+  print("got here")
+  repeat {
+    i = i + 1;
+    vec.tmp = mat %*% (vec/sum(vec))
+    
+    if(printIteration == TRUE){ 
+      print(paste("iteration",i,"threshold = ",sum(vec - vec.tmp)))
+    } 
+    if(abs(sum(vec - vec.tmp)) < 10^-10 || i > 4000){
+      vec = vec.tmp
+      break;
+    }
+    vec = vec.tmp
+  }
+  
+  
+  df <- data.frame(rank=vec,type=label)
+  if (norm == TRUE){
+    df$rank = (df$rank / sum(df$rank)) * length(df$rank)  ## (value / sum) * count = average value is one
+    df
   }else{
     df
   }

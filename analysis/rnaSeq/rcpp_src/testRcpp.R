@@ -92,16 +92,18 @@ a= f4(Xs = matrix(runif(500*40),500), ys = runif(500))
 
 X = as.matrix(iris[,1:4])
 y = runif(dim(X)[1])
-ic = f4(Xs = X, ys = y)
+ic = f4(Xs = X +1, ys = y)
 yp = as.matrix(ic$y,1)
 
 
 X = as.matrix(iris[,1:4])
 S = 1/ (X %*% t(X))
 e = eigen(S)
-ye = e$vector
+ye = e$vector[,1]
 
-
+if(cor(yp,ye) < 0.0000001){
+  print("TEST PASSED")
+}
 
 
 src3 = '

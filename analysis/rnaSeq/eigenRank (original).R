@@ -1,9 +1,6 @@
 # Purpose: compare the features of of known lncRNA and the rest of lncRNA
-
-rm(list=unlist(ls()))
-
-
 source( "/Users/adam/work/research/researchProjects/encode/encode-manager/analysis/rnaSeq/createMLdataset.R")
+
 library(Rcpp)
 library(inline)
 library(RcppArmadillo)
@@ -65,22 +62,6 @@ Rcpp::Named("diff")       = diff);
 # ... 
 CalcEigenCpp = cxxfunction(signature(Xs="numeric", ys="numeric"), srcCalcEigenCpp, plugin="RcppArmadillo")
 
-
-calcEigenHelper = function(nolab,lab,cols){
-#  fn :: (df,df,vector) -> df
-  mat.df = rbind(nolab[,cols],lab[,cols])
-  mat = (as.matrix(mat.df)) 
-  initialGuess = rep(1,dim(mat)[1])
-  e.out = CalcEigenCpp(Xs=(mat + 10),y=initialGuess)
-  e <<- e.out
-  mat.df$rank = e.out$y
-  mat.df$label = c(nolab$label,lab$label)
-  mat.df$lncRnaName = c(nolab$lncRnaName,lab$lncRnaName)
-  mat.df$rank = (mat.df$rank / sum(mat.df$rank))*length(mat.df$rank)
-  mat.df
-}
-
-
 # all three of these methods give the same rank...
 
 # CalcEigenCpp(Xs=(m+ 1),y=ystart) -> a1
@@ -96,7 +77,6 @@ plotEigenVectorsPvals = function(nolab,lab,outdir,filename,cols,titleMsg=""){
   eigenRankOutfile = paste(outdir,"/",filename,"rank.pdf",sep="")
   pvalueOutfile = paste(outdir,"/",filename,"pvalues.pdf",sep="")
   fullEigenOutfile= paste(outdir,"/",filename,"rank_all.pdf",sep="")
-  fullEigenLogOutfile= paste(outdir,"/",filename,"rank_all_log.pdf",sep="")
   
   title = paste("PageRank of lncRNA expr\nfunctional vs rest of lncRNA",titleMsg,sep="\n") 
   
@@ -106,7 +86,7 @@ plotEigenVectorsPvals = function(nolab,lab,outdir,filename,cols,titleMsg=""){
   
   
   # colnames(eigen.df) = c("group", "rank", "type", "lncRnaName")
-  ggplot(eigen.df, aes(x = log(rank), fill = factor(type))) + geom_density(alpha=I(0.6)) + facet_wrap(~group,scale="free_y")+theme_bw()+ 
+  ggplot(eigen.df, aes(x = log(rank), fill = factor(type))) + geom_density(alpha=I(0.6)) + facet_wrap(~group)+theme_bw()+ 
     ggtitle(title)
   ggsave(file=eigenRankOutfile)
   
@@ -117,30 +97,19 @@ plotEigenVectorsPvals = function(nolab,lab,outdir,filename,cols,titleMsg=""){
   
   #full eigenVector calc:
   
-  mat.df = calcEigenHelper(nolab,lab,cols)
-  str(mat.df)
-  m <<- mat.df
+  # exprCols.lnpa # exprCols.lpa # maxCols
+  mat.df = rbind(nolab[,cols],lab[,cols])
+  mat = (as.matrix(mat.df)) + 1
+  initialGuess = rep(1,dim(mat)[1])
+  e.out = CalcEigenCpp(Xs = (mat + 1), y = runif(dim(mat.df)[1]))
+  mat.df$rank = e.out$y
+  mat.df$label = c(nolab$label,lab$label)
+  mat.df$lncRnaName = c(nolab$lncRnaName,lab$lncRnaName)
+  mat.df$rank = (mat.df$rank / sum(mat.df$rank))*length(mat.df$rank)
   
-  rank.sd =apply(mat.df$rank, 2, sd)
-  rank.median = median(mat.df$rank)
-  xlim.range = c((rank.median -  rank.sd),(rank.median +  rank.sd))
-  
-  ggplot(mat.df,aes(x=rank,fill=factor(label)))+geom_density(alpha=I(0.6))+theme_bw() + 
-   xlim(xlim.range)+
+  ggplot(mat.df,aes(x=rank,fill=factor(label)))+geom_density(alpha=I(0.6))+theme_bw() + xlim(0.8,1)+
     ggtitle(title)
   ggsave(file=fullEigenOutfile)
-  
-  mat.df$logRank = log(mat.df$rank + 1)^(1/2)
-  rank.sd =apply(mat.df$logRank, 2, sd)
-  rank.median = median(mat.df$logRank)
-  timesSd = 1
-  xlim.range = c((rank.median - timesSd * rank.sd),(rank.median +  timesSd *rank.sd))
-  plot.points = which(mat.df$logRank < xlim.range[2] & mat.df$logRank > xlim.range[1])
-  
-  ggplot(mat.df[plot.points,],aes(x=logRank,fill=factor(label)))+geom_density(alpha=I(0.6))+theme_bw() + 
-    xlim(xlim.range)+
-    ggtitle(title)
-  ggsave(file=fullEigenLogOutfile)
   
   
   
@@ -158,7 +127,7 @@ eigenRankSplitUpIteration <- function(folder = getFullPath("plots/rnaSeq-eigenRa
   nolabel.df = df[which(df$label == 0),] 
   
   # (optional) sort by a column of coice
-  #nolabel.df = nolabel.df[order(nolabel.df[["averageExpr"]]), ]
+  nolabel.df = nolabel.df[order(nolabel.df[["averageExpr"]]), ]
   nolabel.df$index = seq_along(nolabel.df$label)
   
   
@@ -216,66 +185,5 @@ main = function(){
   
 }
 
-test = function(){
-  folder = getFullPath("plots/rnaSeq-eigenRank/randomGroups/")
-  rankByCol = NULL
-  
-  folder = getFullPath("plots/rnaSeq-eigenRank")
-  rankByCol = NULL
-  sourceFile = getFullPath("data/lncRnaExpr_ml.tab")
-    df = readInTable(sourceFile)
-    df = df[which(df$averageExpr != 0),]
-    
-    #divide dataset into labelled and unlabeled entries
-    label.df   = df[which(df$label == 1),] 
-    nolabel.df = df[which(df$label == 0),] 
-    
-    # (optional) sort by a column of coice
-    #nolabel.df = nolabel.df[order(nolabel.df[["averageExpr"]]), ]
-    nolabel.df$index = seq_along(nolabel.df$label)
-    
-    
-    #if (!is.null(rankByCol) == TRUE && (rankByCol %in% colnames(nolabel.df)) ){
-    #  print(paste("using ", rankByCol, "column"))
-    #  nolabel.df = nolabel.df[order(nolabel.df[[rankByCol]]), ]
-    #    nolabel.df$index = seq_along(nolabel.df$label)
-    #  }
-    
-    nolabel.df$group = cut(nolabel.df$index,breaks=pretty(nolabel.df$index,12))
-    doubleCols = intersect(colnames(nolabel.df),
-                           colnames(label.df))[as.vector(sapply(intersect(colnames(nolabel.df),colnames(label.df)),
-                                                                function(x)(typeof(nolabel.df[1,x]) == "double")))]
-    
-    exprCols.lnpa = doubleCols[grep("longNonPolyA$",doubleCols)]
-    exprCols.lpa  = doubleCols[grep("longPolyA$",doubleCols)]
-    
-    topColsToTake = 10
-    rankedColsByPvalue = order(sapply(doubleCols,function(x)wilcox.test(nolabel.df[,x],label.df[, x])[["p.value"]]))
-    rankedByDiff = order(sapply(doubleCols,
-                                function(x){mean((nolabel.df[,x]- mean(df[,x]))/sd(df[,x])) 
-                                            - mean((label.df[,x]- mean(df[,x]))/sd(df[,x]))}))
-    
-    maxCols =(doubleCols[rankedByDiff])[1:topColsToTake]
-    
-  nolab = nolabel.df
-  lab = label.df
-  outdir = folder 
-  filename = "eigenRank-rnaExpr-allcols-"
-  cols = which(colnames(nolabel.df) %in% c(exprCols.lnpa,exprCols.lpa))
-  titleMsg = "all RNA expr experiments used"
-  
-eigenRankOutfile = paste(outdir,"/",filename,"rank.pdf",sep="")
-pvalueOutfile = paste(outdir,"/",filename,"pvalues.pdf",sep="")
-fullEigenOutfile= paste(outdir,"/",filename,"rank_all.pdf",sep="")
-fullEigenLogOutfile= paste(outdir,"/",filename,"rank_all_log.pdf",sep="")
 
-title = paste("PageRank of lncRNA expr\nfunctional vs rest of lncRNA",titleMsg,sep="\n") 
-
-
-eigen.df = ddply(nolab, .(group), function(x)calcEigenRankLabelNoLabel(lab = lab,nolab = x,cols = cols))
-eigenpvals.df = ddply(eigen.df, .(group), function(x)data.frame(pval = wilcox.test(x[x$type == 0,"rank"], x[x$type == 1,"rank"])[["p.value"]]))
-
-
-
-}
 

@@ -5,6 +5,8 @@ using namespace std;
 using namespace arma;
 
 
+
+// [[Rcpp::export]]
 extern "C" SEXP testM(SEXP ys, SEXP xs){
   try{
     // get Rcpp objects from the two S expression
@@ -29,23 +31,3 @@ extern "C" SEXP testM(SEXP ys, SEXP xs){
   return R_NilValue;  
   
 }
-/*
-
-
-
-
-
-f = cxxfunction(signature(xs="numeric",ys="numeric"),
-      file = paste( readLines(getFullPath("/analysis/rcpp_src/arm_test.cpp" ), collapse = "\n" ),
-      plugin="Rcpp"))
-
-
-
-
-
-
-
-
-
-
-
