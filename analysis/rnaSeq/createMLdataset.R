@@ -394,7 +394,8 @@ calcEigenRankLabelNoLabelSwitch <- function(lab,nolab,cols=3:34,scaleFun=functio
   #mat.df = scaleFun(rbind(lab[,cols],nolab[,cols]))
   mat.df = rbind(nolab[,cols],lab[,cols])
   matFromDf = as.matrix(mat.df)
-  mat = matFromDf %*% t(matFromDf)
+  mat = as.matrix(dist(mat.df))
+  
   df <- calcEigenRankIter2(mat=mat,label = c(nolab$label,lab$label),norm=FALSE)
   df$lncRnaName = c(nolab$lncRnaName,lab$lncRnaName)
   df
