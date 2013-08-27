@@ -161,6 +161,21 @@ filterXbyOptimTheta <- function(X,thetaVec,k){
   ggplot(df.plot,aes(y=prec,x=sens))+geom_point()+xlim(0,1)+ylim(0,1)+theme_bw()+geom_smooth()
 }
 
+
+filterXbyOptimTheta_getGuess <- function(X,thetaVec,k){
+  theta = matrix(thetaVec,k)
+  guess = apply(X,1,function(row) t(row) %*% matrix(o$par,k) %*% row)
+  
+ # optim(fn=cfLambda(X,y,k),par=runif(k*k),method= "CG") -> o #$;o$value
+  X = as.matrix(lnc.pca.df[1:n,1:k-1])
+  X = cbind(rep(1,dim(X)[1]),X)
+  y = as.matrix(lnc.pca.df[1:n,33])
+  
+  guess = apply(X,1,function(row) t(row) %*% matrix(o$par,k) %*% row)
+  guess
+}
+
+
 plotDistanceAwayRatio <- function(df,label,exprCols,
                                   df.center= suppressMessages(melt(ddply(df[exprCols],.(),numcolwise(mean)))[["value"]]),rand=FALSE,ellipse=TRUE){
   
@@ -278,6 +293,80 @@ main <- function(){
   
   
 }
+
+runLogReg = function(lncDf,outdir,cols){
+  k = length(cols) + 1
+  n = dim(lncDf)[1]
+  yCount = length(which(lncDf$label == 1))
+  #dataSample = c(1:94,sample(94:length(lnc.pca.df$label),(n-yCount)))
+ # dataSample = 1:n
+  X = as.matrix(lncDf[,cols])
+  X = cbind(rep(1,dim(X)[1]),X)
+  y = as.matrix(lncDf[,"label"])
+  
+  
+  
+  
+  thetaGuess = runif(k*k)
+  zeroGuess  = rep(0,k*k)
+  
+  #opt.lnc = optim(fn=cfLamda(X,y,k),gr=gfLambda(X,y,k),par=thetaGuess,method= "L-BFGS-B")
+  #optim(fn=cfLamda(X,y,k),gr=gfLambda(X,y,k),par=thetaGuess,method= "CG") -> o #400
+  #optim(fn=cfLamda(X,y,k),par=matrix(runif(k*k),k),method= "BFGS")
+  o <-optim(fn=cfLambda(X,y,k),gr=gfLambda(X,y,k),par=matrix(runif(k*k),k),method= "BFGS")
+  # create cost function
+  # create gradient
+  # run optimizer
+  
+  results.df <- data.frame(trial=1:100,cost=rep(0,100))
+  best.cost = 1000000
+  best.theta =matrix(runif(k*k),k)
+  for(i in 1:20){
+    print(i)
+    local =  optim(fn=cfLambda(X[sample(seq_along(X[,1]),50),],y,k),par=matrix(runif(k*k),k),method= "CG") 
+    results.df$trial[i] = i
+    results.df$cost[i] = local$value
+    if (local$value < best.cost){
+      best.cost = local$value
+      best.theta = local$par
+    }
+  }
+ # guess = filterXbyOptimTheta_getGuess(X,best.theta,k)
+  
+  
+  
+  dfo.circle = plotDistanceAwayRatio(df=as.data.frame(X),label=y,exprCols=cols,ellipse=FALSE)
+  #ggplot(dfo,aes(y=prec,x=sens))+geom_point()+xlim(0,1)+ylim(0,1)+theme_bw()+geom_smooth()
+  dfo.circle$type = "circle"
+  
+  guess = filterXbyOptimTheta_getGuess(X,best.theta,k)
+  df.ellipse.tmp = data.frame(x=guess,ellipse=guess,y=y,label=y)
+  # ggplot(df,aes(x=log(x),fill=factor(y)))+geom_density(alpha=I(0.6))
+  df.ellipse = plotDistanceAwayRatio(df.ellipse.tmp,label=y,exprCols=cols,ellipse=TRUE)
+  df.ellipse$type = "ellipse"
+  
+  #sample(y.full,length(y.full)) 
+  #df.random= plotDistanceAwayRatio(df,label=sample(y.full,length(y.full)))
+  #df.random$type = "randomLabel"
+  
+  #ggplot(df.plot,aes(y=prec,x=sens))+geom_point()+xlim(0,1)+ylim(0,1)+theme_bw()+geom_smooth()
+  
+  df.comb = rbind(dfo.circle,df.ellipse)
+  ggplot(df.comb,aes(y=prec,x=sens))+geom_point()+xlim(0,1)+ylim(0,1)+theme_bw()+geom_smooth()+facet_wrap(~type)
+  ggsave("~/Desktop/ellipse.pdf")
+  
+  ggsave(paste(outdir,"elipse.pdf"),height=4,width=6)
+  
+  df.comb.roc = rbind(dfo,df.plot,df.random)
+  ggplot(df.comb.roc,aes(x=FPR,y=TPR,color=type))+geom_line()+geom_point()+theme_bw()+geom_abline(slope=1)+
+    ggtitle("ROC Curve of radius based prediction on pca\n")+xlab("False Positive Rate")+ylab("True Positive Rate")
+  ggsave(paste(outdir,"elipse-ROC.pdf"),height=4,width=5)
+  
+  
+}
+
+
+
 
 
 mainTest <- function(){

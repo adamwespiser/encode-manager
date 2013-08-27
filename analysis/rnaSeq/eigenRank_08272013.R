@@ -77,7 +77,7 @@ plotEigenVectorsPvals = function(nolab,lab,outdir,filename,cols,titleMsg=""){
   eigenRankOutfile = paste(outdir,"/",filename,"rank.pdf",sep="")
   pvalueOutfile = paste(outdir,"/",filename,"pvalues.pdf",sep="")
   fullEigenOutfile= paste(outdir,"/",filename,"rank_all.pdf",sep="")
-  
+  rankVexprOutfile= paste(outdir,"/",filename,"rank_all-vs-aveExpr.pdf",sep="")
   title = paste("PageRank of lncRNA expr\nfunctional vs rest of lncRNA",titleMsg,sep="\n") 
   
   
@@ -113,9 +113,94 @@ plotEigenVectorsPvals = function(nolab,lab,outdir,filename,cols,titleMsg=""){
     ggtitle(title)
   ggsave(file=fullEigenOutfile)
   
-  
+  ggplot(mat.df,aes(y=averageExpr,x=rank,color=factor(label)))+geom_point()+theme_bw() +
+    ggtitle("Rank versus average Expression")
+  ggsave(file=rankVexprOutfile)
   
 }
+
+
+
+
+
+plotEigenVectorsDensity = function(lab,nolab,outdir,filename,cols,titleMsg=""){
+  
+  countNoLabel = dim(nolab)[1]
+  countLabel = dim(lab)[1]
+  
+  
+  if(!file.exists(outdir)){dir.create(path=outdir,recursive=TRUE)}
+  eigenRankOutfile = paste(outdir,"/",filename,"rank.pdf",sep="")
+  pvalueOutfile = paste(outdir,"/",filename,"pvalues.pdf",sep="")
+  fullEigenOutfile= paste(outdir,"/",filename,"rank_all.pdf",sep="")
+  fullEigenOutfile.log= paste(outdir,"/",filename,"rank_log.pdf",sep="")
+  fullEigenOutfile.log2= paste(outdir,"/",filename,"rank_log-bars.pdf",sep="")
+  
+  rankVexprOutfile= paste(outdir,"/",filename,"rank_all-vs-aveExpr.pdf",sep="")
+  title = paste("PageRank of lncRNA expr\nfunctional vs rest of lncRNA",titleMsg,"\n",
+                "count label=",countLabel," count nolabel=",countNoLabel, sep="") 
+  
+  #full eigenVector calc:
+  
+  # exprCols.lnpa # exprCols.lpa # maxCols
+  mat.df = rbind(nolab[,cols],lab[,cols])
+  mat = (as.matrix(mat.df)) + 1
+  initialGuess = rep(1,dim(mat)[1])
+  e.out = CalcEigenCpp(Xs = (mat + 1), y = runif(dim(mat.df)[1]))
+  mat.df$rank = e.out$y
+  mat.df$label = c(nolab$label,lab$label)
+  mat.df$lncRnaName = c(nolab$lncRnaName,lab$lncRnaName)
+  mat.df$rank = (mat.df$rank / sum(mat.df$rank))*length(mat.df$rank)
+  mat.df$averageExpr = c(nolab$averageExpr, lab$averageExpr)
+  
+  mat.df$logRank = log(mat.df$rank + 1)
+  rank.sd =apply(mat.df$logRank, 2, sd)
+  rank.median = median(mat.df$logRank)
+  timesSd = 1
+  xlim.range = c((rank.median - timesSd * rank.sd),(rank.median +  timesSd *rank.sd))
+  plot.points = which(mat.df$logRank < xlim.range[2] & mat.df$logRank > xlim.range[1])
+  
+  
+  ggplot(mat.df[plot.points,],aes(x=logRank,fill=factor(label)))+geom_density(alpha=I(0.6))+theme_bw() + 
+    xlim(xlim.range) +
+    ggtitle(paste(title,"median +/- 2 ds",sep="\n") )
+  ggsave(file=fullEigenOutfile.log)
+  
+  ggplot(mat.df[plot.points,],aes(x=logRank,fill=factor(label))) + 
+    geom_bar(binwidth=(xlim.range[2] - xlim.range[1])/30)+ 
+    facet_wrap(~label,ncol=1,scale="free_y")+
+    theme_bw() + 
+    xlim(xlim.range) +
+    ggtitle(paste(title,"median +/- 2 ds",sep="\n") )
+  ggsave(file=fullEigenOutfile.log2)
+  
+  
+  
+  ggplot(mat.df,aes(x=rank,fill=factor(label)))+geom_density(alpha=I(0.6))+theme_bw() + 
+    xlim(-0.1,1.1) +
+    ggtitle(title)
+  ggsave(file=fullEigenOutfile)
+  
+  ggplot(mat.df,aes(y=averageExpr,x=rank,color=factor(label)))+geom_point()+theme_bw() +
+    ggtitle("Rank versus average Expression")
+  ggsave(file=rankVexprOutfile)
+  
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
