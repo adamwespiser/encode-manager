@@ -93,15 +93,6 @@
 
 
 
-(defn joinTogetherExpr[entry headCol lncRegionFileName]
-"create the join expression to combined TF lnc region crosses"
-   (let [head (first entry)
-         body (second entry)
-         outDir (str  scratch-out (head 3) "/" (head 1) "/") 
-	files (map (fn[x](.replace (x "crossFileLoc") ".bed" ".summary" )) (second entry))
-	headers (map (fn[x](x headCol)) (second entry))
-	target (str outDir lncRegionFileName)]
-	(str "mkdir -p " outDir  "; " (cmdfnList files headers target))))
 
 
 
@@ -126,9 +117,50 @@
 						"cat " tmp " >> " target "; rm " tmp "; ")))))))
 
 
+(defn joinTogetherExpr[entry headCol lncRegionFileName]
+"create the join expression to combined TF lnc region crosses"
+   (let [head (first entry)
+         body (second entry)
+         outDir (str  scratch-out (head 3) "/" (head 1) "/") 
+	files (map (fn[x](.replace (x "crossFileLoc") ".bed" ".summary" )) (second entry))
+	headers (map (fn[x](x headCol)) (second entry))
+	target (str outDir lncRegionFileName)]
+	(str "mkdir -p " outDir  "; " (cmdfnList files headers target))))
 
 
-;;(print (cmdfnList '("test1" "test2" "test3" "test4" "test4") '("c1" "c2" "c3" "c4" "c5") "/home))
+
+  (defn getJoinCmds[h]
+    (let
+        [labs   (rest (distinct (sort(map #(% "lab") h))))
+            cells  (distinct (sort(map #(% "cell") h)))
+            TFs   (distinct (sort(map #(% "antibody") h)))
+            col {}
+            lab-cell (reduce #(let[res (searchFAnotNil %2 h)] (if (not (nil? res)) (cons [%2 res] %1) %1 ))  []  (for [x cells     y labs] ["cell" x "lab" y]))
+            lab-tf (reduce #(let[res (searchFAnotNil %2 h)] (if (not (nil? res)) (cons [%2 res] %1) %1 ))  []  (for [x TFs y l    abs] ["antibody" x "lab" y]))
+            lncRegions ["body" "promoter_proximal" "promoter_distal"]]
+        (flatten (for[x [[lab-cell "antibody"][lab-tf "cell"]] y lncRegions] (map (fn[entry](joinTogetherExpr entry (second x    ) y)) (filterByLncRegion y (first x)))))))
+ 
+    (defn printOutCmdList[h file]
+         (let [op (apply str (interpose "\n" (map wrapRunJob (getJoinCmds h))))]
+             (spit file op)))
+ 
+ 
+ (defn extractRepIdr[file cellType rnaExtract delim fileEnding]
+   (let [tmp (str file (rand-int 10000))
+         src (.replace file ".gz" "")
+         trg (.replace file ".gz" fileEnding)
+         ctype (repeat 3 (str cellType "-" rnaExtract))
+         head (apply str(interpose delim (cons "transcript" (map #(str (.toUpperCase cellType) "-" rnaExtract "-" % )(list "C    OMB" "RPKM1" "RPKM2" "IDR")))))]
+     (str "echo \"" head "\" > " trg "; cat " src " |awk '{print $12," delim "$6,", delim "$14," delim "$16," delim "$18" del    im "}'|sed 's/[\";]//g' >> " trg ";")))
+ 
+ 
+ (defn prepGtfFiles [fileHash dir delim fileEnding]
+   (map
+     (fn [entry]
+       (extractRepIdr (entry "localfile") (entry "cell") (entry "rnaExtract") delim fileEnding))
+     fileHash))
+ 
+
 
 
 
