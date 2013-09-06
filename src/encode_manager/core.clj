@@ -1,4 +1,4 @@
-(ns encode-manager.core
+ (ns encode-manager.core
   (:gen-class)
   (:use clojure.tools.cli)
  
@@ -32,6 +32,17 @@
 ;; $cat /home/wespisea/work/research/researchProjects/encode/encode-manager/data/RnaSeqExpr.tab|awk '{print "wget",$1,"-O",$11}'>tmp.sh; chmod u+x tmp.sh; ./tmp.sh
 ;; 
 ;; (cmdfnList (map #(.replace (% "localfile") ".gz" "tmp" ) h1) (map (fn[x](str (.toUpperCase (x "cell")) "-" (x "rnaExtract")))h1) "/home/wespisea/scratch/encodeRnaSeq/cshl/allCellsCombined.space")
+
+;; RNA Expression WITH RPKM 1 and 2 & IDR
+;; (def h1 (parseCsvIntoArrayHash "/home/wespisea/work/research/researchProjects/encode/encode-manager/data/RnaSeqExpr.tab" "\t"))
+;; (def seqDir "/home/wespisea/scratch/encodeRnaSeq/cshl/")
+;; (spit "/home/wespisea/sandbox/tmp.sh" (apply str (prepGtfFiles h1 seqDir " " "tmp2")))
+;;  $ chmod u+x /home/wespisea/sandbox/tmp.sh; /home/wespisea/sandbox/tmp.sh
+;; for Rep5, change NHEK cell name to NHEK1;; (spit "/home/wespisea/sandbox/tmpCompile.sh" (cmdfnList (map #(.replace (% "localfile") ".gz" "tmp4" ) h1) (flatten (map (fn[exprName](list (str exprName "-RPKM1") (str  exprName "-RPMK2") (str exprName "-IDR")))    (map (fn[x](str (.toUpperCase (x "cell")) "-" (x "rnaExtract")))h1))) "/home/wespisea/scratch/encodeRnaSeq/cshl/allCellsCombined_2reps_idr.space"))
+
+
+
+
 
 ;;create encode peak seq list
 ;;  (def h (parseCsvIntoArrayHash encode-integration-tab "\t"))
@@ -384,7 +395,7 @@
 		  pi 2.35
 		 {:keys [delim field input select convert]} options]
         (if (:help options)
-	  
+
         (help-message options args banner)
        
 	(println (hashToCsvString (parseFileHash  input))))
@@ -392,4 +403,3 @@
 	)
 
 	)
-			     
