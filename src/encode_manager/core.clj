@@ -33,14 +33,24 @@
 ;; 
 ;; (cmdfnList (map #(.replace (% "localfile") ".gz" "tmp" ) h1) (map (fn[x](str (.toUpperCase (x "cell")) "-" (x "rnaExtract")))h1) "/home/wespisea/scratch/encodeRnaSeq/cshl/allCellsCombined.space")
 
+;;create encode peak seq list
+;;  (def h (parseCsvIntoArrayHash encode-integration-tab "\t"))
+;; (filter #(not (nil? %)) (searchFileArrayHash ["dataType" "ChipSeq" "softwareVersion" "PeakSeq"] h));;(def TFs  (filter #(contains? (set our-cell-types) (% "cell")) (filter #(not (nil? %)) (searchFileArrayHash ["dataType" "ChipSeq" "softwareVersion" "PeakSeq"] h))));; (def TF-hash (reduce #(assoc %1 (%2 "filename") (merge %2 {"localfile" (entryToLocalFileInDir %2 "/home/wespisea/scratch/encodePeakSeq")}  {"url" (entryToUrl %2)} )) {} TFs))
+;; ( outputCsvRecord TF-hash "/home/wespisea/work/research/researchProjects/encode/encode-manager/data/TfPeakSeq.tab" "\t")
+
+;;download peakseq and confirm;;  (def h1 (parseCsvIntoArrayHash "/home/wespisea/work/research/researchProjects/encode/encode-manager/data/TfPeakSeq.tab" "\t"))
+;; (downloadEntries h1)
+
+
 ;; RNA Expression WITH RPKM 1 and 2 & IDR
-;; (def h1 (parseCsvIntoArrayHash "/home/wespisea/work/research/researchProjects/encode/encode-manager/data/RnaSeqExpr.tab" "\t"))
+;; (def h0 (parseCsvIntoArrayHash "/home/wespisea/work/research/researchProjects/encode/encode-manager/data/RnaSeqExpr.tab" "\t"))
+;; (def h01 (filter #(not (= "NHEK" (% "cell"))) h0))
+;; (def h1 (filter #(not (= "HMEC" (.toUpperCase (% "cell")))) h01))
 ;; (def seqDir "/home/wespisea/scratch/encodeRnaSeq/cshl/")
-;; (spit "/home/wespisea/sandbox/tmp.sh" (apply str (prepGtfFiles h1 seqDir " " "tmp2")))
+;; (def tmpEnd "tmp5")
+;; (spit "/home/wespisea/sandbox/tmp.sh" (apply str (prepGtfFiles h1 seqDir " " tmpEnd)))
 ;;  $ chmod u+x /home/wespisea/sandbox/tmp.sh; /home/wespisea/sandbox/tmp.sh
-;; for Rep5, change NHEK cell name to NHEK1;; (spit "/home/wespisea/sandbox/tmpCompile.sh" (cmdfnList (map #(.replace (% "localfile") ".gz" "tmp4" ) h1) (flatten (map (fn[exprName](list (str exprName "-RPKM1") (str  exprName "-RPMK2") (str exprName "-IDR")))    (map (fn[x](str (.toUpperCase (x "cell")) "-" (x "rnaExtract")))h1))) "/home/wespisea/scratch/encodeRnaSeq/cshl/allCellsCombined_2reps_idr.space"))
-
-
+;; for Rep5, change NHEK cell name to NHEK1;; (spit "/home/wespisea/sandbox/tmpCompile.sh" (cmdfnList (map #(.replace (% "localfile") ".gz" tmpEnd ) h1) (flatten (map (fn[exprName](list (str exprName "-RPKM1") (str  exprName "-RPMK2") (str exprName "-IDR")))    (map (fn[x](str (.toUpperCase (x "cell")) "-" (x "rnaExtract")))h1))) "/home/wespisea/scratch/encodeRnaSeq/cshl/allCellsCombined_2reps_idr.space"))
 
 
 
