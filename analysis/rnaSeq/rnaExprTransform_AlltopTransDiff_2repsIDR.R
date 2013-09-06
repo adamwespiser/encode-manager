@@ -3,15 +3,14 @@ projectDir <- paste(home,"/work/research/researchProjects/encode/encode-manager"
 setwd(projectDir)
 getwd()
 
-
-source( "/Users/adam/work/research/researchProjects/encode/encode-manager/analysis/RnaSeq/exprLib.R")
-
+expr.file = "/home/wespisea/work/research/researchProjects/encode/encode-manager/analysis/rnaSeq/exprLib.R"
+source(expr.file)
 #out files created: 
 
 
 # UNCOMMENT FOR GENE = TOPT transcript for each sample
-cd.out.file = getFullPath("data/cdExprWithStats_transEachSample.tab")
-lnc.out.file = getFullPath("data/lncExprWithStats_transEachSample.tab")
+cd.out.file = getFullPath("data/cdExprWithStats_transEachSample_idr.tab")
+lnc.out.file = getFullPath("data/lncExprWithStats_transEachSample_idr.tab")
 
 
 # create a list of all transcripts 
@@ -211,37 +210,43 @@ test <- function () {
 ###########################################################################################################################################################
 ###########################################################################################################################################################
 
+
+## use this for 2 reps IDR ...
+
 createAllTransFile <- function () {
-  cd.out.file = getFullPath("data/cdExprWithStats_allTrans.tab")
-  lnc.out.file = getFullPath("data/lncExprWithStats_allTrans.tab")
-  combined.out.file = getFullPath("data/combinedExprWithStats_allTrans.tab")
+  cd.out.file = getFullPath("data/cdExprWithStats_allTrans_idr.tab")
+  lnc.out.file = getFullPath("data/lncExprWithStats_allTrans_idr.tab")
+  combined.out.file = getFullPath("data/combinedExprWithStats_allTrans_idr.tab")
   lnc.expr.df <- data.frame()
   cd.expr.df <- data.frame()
   expr.df <- data.frame()
-  expr.file = "/Volumes/MyBook/Volume1/scratch/encodeRnaSeq/cshl/allCellsCombined.space"
+  expr.file = "/home/wespisea/scratch/encodeRnaSeq/cshl/allCellsCombined_2reps_idr.space"
   expr.in.df <- read.table(file=expr.file,  header=TRUE, stringsAsFactors=FALSE)
-  geneMap.file = "/Volumes/MyBook/Volume1/scratch/gencode/gencode.v7.HAVANA.pc_transcripts.annotation.gtf"
+  transcript_id <- "transcript"
+  geneMap.file = "/home/wespisea/scratch/gencode/gencode.v7.HAVANA.pc_transcripts.annotation.gtf"
   geneMap.df <- read.table(file=geneMap.file,  header=FALSE, stringsAsFactors=FALSE)
   colnames(geneMap.df) <- c("chr","start", "stop", "transcript_id", "gene_id", "strand")
   derrien.file <- getFullPath("data/Gencode_lncRNAsv7_summaryTable_05_02_2012.csv")
   derrien.df <- read.csv(file=getFullPath("data/Gencode_lncRNAsv7_summaryTable_05_02_2012.csv"), stringsAsFactors=FALSE)
   expr.in.df$transcriptType <- "unknown"
-  expr.in.df[which(expr.in.df$transcript_id %in% derrien.df$LncRNA_Txid),]$transcriptType   <- "derrienLncRNA"
-  expr.in.df[which(expr.in.df$transcript_id %in% geneMap.df$transcript_id),]$transcriptType <- "havanaPC"
+  expr.in.df[which(expr.in.df[[transcript_id]] %in% derrien.df$LncRNA_Txid),]$transcriptType   <- "derrienLncRNA"
+  expr.in.df[which(expr.in.df[[transcript_id]] %in% geneMap.df$transcript_id),]$transcriptType <- "havanaPC"
   lnc.expr.df <- expr.in.df[which(expr.in.df$transcriptType == "derrienLncRNA"),]
-  lnc.expr.df <- merge(lnc.expr.df,derrien.df[c("LncRNA_Txid","LncRNA_GeneId")],by.x="transcript_id",by.y="LncRNA_Txid")
+  lnc.expr.df <- merge(lnc.expr.df,derrien.df[c("LncRNA_Txid","LncRNA_GeneId")],by.x=transcript_id,by.y="LncRNA_Txid")
   getTranscriptForMaxCols <- function(t1)cast(ldply(apply(t1,2,function(x)t1[which(x == max(x)),"transcript_id"]),function(x)x[1]), ~ .id )
   #ldply(split(lnc.expr.df,lnc.expr.df$LncRNA_GeneId),getTranscriptForMaxCols) -> lnc.expr.maxTransGeneCol.d
   cd.expr.df <- expr.in.df[which(expr.in.df$transcriptType == "havanaPC"),]
-  cd.expr.df <- merge(cd.expr.df,geneMap.df[c("gene_id","transcript_id")])
+  cd.expr.tmp <- merge(cd.expr.df,geneMap.df[which(geneMap.df$transcript_id %in% cd.expr.df[[transcript_id]]),c("gene_id","transcript_id")],by.x=transcript_id,by.y="transcript_id")
+  cd.expr.df <- cd.expr.tmp
   colnames(lnc.expr.df) <- colnames(cd.expr.df)
   
   
   #lnc.gene.max.df <- ddply(lnc.expr.df,.(gene_id),numcolwise(max))
   #cd.gene.max.df <- ddply(cd.expr.df,.(gene_id),numcolwise(max))
   
-  expr.df <- appendAnalysis( rbind(lnc.expr.df,cd.expr.df), colnames(expr.in.df[,2:33]))
+ # expr.df <- appendAnalysis( rbind(lnc.expr.df,cd.expr.df), colnames(expr.in.df[,2:33]))
   
+  expr.df <- rbind(lnc.expr.df,cd.expr.df) 
   exportAsTable(expr.df[which(expr.df$gene_id %in% derrien.df$LncRNA_GeneId),],lnc.out.file)
   exportAsTable(expr.df[which(expr.df$gene_id %in% geneMap.df$gene_id),],cd.out.file)
 }
