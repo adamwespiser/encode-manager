@@ -1,0 +1,4 @@
+a test to see if combined RPKM was consistently being drawn from RPKM1 and RPKM2. The test uses the formula available here:
+http://genome.crg.es/encode_RNA_dashboard/READMEs/README_TranscriptGencV7.txt
+
+
