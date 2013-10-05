@@ -92,12 +92,18 @@ d.tmp$c2only = ifelse(d.tmp$c2 > 0 & d.tmp$c1 == 0,1,0)
 
 print("heere")
 ggplot(d.tmp[which(d.tmp$c1only == 1),], aes(c1)) + geom_density() + theme_bw()+
-  ggtitle(paste(title,"\n",col1,"> 0,",col2,"=",0)) + xlab(col2)
+  ggtitle(paste(title,"\n",col1,"> 0,",col2,"=",0,"\nN=",dim(d.tmp[which(d.tmp$c1only == 1),][1]))) + xlab(col2)
 ggsave(file=paste(outdir,col1f,"-only-density.pdf",sep=""))
 
 ggplot(d.tmp[which(d.tmp$c2only == 1),], aes(c2)) + geom_density() + theme_bw()+
-  ggtitle(paste(title,"\n",col2,"> 0,",col1,"=",0)) + xlab(col2)
+  ggtitle(paste(title,"\n",col2,"> 0,",col1,"=",0,"\nN=",dim(d.tmp[which(d.tmp$c2only == 1),][1]))) + xlab(col1)
 ggsave(file=paste(outdir,col2f,"-only-density.pdf",sep=""))
+
+comb.df = data.frame(RPKM= c(d.tmp[which(d.tmp$c2only == 1),"c2"] , d.tmp[which(d.tmp$c1only == 1),"c1"]))
+ggplot(comb.df, aes(RPKM)) + geom_density() + theme_bw()+
+  ggtitle(paste(title,"\n",col2,"> 0,",col1,"=",0,"\nN=",dim(comb.df)[1])) + xlab(col2)
+ggsave(file=paste(outdir,"combined-OneOnly-density.pdf",sep=""))
+
 
 }
 

@@ -227,7 +227,7 @@ main <- function(){
   # k is the number of features we are going to take
   # n is the number of lncRNA examples we are going to take, note that label=1 is sorted to the top
   k = 8 
-  n = 400
+  n = 1500
   yCount = length(which(lnc.pca.df$label == 1))
   dataSample = c(1:94,sample(94:length(lnc.pca.df$label),(n-yCount)))
   dataSample = 1:n
@@ -247,7 +247,7 @@ main <- function(){
   #opt.lnc = optim(fn=cfLamda(X,y,k),gr=gfLambda(X,y,k),par=thetaGuess,method= "L-BFGS-B")
   #optim(fn=cfLamda(X,y,k),gr=gfLambda(X,y,k),par=thetaGuess,method= "CG") -> o #400
   #optim(fn=cfLamda(X,y,k),par=matrix(runif(k*k),k),method= "BFGS")
-  o <-optim(fn=cfLamda(X,y,k),gr=gfLambda(X,y,k),par=matrix(runif(k*k),k),method= "BFGS")
+  o <-optim(fn=cfLambda(X,y,k),gr=gfLambda(X,y,k),par=matrix(runif(k*k),k),method= "CG")
   # create cost function
   # create gradient
   # run optimizer
@@ -257,7 +257,7 @@ main <- function(){
   best.theta =matrix(runif(k*k),k)
   for(i in 1:20){
     print(i)
-    local =  optim(fn=cfLamda(X,y,k),par=matrix(runif(k*k),k),method= "BFGS") 
+    local =  optim(fn=cfLambda(X,y,k),par=matrix(runif(k*k),k),method= "BFGS") 
     results.df$trial[i] = i
     results.df$cost[i] = local$value
     if (local$value < best.cost){
@@ -270,21 +270,25 @@ main <- function(){
   #ggplot(dfo,aes(y=prec,x=sens))+geom_point()+xlim(0,1)+ylim(0,1)+theme_bw()+geom_smooth()
   dfo$type = "circle"
   
-  guess = apply(X.full,1,function(row) t(row) %*% matrix(best.theta$par,k) %*% row)
+  guess = apply(X.full,1,function(row) t(row) %*% matrix(best.theta,k) %*% row)
   df = data.frame(x=guess,ellipse=guess,y=y.full,label=y.full)
  # ggplot(df,aes(x=log(x),fill=factor(y)))+geom_density(alpha=I(0.6))
   df.plot= plotDistanceAwayRatio(df,label=y.full)
   df.plot$type = "ellipse"
   
-  sample(y.full,length(y.full)) 
+  #sample(y.full,length(y.full)) 
   df.random= plotDistanceAwayRatio(df,label=sample(y.full,length(y.full)))
   df.random$type = "randomLabel"
   
   #ggplot(df.plot,aes(y=prec,x=sens))+geom_point()+xlim(0,1)+ylim(0,1)+theme_bw()+geom_smooth()
   
   df.comb = rbind(dfo,df.plot)
-  ggplot(df.comb,aes(y=prec,x=sens))+geom_point()+xlim(0,1)+ylim(0,1)+theme_bw()+geom_smooth()+facet_wrap(~type)
-  ggsave("~/Desktop/ellipse1.pdf",height=4,width=6)
+  ggplot(df.comb,aes(y=prec,x=sens))+geom_point()+xlim(0,1)+ylim(0,1)+theme_bw() + 
+    geom_smooth() + 
+    facet_wrap(~type)+
+    ggtitle(paste("Log Reg: rows =",n,"cols=",k,"\nPCA data used"))
+
+  ggsave("~/Desktop/ellipse2.pdf",height=4,width=6)
   
   df.comb.roc = rbind(dfo,df.plot,df.random)
   ggplot(df.comb.roc,aes(x=FPR,y=TPR,color=type))+geom_line()+geom_point()+theme_bw()+geom_abline(slope=1)+
@@ -294,26 +298,29 @@ main <- function(){
   
 }
 
-runLogReg = function(lncDf,outdir,cols){
-  k = length(cols) + 1
-  n = dim(lncDf)[1]
-  yCount = length(which(lncDf$label == 1))
+runLogReg = function(lncDf,outdir = "~/Desktop/testPCA",cols,iter=10,debug= TRUE){
+  k <- length(cols) + 1
+  n <- dim(lncDf)[1]
+  
+  
+  yCount <- length(which(lncDf$label == 1))
   #dataSample = c(1:94,sample(94:length(lnc.pca.df$label),(n-yCount)))
  # dataSample = 1:n
-  X = as.matrix(lncDf[,cols])
-  X = cbind(rep(1,dim(X)[1]),X)
-  y = as.matrix(lncDf[,"label"])
+  X <- as.matrix(lncDf[,cols])
+  X <- cbind(rep(1,dim(X)[1]),X)
+  y <- as.matrix(lncDf[,"label"])
   
+  # we need to center X:
+  X <- apply(X,2,function(x){x - mean(x)})
+  X[,1] <- 1
   
-  
-  
-  thetaGuess = runif(k*k)
-  zeroGuess  = rep(0,k*k)
+  thetaGuess <- runif(k*k)
+  zeroGuess  <- rep(0,k*k)
   
   #opt.lnc = optim(fn=cfLamda(X,y,k),gr=gfLambda(X,y,k),par=thetaGuess,method= "L-BFGS-B")
   #optim(fn=cfLamda(X,y,k),gr=gfLambda(X,y,k),par=thetaGuess,method= "CG") -> o #400
   #optim(fn=cfLamda(X,y,k),par=matrix(runif(k*k),k),method= "BFGS")
-  o <-optim(fn=cfLambda(X,y,k),gr=gfLambda(X,y,k),par=matrix(runif(k*k),k),method= "BFGS")
+  o <- optim(fn=cfLambda(X,y,k),gr=gfLambda(X,y,k),par=matrix(runif(k*k),k),method= "CG")
   # create cost function
   # create gradient
   # run optimizer
@@ -321,9 +328,9 @@ runLogReg = function(lncDf,outdir,cols){
   results.df <- data.frame(trial=1:100,cost=rep(0,100))
   best.cost = 1000000
   best.theta =matrix(runif(k*k),k)
-  for(i in 1:20){
+  for(i in 1:iter){
     print(i)
-    local =  optim(fn=cfLambda(X[sample(seq_along(X[,1]),50),],y,k),par=matrix(runif(k*k),k),method= "CG") 
+    local =  optim(fn=cfLambda(X,y,k),par=matrix(runif(k*k),k),method= "CG") 
     results.df$trial[i] = i
     results.df$cost[i] = local$value
     if (local$value < best.cost){
@@ -332,32 +339,33 @@ runLogReg = function(lncDf,outdir,cols){
     }
   }
  # guess = filterXbyOptimTheta_getGuess(X,best.theta,k)
+  if("o" %in% ls() && debug == TRUE){
+    best.cost = o$value
+    best.theta = o$par
+  }
   
   
-  
-  dfo.circle = plotDistanceAwayRatio(df=as.data.frame(X),label=y,exprCols=cols,ellipse=FALSE)
+  dfo.circle = plotDistanceAwayRatio(df=as.data.frame(X),label=y,exprCols=1:k,ellipse=FALSE)
   #ggplot(dfo,aes(y=prec,x=sens))+geom_point()+xlim(0,1)+ylim(0,1)+theme_bw()+geom_smooth()
   dfo.circle$type = "circle"
   
   guess = filterXbyOptimTheta_getGuess(X,best.theta,k)
   df.ellipse.tmp = data.frame(x=guess,ellipse=guess,y=y,label=y)
   # ggplot(df,aes(x=log(x),fill=factor(y)))+geom_density(alpha=I(0.6))
-  df.ellipse = plotDistanceAwayRatio(df.ellipse.tmp,label=y,exprCols=cols,ellipse=TRUE)
+  df.ellipse = plotDistanceAwayRatio(df.ellipse.tmp,label=y,exprCols=1:k,ellipse=TRUE)
   df.ellipse$type = "ellipse"
   
-  #sample(y.full,length(y.full)) 
-  #df.random= plotDistanceAwayRatio(df,label=sample(y.full,length(y.full)))
-  #df.random$type = "randomLabel"
+  df.random.tmp  = data.frame(x=guess,ellipse=guess,y=y,label=y)
+  df.random= plotDistanceAwayRatio(df.random.tmp,label=sample(y,length(y)))
+  df.random$type = "randomLabel"
   
   #ggplot(df.plot,aes(y=prec,x=sens))+geom_point()+xlim(0,1)+ylim(0,1)+theme_bw()+geom_smooth()
   
   df.comb = rbind(dfo.circle,df.ellipse)
   ggplot(df.comb,aes(y=prec,x=sens))+geom_point()+xlim(0,1)+ylim(0,1)+theme_bw()+geom_smooth()+facet_wrap(~type)
-  ggsave("~/Desktop/ellipse.pdf")
-  
   ggsave(paste(outdir,"elipse.pdf"),height=4,width=6)
   
-  df.comb.roc = rbind(dfo,df.plot,df.random)
+  df.comb.roc = rbind(df.comb,df.random)
   ggplot(df.comb.roc,aes(x=FPR,y=TPR,color=type))+geom_line()+geom_point()+theme_bw()+geom_abline(slope=1)+
     ggtitle("ROC Curve of radius based prediction on pca\n")+xlab("False Positive Rate")+ylab("True Positive Rate")
   ggsave(paste(outdir,"elipse-ROC.pdf"),height=4,width=5)

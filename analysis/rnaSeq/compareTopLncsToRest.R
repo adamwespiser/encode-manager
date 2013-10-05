@@ -43,11 +43,11 @@ makeComparisonsLnc <- function(lncDf=df.1,exprColIndex=2:33,transKeyword="annot"
     lncDf$withinSubset = "false"
     lncDf[which(lncDf$gene_id_short %in% annotDf$gene_id_short),]$withinSubset = "true"
     
-    n.subset = length(which(lncDf$withinSubset == "true"))
-    n.total = dim(lncDf)[1]
-    n.line = paste("subset =",foundColword,"\n",n.subset,foundColword,"lncRNAs out of",n.total,"total lncRNAs\n",sep=" ")
-    titleWithBanner = function(x)paste(n.line,x,sep="\n")
-    
+#     n.subset <<- length(which(lncDf$withinSubset == "true"))
+#     n.total <<- dim(lncDf)[1]
+#     n.line  <<- paste("subset =",foundColword,"\n",n.subset,foundColword,"lncRNAs out of",n.total,"total lncRNAs\n",sep=" ")
+#     titleWithBanner <<- function(x)paste(n.line,x,sep="\n")
+#     
     
     ddply(annotDf,.(gene_id),function(x)x[1]) -> ensLnc.df
     getLncName <- function(x){y<-ensLnc.df[which(ensLnc.df$gene_id == x ), "lncRnaName"][1];if(is.na(y)){"notFound"}else{y}}
@@ -58,7 +58,16 @@ makeComparisonsLnc <- function(lncDf=df.1,exprColIndex=2:33,transKeyword="annot"
     str(lncDf) 
     
   }
-  else{lncDf = processedLncDf}
+  else{lncDf = processedLncDf
+         
+  }
+  
+  n.subset = length(which(lncDf$withinSubset == "true"))
+  n.total = dim(lncDf)[1]
+  n.line  = paste("subset =",foundColword,"\n",n.subset,foundColword,"lncRNAs out of",n.total,"total lncRNAs\n",sep=" ")
+  titleWithBanner = function(x)paste(n.line,x,sep="\n")
+  
+  
   
   expr.cols <- sort(colnames(lncDf[exprColIndex]))
   expr.uniq.cols <- unique(unlist(lapply(colnames(lncDf[exprColIndex]),function(x)strsplit(x,".long"))))
@@ -191,7 +200,7 @@ makeComparisonsLnc <- function(lncDf=df.1,exprColIndex=2:33,transKeyword="annot"
       xlab("JSD for each gene")
     ggsave(file=makeOutFile("lncRNA-JSD-density-plot.pdf"),height=8,width=8)
     
-    ggplot(lncDf,aes(x=tissSpec,fill=withinSubset))+geom_density(alpha=I(0.4)) + theme_bw()+ facet_wrap(~withinSubset)
+    ggplot(lncDf,aes(x=tissSpec,fill=withinSubset))+geom_density(alpha=I(0.4)) + theme_bw()+ facet_wrap(~withinSubset)+
       ggtitle(titleWithBanner("expression accross all samples(cell-type/pulldown)"))+
       xlab("JSD for each gene")
     ggsave(file=makeOutFile("lncRNA-JSD-density-plot.pdf"),height=8,width=8)
@@ -461,13 +470,12 @@ getAnnotLncDf <- function(lncDf,annotDf,exprCol,annotColName){
 }
 
 withinFuntionalCompareBiotypes = function(){
-  
-  
+
 lnc.in.file = getFullPath("data/lncExprWithStats_transEachSample.tab")
 lncFound.df = getEnslist()
 lncExpr.df = readInTable(lnc.in.file)
 lncExpr.df[["gene_id_short"]] =  sapply(as.character(lncExpr.df$gene_id),function(x){as.vector(strsplit(x,"\\.")[[1]])[1]})
-lncFound.df = unique(data.frame(ensembl_gene_id=ens$ensembl_gene_id,external_gene_id=ens$external_gene_id,gene_biotype=ens$gene_biotype))
+lncFound.df = unique(data.frame(ensembl_gene_id=lncFound.df$ensembl_gene_id,external_gene_id=lncFound.df$external_gene_id,gene_biotype=lncFound.df$gene_biotype))
 lncFound.df = lncFound.df[which(lncFound.df$ensembl_gene_id %in% lncExpr.df[["gene_id_short"]]), ]
 lncFoundThree.df = lncFound.df[which(lncFound.df$gene_biotype %in% c("antisense","lincRNA","processed_transcript")),]
 
@@ -503,11 +511,11 @@ makeComparisonsLnc(lncDf=lncExpr.df,exprColIndex=exprCols,foundColword="biotypeO
 
 
 geneTxType.df = getBioTypesForDf()
-
-geneTxType.df = unique(derrien.df[c("LncRNA_GeneId","tx_biotype")])
+#derrien.df <- read.csv(file=getFullPath("data/Gencode_lncRNAsv7_summaryTable_05_02_2012.csv"), stringsAsFactors=FALSE)
+#geneTxType.df = unique(derrien.df[c("LncRNA_GeneId","tx_biotype")])
 geneTxType.df[["gene_id_short"]] =  sapply(as.character(geneTxType.df$LncRNA_GeneId),function(x){as.vector(strsplit(x,"\\.")[[1]])[1]})
 geneTxTypeFunc.df = geneTxType.df[which(geneTxType.df$LncRNA_GeneId %in% lncExprFound.df$gene_id),]
-lncExprBmBioTypes.df = unique(merge(lncExpr.df,geneTxType.df[c("LncRNA_GeneId","bm_biotype")],by.x="gene_id",by.y="LncRNA_GeneId"))
+lncExprBmBioTypes.df = unique(merge(lncExpr.df,geneTxType.df[c("LncRNA_GeneId","tx_biotype")],by.x="gene_id",by.y="LncRNA_GeneId"))
 
 
 
@@ -518,7 +526,38 @@ lncExprFound.outdir = "/Users/adam/work/research/researchProjects/encode/encode-
 makeDir(lncExprFound.outdir)
 makeComparisonsLnc(lncDf=lncExpr.df,exprColIndex=exprCols,foundColword="antisense",fileBase="func-biotype-",
                    outDir=lncExprFound.outdir,annotDf=lncExprFound.df,annotColName="external_gene_id",
-                   injectLncDf = TRUE, processedLncDf= lncExprBmBioTypes.df[which(lncExprBmBioTypes.df$bm_biotype == "antisense"), ])
+                   injectLncDf = TRUE, processedLncDf= lncExprBmBioTypes.df[which(lncExprBmBioTypes.df$tx_biotype == "antisense"), ])
+
+
+# not anti-sense
+lncExprBmBioTypes.df$withinSubset = "unlabel-non-AS"
+lncExprBmBioTypes.df[which(lncExprBmBioTypes.df$gene_id_short %in% lncFound.df$ensembl_gene_id),"withinSubset"] = "functional-non-AS"
+lncExprBmBioTypesnonAS.df = lncExprBmBioTypes.df
+lncExprBmBioTypesnonAS.df[which(lncExprBmBioTypesnonAS.df$tx_biotype != "antisense"), "tx_biotype" ] =  "non-antisense"
+
+
+lncExprFound.outdir = "/Users/adam/work/research/researchProjects/encode/encode-manager/plots/lncCompare/lncFunctional-BioTypes-non-AS"
+makeDir(lncExprFound.outdir)
+makeComparisonsLnc(lncDf=lncExpr.df,exprColIndex=exprCols,foundColword="non-antisense",fileBase="func-biotype-",
+                   outDir=lncExprFound.outdir,annotDf=lncExprFound.df,annotColName="external_gene_id",
+                   injectLncDf = TRUE, processedLncDf= lncExprBmBioTypesnonAS.df[which(lncExprBmBioTypesnonAS.df$tx_biotype == "non-antisense"), ])
+
+
+# everything
+lncExprBmBioTypes.df$withinSubset = "unlabel"
+lncExprBmBioTypes.df[which(lncExprBmBioTypes.df$gene_id_short %in% lncFound.df$ensembl_gene_id),"withinSubset"] = "functional"
+
+
+lncExprFound.outdir = "/Users/adam/work/research/researchProjects/encode/encode-manager/plots/lncCompare/lncFunctional-BioTypes-all"
+makeDir(lncExprFound.outdir)
+makeComparisonsLnc(lncDf=lncExpr.df,exprColIndex=exprCols,foundColword="non-antisense",fileBase="func-biotype-",
+                   outDir=lncExprFound.outdir,annotDf=lncExprFound.df,annotColName="external_gene_id",
+                   injectLncDf = TRUE, processedLncDf= lncExprBmBioTypes.df)
+
+
+
+
+
 
 #processed_transcript
 lncExprBmBioTypes.df$withinSubset = "unlabel-procTrans"
@@ -527,7 +566,7 @@ lncExprFound.outdir = "/Users/adam/work/research/researchProjects/encode/encode-
 makeDir(lncExprFound.outdir)
 makeComparisonsLnc(lncDf=lncExpr.df,exprColIndex=exprCols,foundColword="processed_transcript",fileBase="func-processed-transcript",
                    outDir=lncExprFound.outdir,annotDf=lncExprFound.df,annotColName="external_gene_id",
-                   injectLncDf = TRUE, processedLncDf= lncExprBmBioTypes.df[which(lncExprBmBioTypes.df$bm_biotype == "processed_transcript"), ])
+                   injectLncDf = TRUE, processedLncDf= lncExprBmBioTypes.df[which(lncExprBmBioTypes.df$tx_biotype == "processed_transcript"), ])
 
 
 
@@ -538,14 +577,14 @@ lncExprFound.outdir = "/Users/adam/work/research/researchProjects/encode/encode-
 makeDir(lncExprFound.outdir)
 makeComparisonsLnc(lncDf=lncExpr.df,exprColIndex=exprCols,foundColword="lincRNA",fileBase="func-lincRNA-",
                    outDir=lncExprFound.outdir,annotDf=lncExprFound.df,annotColName="external_gene_id",
-                   injectLncDf = TRUE, processedLncDf= lncExprBmBioTypes.df[which(lncExprBmBioTypes.df$bm_biotype == "lincRNA"), ])
+                   injectLncDf = TRUE, processedLncDf= lncExprBmBioTypes.df[which(lncExprBmBioTypes.df$tx_biotype == "lincRNA"), ])
 
 
 
-threeTypesTotal.df <- lncExprBmBioTypes.df[which(lncExprBmBioTypes.df$bm_biotype %in% c("lincRNA","processed_transcript","antisense")),]
+threeTypesTotal.df <- lncExprBmBioTypes.df[which(lncExprBmBioTypes.df$tx_biotype %in% c("lincRNA","processed_transcript","antisense")),]
 threeTypesTotal.df$functional <- "unLabel-"
 threeTypesTotal.df[which(threeTypesTotal.df$gene_id_short %in% lncFound.df$ensembl_gene_id),"functional"] <- "func-"
-threeTypesTotal.df$withinSubset = paste(threeTypesTotal.df$bm_biotype,threeTypesTotal.df$functional,sep="")
+threeTypesTotal.df$withinSubset = paste(threeTypesTotal.df$tx_biotype,threeTypesTotal.df$functional,sep="")
 lncExprFound.outdir = "/Users/adam/work/research/researchProjects/encode/encode-manager/plots/lncCompare/lncFunctional-BioTypes-fullCompare"
 makeDir(lncExprFound.outdir)
 makeComparisonsLnc(lncDf=lncExpr.df,exprColIndex=exprCols,foundColword="funcBioType",fileBase="func-biotype-",

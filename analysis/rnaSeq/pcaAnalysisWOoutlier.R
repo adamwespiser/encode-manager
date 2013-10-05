@@ -69,6 +69,10 @@ pdTest <- function(){
   ggplot(dfo.stats,aes(y=prec,x=sens,color=predict))+geom_point(size=1)+xlim(0,1)+ylim(0,1)+theme_bw()+geom_smooth()
 }
 
+
+
+
+
 plotDistanceAwayRatio <- function(df,exprCols,
                                   df.center= suppressMessages(melt(ddply(df[exprCols],.(),numcolwise(mean)))[["value"]]),rand=FALSE){
   
@@ -101,6 +105,16 @@ plotDistanceAwayRatio <- function(df,exprCols,
   })
   dfo.stats[c("predict","totalMembers","P","N","TP","FP","TN","FN","sens","prec","TPR","FPR","FNR","TNR","Fscore","accuracy","errorRate")]
 }
+
+saveToFilePlotDistAway <- function(df,exprCols,outfile,titleMsg){
+  df = plotDistanceAwayRatio(df,exprCols)
+  
+  ggplot( df, aes(x=sens,y=prec)) + geom_point() +theme_bw()+
+    ggtitle(titleMsg)
+  ggsave(paste(outfile,"circClassifierPCA.pdf", sep=""),)
+  
+}
+
 
 # create a heat map of the loadings for each of the principal compenents
 plotLoadingsToFile <- function(pca,outfile,titleMsg=""){
@@ -162,16 +176,21 @@ transformDataByPCA <- function(df,
 
 normalizePcaFactorsFromLoading <- function(pca,lncDataFrame,exprCols){
   lncDataFrame[exprCols] = transformDataByPCA(df=lncDataFrame[,exprCols],pca=pca)
+  
+  if (is.numeric(exprCols)){
   colnames(lncDataFrame)[exprCols] = paste0("Comp.",seq_along(exprCols))
-  data.frame(
+  } else {
+  colnames(lncDataFrame)[which(colnames(lncDataFrame) %in% exprCols)] = paste0("Comp.", seq_along(exprCols))
+  }
+  
+  normLncDf <- apply(lncDataFrame[ paste0("Comp.", seq_along(exprCols))],2,function(x)(x - min(x))+1)
+  
+  df.out <- data.frame(
     gene_id =  lncDataFrame[["gene_id"]],
     withinSubset = lncDataFrame[["withinSubset"]],
-    lncRnaName =  lncDataFrame[["lncRnaName"]],
-    
-    Comp.1 = lncDataFrame[["Comp.1"]] - min( lncDataFrame[["Comp.1"]]) + 1,
-    Comp.2 = lncDataFrame[["Comp.2"]] - min( lncDataFrame[["Comp.2"]]) + 1,
-    Comp.3 = lncDataFrame[["Comp.3"]] - min( lncDataFrame[["Comp.3"]]) + 1,
-    Comp.4 = lncDataFrame[["Comp.4"]] - min( lncDataFrame[["Comp.4"]]) + 1)
+    lncRnaName =  lncDataFrame[["lncRnaName"]])
+  
+  cbind(df.out,normLncDf)
 
   
 }
@@ -460,13 +479,7 @@ pcaAnalysisRemoveOutliersAllCols  <- function(lncDf,exprCols,normalFun=FALSE,out
   g <- plotDistanceAwayRatio(df=ratioTest.df,exprCols=exprCols)
   g1 <- g + ggtitle("PR Curve of radius based prediction all lncRNAs\nPCA from removeOut2 group")
   ggsave(file=makeOutFile("allLnc-removeOut2-Loadings/ratioTest.pdf"))
-  
-  plotPcaPredictStats(lncDf=lncDf,pca=lnc.pca.r2,exprCols=exprCols,
-                      baseDir=makeOutFile("allLnc-removeOut2-Loadings/lncRNA-func-PCA"),fileNameMsg="",titleMsg="removeOut2 Vectors, all lncs included")
-  
-  
 }
-
 pcaAnalysisRemoveOutliersGeneral  <- function(lncDf,exprCols,titleMsg,normalFun=FALSE,outDir,fileBase,foundColword,COR=FALSE,rOneVec=c("MALAT1","H19","RP11-255B23.3"),
                                               rTwoVec=c("ENSG00000235162","ENSG00000228474","ENSG00000175061","DANCR","SNGG1","ZFAS1","ENSG00000249790",
                                                         "ENSG00000256329","ENSG00000235162","ENSG00000228474","ENSG00000249532","ENSG00000249502","MALAT1","H19","RP11-255B23.3") ){
@@ -475,12 +488,21 @@ pcaAnalysisRemoveOutliersGeneral  <- function(lncDf,exprCols,titleMsg,normalFun=
   titleWithBanner <<- function(x)paste(paste("lncRNA subsection = ",foundColword),x,sep="\n")
   expr.cols <- exprCols
   
+  dirs = c(makeOutFile("allLnc/"),makeOutFile("removeOut1/"),makeOutFile("removeOut2/"),makeOutFile("allLnc-removeOut2-Loadings/"))
+  for (newDir in dirs){
+    if (!file.exists(newDir)){
+      dir.create(newDir)
+    }
+  }
+  
+  
   
   lnc.pca             <- princomp(lncDf[exprCols],cor=COR)
   plotLoadingsToFile(pca=lnc.pca,outfile=makeOutFile("allLnc/lncRNA-func-loadings-all.png"),titleMsg=paste("all lnc RNAs",titleMsg))
   plotScreeToFile(pca=lnc.pca,outfile=makeOutFile("allLnc/lncRNA-func-scree-all.pdf"),
                   outfileECDF=makeOutFile("allLnc/lncRNA-func-scree-ECDF-all.pdf"),titleMsg=paste("all lnc RNAs",titleMsg))
   
+
   lnc.pca.factors = normalizePcaFactors(pca=lnc.pca,lncDataFrame=lncDf)
   plotPcaCompToFileLabelAndWO(pcaFactors=lnc.pca.factors,baseDir=makeOutFile("allLnc/lncRNA-func-"),fileNameMsg="allLncs",titleMsg=paste("all lnc RNAs",titleMsg),
                               comp1range=c(0,4),comp2range=c(2,10),comp3range=c(0,3.5))
@@ -521,23 +543,23 @@ pcaAnalysisRemoveOutliersGeneral  <- function(lncDf,exprCols,titleMsg,normalFun=
   exportAsTable(df= normalizePcaFactorsFromLoadingForRatioTest(pca=lnc.pca.r2,lncDataFrame=lncDf,exprCols=exprCols),
                 file=makeOutFile("pca.tab"))  
   
-  
+  print("made it to removeOut2-Loadings...")
   plotPcaCompToFileLabelAndWO(pcaFactors=lnc.pca.factors.r2.full, baseDir=makeOutFile("allLnc-removeOut2-Loadings/lncRNA-func"), fileNameMsg="allLnc-removeOut2-Loadings", titleMsg=paste("Lnc RNAs: All \nLoading: no Hg19/MALAT/RP11 + group 2\n ",titleMsg),
                               comp1range=c(1.4,Inf),comp2range=c(0,3.5),comp3range=c(0,3) )
   runStatHexBin(pcaFactors=lnc.pca.factors.r2.full, baseDir=makeOutFile("allLnc-removeOut2-Loadings/lncRNA-func-"), fileNameMsg="allLnc-removeOut2-Loadings", titleMsg=paste("PCA of lncRNA expr :\nnLoading: o Hg19/MALAT/RP11 + group 2",titleMsg) )
   
   print("made it to the radius test")
-  ratioTest.df <- lncDf
-  ratioTest.df[exprCols] = transformDataByPCA(df=ratioTest.df[exprCols],pca=lnc.pca.r2)
-  colnames(ratioTest.df)[exprCols] = paste0("Comp.",seq_along(exprCols))
+#  ratioTest.df <- lncDf
+#  ratioTest.df[exprCols] = transformDataByPCA(df=ratioTest.df[exprCols],pca=lnc.pca.r2)
+#  colnames(ratioTest.df)[exprCols] = paste0("Comp.",seq_along(exprCols))
 
  # g <- plotDistanceAwayRatio(df=ratioTest.df,exprCols=exprCols) + ggtitle("PR Curve of radius based prediction all lncRNAs\nPCA from removeOut2 group")
 
  # g 
  # ggsave(file=makeOutFile("allLnc-removeOut2-Loadings/ratioTest.pdf"))
   
-  plotPcaPredictStats(lncDf=lncDf,pca=lnc.pca.r2,exprCols=exprCols,
-                      baseDir=makeOutFile("allLnc-removeOut2-Loadings/lncRNA-func-PCA"),fileNameMsg="",titleMsg="removeOut2 Vectors, all lncs included")
+ #plotPcaPredictStats(lncDf=lncDf,pca=lnc.pca.r2,exprCols=exprCols,
+#                      baseDir=makeOutFile("allLnc-removeOut2-Loadings/lncRNA-func-PCA"),fileNameMsg="",titleMsg="removeOut2 Vectors, all lncs included")
   
   
 }
@@ -599,6 +621,118 @@ pcaAnalysisRemoveOutliersRobust <- function(lncDf,exprCols,normalFun=FALSE,outDi
   g1 <- g + ggtitle("PR Curve of radius based prediction all lncRNAs\nPCA from removeOut2 group")
   ggsave(file=makeOutFile("removeOut2/ratioTest.pdf"))
 }
+
+findTopOutliersFromPCA <- function(pca,N,exprCols){
+  #pca should be normalized...
+  pcaCols <- seq_along(exprCols)
+  pca.center <- suppressMessages(melt(ddply(pca[pcaCols],.(),numcolwise(mean)))[["value"]])
+  pca[["dist"]] <- apply(pca[pcaCols],1,function(x) sqrt(sum((x - pca.center)^2)))
+  pca.distOrder <- pca[order(max(pca$dist) - pca$dist),]
+  pca.distOrder[1:N,"lncRnaName"]
+}
+
+
+
+pcaAnalysisRemoveOutliersSelectOutliers  <- function(lncDf,exprCols,titleMsg,normalFun=FALSE,outDir,fileBase,foundColword,COR=FALSE ){
+  printReport <- function(report){ if(verbose == TRUE){print(report)}}
+  makeOutFile <- function(x){outfile<-paste(paste(outDir,fileBase,sep="/"),x,sep="");print(paste("making",outfile));outfile} # requires outDir & fileBase
+  titleWithBanner <<- function(x)paste(paste("lncRNA subsection = ",foundColword),x,sep="\n")
+  expr.cols <- exprCols
+  
+  dirs = c(makeOutFile("allLnc/"),makeOutFile("removeOut1/"),makeOutFile("removeOut2/"),makeOutFile("allLnc-removeOut2-Loadings/"))
+  for (newDir in dirs){
+    if (!file.exists(newDir)){
+      dir.create(newDir)
+    }
+  }
+  
+  
+  
+  ### PCA FULL
+  lnc.pca             <- princomp(lncDf[exprCols],cor=COR)
+  plotLoadingsToFile(pca=lnc.pca,outfile=makeOutFile("allLnc/lncRNA-func-loadings-all.png"),titleMsg=paste("all lnc RNAs",titleMsg))
+  plotScreeToFile(pca=lnc.pca,outfile=makeOutFile("allLnc/lncRNA-func-scree-all.pdf"),
+                  outfileECDF=makeOutFile("allLnc/lncRNA-func-scree-ECDF-all.pdf"),titleMsg=paste("all lnc RNAs",titleMsg))
+  
+    #normalize for plotting...
+  lnc.pca.factors = normalizePcaFactors(pca=lnc.pca,lncDataFrame=lncDf)
+ 
+  saveToFilePlotDistAway(lnc.pca.factors,seq_along(exprCols),makeOutFile("allLnc/"),"PR curve on PCA - all lncRNA")
+  plotPcaCompToFileLabelAndWO(pcaFactors=lnc.pca.factors,baseDir=makeOutFile("allLnc/lncRNA-func-"),fileNameMsg="allLncs",titleMsg=paste("all lnc RNAs",titleMsg),
+                              comp1range=c(0,4),comp2range=c(2,10),comp3range=c(0,3.5))
+  
+  runStatHexBin(pcaFactors=lnc.pca.factors,baseDir=makeOutFile("allLnc/lncRNA-func-"),fileNameMsg="allLncs",titleMsg=paste("PCA of lncRNA expr :\n",titleMsg,sep=""))
+  
+  
+  ### PCA Remove group 1
+  ## need to find top N outlier
+  r1.vec =  findTopOutliersFromPCA(lnc.pca.factors,10,expr.cols)
+  lncDf.reduced.1 <- lncDf[which(!lncDf$lncRnaName %in% r1.vec),]
+  write.csv(file=makeOutFile("removeOut1/missingLnc.csv"),x=data.frame(missing=r1.vec))
+  lnc.pca.r1             <- princomp(lncDf.reduced.1[exprCols],cor=COR)
+  plotLoadingsToFile(pca=lnc.pca.r1, outfile=makeOutFile("removeOut1/lncRNA-func-loadings-removeOut1.png"),titleMsg=paste("all lnc RNAs",titleMsg))
+  plotScreeToFile(pca=lnc.pca.r1, outfile=makeOutFile("removeOut1/lncRNA-func-scree-removeOut1.pdf"),
+                  outfileECDF=makeOutFile("removeOut1/lncRNA-func-scree-ECDF-removeOut1.pdf"),titleMsg=paste("no r1 group",titleMsg))
+  
+     #normalize for plotting...
+  lnc.pca.factors.r1 = normalizePcaFactors(pca=lnc.pca.r1,lncDataFrame=lncDf.reduced.1)
+  saveToFilePlotDistAway(lnc.pca.factors,seq_along(exprCols),makeOutFile("removeOut1/"),"PR curve on PCA - remove group 1")
+
+  plotPcaCompToFileLabelAndWO(pcaFactors=lnc.pca.factors.r1, baseDir=makeOutFile("removeOut1/lncRNA-func-"), fileNameMsg="removeOut1", titleMsg=paste("Lnc RNAs: no r1 group",titleMsg),
+                              comp1range=c(1.4,Inf),comp2range=c(0,3.5),comp3range=c(0,3) )
+  runStatHexBin(pcaFactors=lnc.pca.factors.r1, baseDir=makeOutFile("removeOut1/lncRNA-func-"), fileNameMsg="removeOut1", titleMsg=paste("PCA of lncRNA expr :\nno  r1 group",titleMsg))
+  
+  
+  ### PCA Remove group 2
+  ## need to find top N outlier
+  r2.vec =  c(findTopOutliersFromPCA(lnc.pca.factors.r1,10,expr.cols),r1.vec)
+  write.csv(file=makeOutFile("removeOut2/missingLnc.csv"),x=data.frame(missing=r2.vec))
+  lncDf.reduced.2 <- lncDf[which(!lncDf$lncRnaName %in% r2.vec),]
+  lnc.pca.r2             <- princomp(lncDf.reduced.2[exprCols],cor=COR)
+  plotLoadingsToFile(pca=lnc.pca.r2, outfile=makeOutFile("removeOut2/lncRNA-func-loadings-removeOut2.png"),titleMsg=paste("all lnc RNAs",titleMsg))
+  plotScreeToFile(pca=lnc.pca.r2, outfile=makeOutFile("removeOut2/lncRNA-func-scree-removeOut2.pdf"),
+                  outfileECDF=makeOutFile("removeOut2/lncRNA-func-scree-ECDF-removeOut2.pdf"),titleMsg=paste("group 1 & 2 of outliers removed",titleMsg))
+  
+  lnc.pca.factors.r2 = normalizePcaFactors(pca=lnc.pca.r2,lncDataFrame=lncDf.reduced.2)
+  saveToFilePlotDistAway(lnc.pca.factors.r2,seq_along(exprCols),makeOutFile("removeOut2/"),"PR curve on PCA - remove group 2")
+  plotPcaCompToFileLabelAndWO(pcaFactors=lnc.pca.factors.r2, baseDir=makeOutFile("removeOut2/lncRNA-func"), fileNameMsg="removeOut2", titleMsg=paste("Lnc RNAs: no r1 group + r2 group   \n",titleMsg),
+                              comp1range=c(1.4,Inf),comp2range=c(0,3.5),comp3range=c(0,3) )
+  runStatHexBin(pcaFactors=lnc.pca.factors.r2, baseDir=makeOutFile("removeOut2/lncRNA-func-"), fileNameMsg="removeOut2", titleMsg=paste("PCA of lncRNA expr :\nno no r1 group + r2 group \n",titleMsg))
+  
+  
+  
+  ### PCA all lncRNA, w/ loadings from remove2 grouping...
+  print("making r2 loading on all lncRNA")
+  lnc.pca.factors.r2.full <- normalizePcaFactorsFromLoading(pca=lnc.pca.r2,lncDataFrame=lncDf,exprCols=exprCols)
+  doubleCols = as.vector(which(sapply(colnames(lnc.pca.factors.r2.full),function(x)(typeof(lnc.pca.factors.r2.full[1,x]) == "double"))))
+  saveToFilePlotDistAway(lnc.pca.factors.r2.full,doubleCols,makeOutFile("removeOut2/"),"PR curve on PCA - remove group 2")
+  
+  
+  #normalizePcaFactorsFromLoadingForRatioTestg(pca=lnc.pca.r2,lncDataFrame=lncDf,exprCols=exprCols)
+  exportAsTable(df= lnc.pca.factors.r2.full,
+                file=makeOutFile("allLnc-removeOut2-Loadings/pca.tab"))  
+  
+  print("made it to removeOut2-Loadings...")
+  plotPcaCompToFileLabelAndWO(pcaFactors=lnc.pca.factors.r2.full, baseDir=makeOutFile("allLnc-removeOut2-Loadings/lncRNA-func"), fileNameMsg="allLnc-removeOut2-Loadings", titleMsg=paste("Lnc RNAs: All \nLoading: no Hg19/MALAT/RP11 + group 2\n ",titleMsg),
+                              comp1range=c(1.4,Inf),comp2range=c(0,3.5),comp3range=c(0,3) )
+  runStatHexBin(pcaFactors=lnc.pca.factors.r2.full, baseDir=makeOutFile("allLnc-removeOut2-Loadings/lncRNA-func-"), fileNameMsg="allLnc-removeOut2-Loadings", titleMsg=paste("PCA of lncRNA expr :\nnLoading: o Hg19/MALAT/RP11 + group 2",titleMsg) )
+  
+  print("made it to the radius test")
+  #  ratioTest.df <- lncDf
+  #  ratioTest.df[exprCols] = transformDataByPCA(df=ratioTest.df[exprCols],pca=lnc.pca.r2)
+  #  colnames(ratioTest.df)[exprCols] = paste0("Comp.",seq_along(exprCols))
+  
+  # g <- plotDistanceAwayRatio(df=ratioTest.df,exprCols=exprCols) + ggtitle("PR Curve of radius based prediction all lncRNAs\nPCA from removeOut2 group")
+  
+  # g 
+  # ggsave(file=makeOutFile("allLnc-removeOut2-Loadings/ratioTest.pdf"))
+  
+  # plotPcaPredictStats(lncDf=lncDf,pca=lnc.pca.r2,exprCols=exprCols,
+  #                     baseDir=makeOutFile("allLnc-removeOut2-Loadings/lncRNA-func-PCA"),fileNameMsg="",titleMsg="removeOut2 Vectors, all lncs included")
+  
+  
+}
+
 
 main <- function(){
   

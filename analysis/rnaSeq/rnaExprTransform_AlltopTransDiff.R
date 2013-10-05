@@ -4,7 +4,7 @@ setwd(projectDir)
 getwd()
 
 
-source( "/Users/adam/work/research/researchProjects/encode/encode-manager/analysis/RnaSeq/exprLib.R")
+source(paste(home, "/work/research/researchProjects/encode/encode-manager/analysis/RnaSeq/exprLib.R",sep=""))
 
 #out files created: 
 
