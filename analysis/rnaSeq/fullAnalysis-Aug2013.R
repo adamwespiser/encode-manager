@@ -243,7 +243,9 @@ lnc.pca.df <- getPcaData()
 lnc.pca.df <- lnc.pca.df[order(lnc.pca.df$label,decreasing=TRUE),]
 
 
-
+# TO DO:
+# 1) figure out outdir system to describe exper on lncRNA
+# 2) 
 
 for(columns in c("lpa","lnpa","bothPullDowns")){
   expr.cols = cols.list[[columns]]
@@ -295,7 +297,8 @@ for(columns in c("lpa","lnpa","bothPullDowns")){
                                             titleMsg==paste("LncRNA",biotype,columns,sep=" "))
     
     ## Log. Regression
-    
+    # logisticRegPcaExprData.R
+   ## runLogReg = function(lncDf,outdir = "~/Desktop/testPCA",cols,iter=10,debug= TRUE)
     
   }
 }

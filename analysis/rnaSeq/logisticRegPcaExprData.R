@@ -73,15 +73,35 @@ costFunction <- function(X,y,thetaVec,k){
   #z = -y * log(sig) - (1 - y)*log(1 - sig)
   z1 = ifelse(y == 1, -log(sig),-log(1-sig))
   z2 = ifelse(z1 == Inf, 0, z1)
+  sum(z2)
 }
 
-cfLambda <- function(X,y,k){
+cfLambda_old <- function(X,y,k){
   function(thetaVec){
   theta = matrix(thetaVec,k)
   xTx = apply(X,1,function(row){t(row) %*% theta %*% row})
   sig = abs(sigmoid(xTx))
   z1 = ifelse(y ==1, -log(sig),-log(1- sig))
   -1/length(y) * sum(ifelse(z1 == Inf, 0, z1))
+  }
+}
+
+
+cfLambdatt <- function(X,y,k,c){
+    theta = diag(k) * c
+    xTx = apply(X,1,function(row){t(row) %*% theta %*% row})
+    sig = sigmoid(xTx)
+    z1 = ifelse(y ==1, log(sig),log(1- sig))
+    -1/length(y) * sum(ifelse(z1 == -Inf, 0, z1))
+}
+
+cfLambda <- function(X,y,k){
+  function(thetaVec){
+  theta = matrix(thetaVec,k)
+  xTx = apply(X,1,function(row){t(row) %*% theta %*% row})
+  sig = sigmoid(xTx)
+  z1 = ifelse(y ==1, log(sig),log(1- sig))
+  -1/length(y) * sum(ifelse(z1 == -Inf, 0, z1))
   }
 }
 
@@ -146,7 +166,7 @@ gfLambdaIterate <- function(X,y,k){
 
 filterXbyOptimTheta <- function(X,thetaVec,k){
   theta = matrix(thetaVec,k)
-  guess = apply(X,1,function(row) t(row) %*% matrix(o$par,k) %*% row)
+  guess = apply(X,1,function(row) t(row) %*% matrix(thetaVec,k) %*% row)
   
   optim(fn=cfLamda(X,y,k),par=runif(k*k),method= "CG") -> o #$;o$value
    X = as.matrix(lnc.pca.df[1:n,1:k-1])
@@ -164,15 +184,15 @@ filterXbyOptimTheta <- function(X,thetaVec,k){
 
 filterXbyOptimTheta_getGuess <- function(X,thetaVec,k){
   theta = matrix(thetaVec,k)
-  guess = apply(X,1,function(row) t(row) %*% matrix(o$par,k) %*% row)
+  guess = apply(X,1,function(row) t(row) %*% matrix(thetaVec,k) %*% row)
   
  # optim(fn=cfLambda(X,y,k),par=runif(k*k),method= "CG") -> o #$;o$value
-  X = as.matrix(lnc.pca.df[1:n,1:k-1])
-  X = cbind(rep(1,dim(X)[1]),X)
-  y = as.matrix(lnc.pca.df[1:n,33])
+ # X = as.matrix(lnc.pca.df[1:n,1:k-1])
+#  X = cbind(rep(1,dim(X)[1]),X)
+#  y = as.matrix(lnc.pca.df[1:n,33])
   
-  guess = apply(X,1,function(row) t(row) %*% matrix(o$par,k) %*% row)
-  guess
+#  guess = apply(X,1,function(row) t(row) %*% matrix(thetaVec,k) %*% row)
+#  guess
 }
 
 
@@ -311,7 +331,7 @@ runLogReg = function(lncDf,outdir = "~/Desktop/testPCA",cols,iter=10,debug= TRUE
   y <- as.matrix(lncDf[,"label"])
   
   # we need to center X:
-  X <- apply(X,2,function(x){x - mean(x)})
+#  X <- apply(X,2,function(x){x - mean(x)})
   X[,1] <- 1
   
   thetaGuess <- runif(k*k)
@@ -320,7 +340,7 @@ runLogReg = function(lncDf,outdir = "~/Desktop/testPCA",cols,iter=10,debug= TRUE
   #opt.lnc = optim(fn=cfLamda(X,y,k),gr=gfLambda(X,y,k),par=thetaGuess,method= "L-BFGS-B")
   #optim(fn=cfLamda(X,y,k),gr=gfLambda(X,y,k),par=thetaGuess,method= "CG") -> o #400
   #optim(fn=cfLamda(X,y,k),par=matrix(runif(k*k),k),method= "BFGS")
-  o <- optim(fn=cfLambda(X,y,k),gr=gfLambda(X,y,k),par=matrix(runif(k*k),k),method= "CG")
+  o <- optim(fn=cfLambda(X,y,k),gr=gfLambda(X,y,k),par=matrix(thetaGuess,k),method= "BFGS")
   # create cost function
   # create gradient
   # run optimizer
@@ -330,7 +350,10 @@ runLogReg = function(lncDf,outdir = "~/Desktop/testPCA",cols,iter=10,debug= TRUE
   best.theta =matrix(runif(k*k),k)
   for(i in 1:iter){
     print(i)
-    local =  optim(fn=cfLambda(X,y,k),par=matrix(runif(k*k),k),method= "CG") 
+    local = optim(fn=cfLambda(X,y,k),par=matrix(-runif(k*k),k),method= "Nelder-Mead")
+    #local =  optim(fn=cfLambda(X,y,k),par=diag(k),method= "CG") #we know this works with the getLncPcaData() fun set...see main() in this file...
+    #local =  optim(fn=cfLambda(X,y,k),par=diag(k),method= "CG")
+    
     results.df$trial[i] = i
     results.df$cost[i] = local$value
     if (local$value < best.cost){
@@ -388,3 +411,51 @@ mainTest <- function(){
   thetaGuess = runif(k*k)
   zeroGuess  = rep(0,k*k)
 }
+
+
+test1 = function(){
+  
+  nn = 1000
+  lower.df= data.frame(x0 = rep(1,nn),
+                       x1 = runif(nn)*2 -1 ,
+             x2 = runif(nn)*2 - 1,
+            y = rep(0,nn))
+  lower.df$dist <- apply(lower.df, 1, function(x)sqrt(x[["x2"]]^2  + x[["x1"]]^2))
+  lower.df <- lower.df[which(lower.df$dist < 1),]
+  lowerMax =  ifelse(dim(lower.df)[1] > 100, 100, dim(lower.df)[1])
+  upper.df= data.frame(x0 = rep(1,nn),
+                       x1 = runif(nn)*3-1.5,
+                       x2 = runif(nn)*3-1.5,
+                       y = rep(1,nn))
+  upper.df$dist <- apply(upper.df, 1, function(x)sqrt(x[["x2"]]^2  + x[["x1"]]^2))
+  upper.df <- upper.df[which(upper.df$dist < 1.5 & upper.df$dist > 1),]
+  upperMax =  ifelse(dim(upper.df)[1] > 100, 100, dim(upper.df)[1])
+  
+  
+  X.df = rbind(lower.df[1:lowerMax,],upper.df[1:upperMax,])
+  X.test = as.matrix(X.df[,1:3])
+  y.test = X.df$y
+  
+  k.test = 3
+  
+  ggplot(as.data.frame(X),aes(x1,x2,color=factor(y))) + geom_point() + theme_bw()
+  ggsave("~/Desktop/tt3.pdf")
+  
+  t1 = data.frame(x=(1:1000-500)/10)
+  t1$y = apply(t1,1,function(c)test1(diag(k.test),X.test,k.test,c))
+  
+  ggplot(t1,aes(x,y))+geom_point()+theme_bw()
+  ggsave("~/Desktop/test.pdf")
+
+  ggplot(t1,aes(x,y)) + geom_point() + theme_bw() + 
+    geom_vline(x=t1[which(t1$y == min(t1$y)),"x"]) +
+    xlim(-5,5)
+  
+  ggsave("~/Desktop/test.pdf")
+  
+
+
+}
+
+
+
