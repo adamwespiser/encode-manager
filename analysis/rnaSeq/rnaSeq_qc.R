@@ -12,8 +12,8 @@ clear <- function(save.vec=c()){ ls.vec <- ls(globalenv());del.vec <-setdiff(ls.
 readInTable <- function(file) read.table(file=file,stringsAsFactors=FALSE,header=TRUE)
 
 #pull in exprLib for some helper functions, and getENSGfromBiomartByRefseq.R for the gene BioMart grabs..
-source( "/Users/adam/work/research/researchProjects/encode/encode-manager/analysis/RnaSeq/exprLib.R")
-source( "/Users/adam/work/research/researchProjects/encode/encode-manager/analysis/getENSGfromBiomartByRefseq.R")
+source( paste(home,"/work/research/researchProjects/encode/encode-manager/analysis/rnaSeq/exprLib.R",sep=""))
+source( paste(home,"/work/research/researchProjects/encode/encode-manager/analysis/getENSGfromBiomartByRefseq.R",sep=""))
 
 
 sourceFile <- getFullPath("data/lncExprWithStats_allTrans_idr.tab")
@@ -146,6 +146,14 @@ normRPKM <- function(RPKM1, RPKM2){
 (((RPKM1 + RPKM2)/2) *1000)/max(RPKM1,RPKM2)/2
 }
 
+plotCummFnByVariable <- function(outdir = getFullPath("plots/rnaSeq-QC/allCells/"),
+                                 df = preProcessData()){
+  
+  
+  
+}
+
+
 plotData <- function(outdir = getFullPath("plots/rnaSeq-QC/allCells/")){
   
   if(!file.exists(outdir)){
@@ -173,12 +181,7 @@ plotData <- function(outdir = getFullPath("plots/rnaSeq-QC/allCells/")){
     df.out[[gsub(x=paste("p",p,sep=""),replacement="_",pattern="\\.")]] <- apply(df.out,1,function(x)labelFnIDR(cutoff = p,df=df,celltype=x[["celltype"]],pulldown=x[["pulldown"]]))
   }
   
-  exportAsTable(df.out,file = paste(outdir,"lncRNA_IDRcutoff_appliedToAllLncRNA.tab"))
-  
-  
-  
-  
-  
+  exportAsTable(df.out,file = paste(outdir,"lncRNA_IDRcutoff_appliedToAllLncRNA.tab"),sep="")
   
   
   
@@ -188,7 +191,7 @@ plotData <- function(outdir = getFullPath("plots/rnaSeq-QC/allCells/")){
   for (cell in celltypes){
     outfile <- paste(outdir.rpkm,cell,"_PolyA_RPKM1_2.pdf")
     df.local <- df[which(df$celltype == cell & df$pulldown == "longPolyA"),]
-    plot.title = paste("RPMKs for celltype=",cell, "\npulldown=longPolyA")s
+    plot.title = paste("RPMKs for celltype=",cell, "\npulldown=longPolyA")
     
     g <- ggplot(df.local[order(df.local$label),], aes(x = RPKM1, y = RPKM2, color = factor(label), size= label )) + 
       geom_point() +
@@ -199,16 +202,116 @@ plotData <- function(outdir = getFullPath("plots/rnaSeq-QC/allCells/")){
     g + xlim(0,quantile(df$RPKM1,0.95)) + 
       ylim(0,quantile(df$RPKM2,0.95)) +
       ggtitle(paste(plot.title,"\ntop 5% of datapoints removed"))
-    ggsave(paste(outdir.rpkm,cell,"_PolyA_RPKM1_2_zoom.pdf"),height=6,width=8)
+    ggsave(paste(outdir.rpkm,cell,"_PolyA_RPKM1_2_zoom.pdf",sep=""),height=6,width=8)
     
     ggplot(df.local, aes(x=IDR, fill = factor(label))) + geom_bar() + 
       theme_bw() + 
       geom_vline(x=0.1) + 
       facet_wrap(~label,ncol=1,scale="free_y")+
       ggtitle(paste(cell,"longPolyA\nIDR (label: 1=function,0=unlab)"))
-    ggsave(paste(outdir.rpkm,cell,"_PolyA_IDR.pdf"),height=6,width=8)
+    ggsave(paste(outdir.rpkm,cell,"_PolyA_IDR.pdf",sep=""),height=6,width=8)
     
   }
+  
+  #v as.data.frame(table(df[df$IDR < 0.4, "celltype"]))[["Freq"]]
+  
+  ggplot(df,aes(x=IDR,fill=factor(label)))+geom_density(alpha=I(0.4)) + theme_bw() +
+    ggtitle("All celltype/lnc IDR entries")
+  ggsave(paste(outdir,"IDR_density.pdf",sep=""))
+  
+  ggplot(d, aes(x=IDR,fill=factor(label)))+geom_bar(binwidth=0.02)+theme_bw()+
+    facet_wrap(~label,ncol=1,scale="free_y")+
+    ggtitle("IDR distribution of lncRNA s.t. IDR > 0\nfacet 0 = unlabel & facet 1 = label")
+  ggsave(paste(outdir,"IDR_distro.pdf",sep=""))
+  
+  
+  
+  
+  
+  df.lpa <- df[which(df$pulldown == "longPolyA"),]
+  idr.df = as.data.frame(table(df.lpa[df.lpa$IDR < 1, "celltype"]))
+  idr.df$idr = 1
+  for(i in 2:1000){
+    p = (i - 1) / 1000
+    tmp = as.data.frame(table(df.lpa[df.lpa$IDR < p, "celltype"]))
+    tmp$idr = p
+    idr.df = rbind(idr.df, tmp)
+  }
+  
+  dflabel = df.lpa[which(df.lpa$label == 1),]
+  idrlabel.df = as.data.frame(table(dflabel[dflabel$IDR < 1, "celltype"]))
+  idrlabel.df$idr = 1
+  for(i in 2:1000){
+    p = (i - 1)/ 1000
+    tmp = as.data.frame(table(dflabel[dflabel$IDR < p,"celltype"]s))
+    tmp$idr = p
+    idrlabel.df = rbind(idrlabel.df, tmp)
+  }
+  
+  
+  idrlabel.df$label = "label"
+  idr.df$label = "unlabel"
+  idrratio.df = idrlabel.df
+  idrratio.df$Freq = idrlabel.df$Freq / idr.df$Freq
+  idrratio.df$label = "labelOverUnlabel"
+  idr.comb = rbind(idr.df,idrlabel.df,idrratio.df)
+  
+  colnames(idr.comb) <- c("celltype","lncRnaFound","idrCutoff","label")
+  
+  ggplot(idr.comb, aes(x=idrCutoff,y=lncRnaFound,color=celltype))+geom_line()+
+    theme_bw()+xlim(0,0.5)+
+    facet_wrap(~label,ncol=1,scale="free_y")
+  ggsave(paste(outdir,"idrCuttof_plusRatio.pdf",sep=""))
+  
+   #################### COMB
+  comb.df = as.data.frame(table(df.lpa[df.lpa$COMB > 0, "celltype"]))
+  comb.df$comb = 0
+  for(i in 2:300){
+    p = (i - 1) / 100
+    tmp = as.data.frame(table(df.lpa[df.lpa$COMB > p, "celltype"]))
+    tmp$comb = p
+    comb.df = rbind(comb.df, tmp)
+  }
+  
+  dflabel = df[which(df.lpa$label == 1),]
+  comblabel.df = as.data.frame(table(dflabel[dflabel$COMB > 0, "celltype"]))
+  comblabel.df$comb = 0
+  for(i in 2:300){
+    p = (i - 1)/ 100
+    tmp = as.data.frame(table(dflabel[dflabel$COMB > p,"celltype"]))
+    tmp$comb = p
+    comblabel.df = rbind(comblabel.df, tmp)
+  }
+  
+  
+  comblabel.df$label = "label"
+  comb.df$label = "unlabel"
+  combratio.df = comblabel.df
+  combratio.df$Freq = comblabel.df$Freq / comb.df$Freq
+  combratio.df$label = "labelOverUnlabel"
+  together.df = rbind(comb.df,comblabel.df,combratio.df)
+  
+  colnames(together.df) <- c("celltype","lncRnaFound","combinedRPKMCutoff","label")
+  
+  ggplot(together.df, aes(x=combinedRPKMCutoff,y=lncRnaFound,color=celltype))+geom_line()+
+    theme_bw()+xlim(0,3)+
+    facet_wrap(~label,ncol=1,scale="free_y") +
+    ggtitle("Combined RPKM distribution of lncRNA s.t. IDR > 0\nfacet 0 = unlabel & facet 1 = label")
+  ggsave(paste(outdir,"combinedRPKM_cutoffPlusRatio.pdf",sep=""))
+  
+ 
+  # number of lncRNA found in each cell type
+  c.df <- as.data.frame(table(df[which(df$COMB > 0), "celltype"]))
+  c.df$src = "combinedRPKM"
+  l.df <- as.data.frame(table(df[which(df$IDR <  0.5), "celltype"]))
+  l.df$src = "IDR"
+  cl.df <- rbind(c.df,l.df)
+  colnames(cl.df) <- c("celltype","foundLncRNA", "measure")
+  ggplot(cl.df, aes(x=celltype, y= foundLncRNA,fill=measure)) + 
+    geom_histogram(position="dodge",stat="identity") +
+    ggtitle("Number of lncRNA found with COMB > 0, IDR < 0.5")
+  ggsave(paste(outdir,"lncRNAFoundByCutoff.pdf",sep=""))
+  
   
   
   

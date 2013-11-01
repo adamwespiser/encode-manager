@@ -297,8 +297,9 @@ for(columns in c("lpa","lnpa","bothPullDowns")){
                                             titleMsg==paste("LncRNA",biotype,columns,sep=" "))
     
     ## Log. Regression
+      print("logistic regression")
     # logisticRegPcaExprData.R
-   ## runLogReg = function(lncDf,outdir = "~/Desktop/testPCA",cols,iter=10,debug= TRUE)
+     runLogReg = function(lncDf,outdir = "~/Desktop/testPCA",cols,iter=10,debug= TRUE)
     
   }
 }

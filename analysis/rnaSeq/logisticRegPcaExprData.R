@@ -385,7 +385,9 @@ runLogReg = function(lncDf,outdir = "~/Desktop/testPCA",cols,iter=10,debug= TRUE
   #ggplot(df.plot,aes(y=prec,x=sens))+geom_point()+xlim(0,1)+ylim(0,1)+theme_bw()+geom_smooth()
   
   df.comb = rbind(dfo.circle,df.ellipse)
-  ggplot(df.comb,aes(y=prec,x=sens))+geom_point()+xlim(0,1)+ylim(0,1)+theme_bw()+geom_smooth()+facet_wrap(~type)
+  ggplot(df.comb,aes(y=prec,x=sens))+geom_point()+xlim(0,1)+ylim(0,1) + 
+    theme_bw() + geom_smooth() + facet_wrap(~type) +
+    ggtitle("Precision/Sensitivity Curve for logistic regression")
   ggsave(paste(outdir,"elipse.pdf"),height=4,width=6)
   
   df.comb.roc = rbind(df.comb,df.random)
