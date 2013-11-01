@@ -1,5 +1,7 @@
 # Purpose: compare the features of of known lncRNA and the rest of lncRNA
-source( "/Users/adam/work/research/researchProjects/encode/encode-manager/analysis/rnaSeq/createMLdataset.R")
+
+home <- Sys.getenv("HOME")
+source(paste(home, "/work/research/researchProjects/encode/encode-manager/analysis/rnaSeq/createMLdataset.R",sep=""))
 
 library(Rcpp)
 library(inline)

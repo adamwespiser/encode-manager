@@ -11,8 +11,8 @@ clear <- function(save.vec=c()){ ls.vec <- ls(globalenv());del.vec <-setdiff(ls.
 readInTable <- function(file) read.table(file=file,stringsAsFactors=FALSE,header=TRUE)
 
 #pull in exprLib for some helper functions, and getENSGfromBiomartByRefseq.R for the gene BioMart grabs..
-source( "/Users/adam/work/research/researchProjects/encode/encode-manager/analysis/RnaSeq/exprLib.R")
-source( "/Users/adam/work/research/researchProjects/encode/encode-manager/analysis/getENSGfromBiomartByRefseq.R")
+source(paste(home, "/work/research/researchProjects/encode/encode-manager/analysis/rnaSeq/exprLib.R", sep = ""))
+source(paste(home, "/work/research/researchProjects/encode/encode-manager/analysis/getENSGfromBiomartByRefseq.R", sep=""))
 
 
 testFun <- function(){
@@ -84,6 +84,7 @@ plotDistanceAwayRatio <- function(df,exprCols,
   
   df[["dist"]] = apply(df[exprCols],1,function(x) sqrt(sum((x - df.center)^2)))
   dfo = df[order(max(df$dist) - df$dist),] # order from highest to lowest
+  
   dfo[["TP"]] = cumsum(dfo$withinSubset)
   dfo[["predict"]] = seq_along(dfo$withinSubset)
   dfo[["P"]] = sum(dfo$withinSubset)
@@ -107,7 +108,7 @@ plotDistanceAwayRatio <- function(df,exprCols,
 }
 
 saveToFilePlotDistAway <- function(df,exprCols,outfile,titleMsg){
-  df = plotDistanceAwayRatio(df,exprCols)
+  df = plotDistanceAwayRatio(df,seq_along(exprCols))
   
   ggplot( df, aes(x=sens,y=prec)) + geom_point() +theme_bw()+
     ggtitle(titleMsg)
@@ -343,9 +344,9 @@ runStatHexBin <- function(pcaFactors,baseDir,fileNameMsg,titleMsg){
 
 
 
-pcaAnalysisRemoveOutliers <- function(lncDf,exprCols,normalFun=FALSE,outDir,fileBase,foundColword,COR=FALSE){
+pcaAnalysisRemoveOutliers <- function(lncDf,exprCols,normalFun=FALSE,outDir,filebase,foundColword,COR=FALSE){
   printReport <- function(report){ if(verbose == TRUE){print(report)}}
-  makeOutFile <- function(x){outfile<-paste(paste(outDir,fileBase,sep="/"),x,sep="");print(paste("making",outfile));outfile} # requires outDir & fileBase
+  makeOutFile <- function(x){outfile<-paste(paste(outDir,filebase,sep="/"),x,sep="");print(paste("making",outfile));outfile} # requires outDir & filebase
   titleWithBanner <<- function(x)paste(paste("lncRNA subsection = ",foundColword),x,sep="\n")
   expr.cols <- exprCols
   
@@ -420,9 +421,9 @@ pcaAnalysisRemoveOutliers <- function(lncDf,exprCols,normalFun=FALSE,outDir,file
 
 }
 
-pcaAnalysisRemoveOutliersAllCols  <- function(lncDf,exprCols,normalFun=FALSE,outDir,fileBase,foundColword,COR=FALSE){
+pcaAnalysisRemoveOutliersAllCols  <- function(lncDf,exprCols,normalFun=FALSE,outDir,filebase,foundColword,COR=FALSE){
   printReport <- function(report){ if(verbose == TRUE){print(report)}}
-  makeOutFile <- function(x){outfile<-paste(paste(outDir,fileBase,sep="/"),x,sep="");print(paste("making",outfile));outfile} # requires outDir & fileBase
+  makeOutFile <- function(x){outfile<-paste(paste(outDir,filebase,sep="/"),x,sep="");print(paste("making",outfile));outfile} # requires outDir & filebase
   titleWithBanner <<- function(x)paste(paste("lncRNA subsection = ",foundColword),x,sep="\n")
   expr.cols <- exprCols
   
@@ -480,11 +481,11 @@ pcaAnalysisRemoveOutliersAllCols  <- function(lncDf,exprCols,normalFun=FALSE,out
   g1 <- g + ggtitle("PR Curve of radius based prediction all lncRNAs\nPCA from removeOut2 group")
   ggsave(file=makeOutFile("allLnc-removeOut2-Loadings/ratioTest.pdf"))
 }
-pcaAnalysisRemoveOutliersGeneral  <- function(lncDf,exprCols,titleMsg,normalFun=FALSE,outDir,fileBase,foundColword,COR=FALSE,rOneVec=c("MALAT1","H19","RP11-255B23.3"),
+pcaAnalysisRemoveOutliersGeneral  <- function(lncDf,exprCols,titleMsg,normalFun=FALSE,outDir,filebase,foundColword,COR=FALSE,rOneVec=c("MALAT1","H19","RP11-255B23.3"),
                                               rTwoVec=c("ENSG00000235162","ENSG00000228474","ENSG00000175061","DANCR","SNGG1","ZFAS1","ENSG00000249790",
                                                         "ENSG00000256329","ENSG00000235162","ENSG00000228474","ENSG00000249532","ENSG00000249502","MALAT1","H19","RP11-255B23.3") ){
   printReport <- function(report){ if(verbose == TRUE){print(report)}}
-  makeOutFile <- function(x){outfile<-paste(paste(outDir,fileBase,sep="/"),x,sep="");print(paste("making",outfile));outfile} # requires outDir & fileBase
+  makeOutFile <- function(x){outfile<-paste(paste(outDir,filebase,sep="/"),x,sep="");print(paste("making",outfile));outfile} # requires outDir & filebase
   titleWithBanner <<- function(x)paste(paste("lncRNA subsection = ",foundColword),x,sep="\n")
   expr.cols <- exprCols
   
@@ -494,7 +495,6 @@ pcaAnalysisRemoveOutliersGeneral  <- function(lncDf,exprCols,titleMsg,normalFun=
       dir.create(newDir)
     }
   }
-  
   
   
   lnc.pca             <- princomp(lncDf[exprCols],cor=COR)
@@ -564,9 +564,9 @@ pcaAnalysisRemoveOutliersGeneral  <- function(lncDf,exprCols,titleMsg,normalFun=
   
 }
 
-pcaAnalysisRemoveOutliersRobust <- function(lncDf,exprCols,normalFun=FALSE,outDir,fileBase,foundColword,COR=FALSE){
+pcaAnalysisRemoveOutliersRobust <- function(lncDf,exprCols,normalFun=FALSE,outDir,filebase,foundColword,COR=FALSE){
   printReport <- function(report){ if(verbose == TRUE){print(report)}}
-  makeOutFile <- function(x){outfile<-paste(paste(outDir,fileBase,sep="/"),x,sep="");print(paste("making",outfile));outfile} # requires outDir & fileBase
+  makeOutFile <- function(x){outfile<-paste(paste(outDir,filebase,sep="/"),x,sep="");print(paste("making",outfile));outfile} # requires outDir & filebase
   titleWithBanner <<- function(x)paste(paste("lncRNA subsection = ",foundColword),x,sep="\n")
   expr.cols <- exprCols
   
@@ -633,20 +633,21 @@ findTopOutliersFromPCA <- function(pca,N,exprCols){
 
 
 
-pcaAnalysisRemoveOutliersSelectOutliers  <- function(lncDf,exprCols,titleMsg,normalFun=FALSE,outDir,fileBase,foundColword,COR=FALSE ){
+pcaAnalysisRemoveOutliersSelectOutliers  <- function(lncDf,exprCols,titleMsg,normalFun=FALSE,outDir,filebase,foundColword,COR=FALSE ){
   printReport <- function(report){ if(verbose == TRUE){print(report)}}
-  makeOutFile <- function(x){outfile<-paste(paste(outDir,fileBase,sep="/"),x,sep="");print(paste("making",outfile));outfile} # requires outDir & fileBase
+  makeOutFile <- function(x){outfile<-paste(paste(outDir,filebase,sep="/"),x,sep="");print(paste("making",outfile));outfile} # requires outDir & filebase
   titleWithBanner <<- function(x)paste(paste("lncRNA subsection = ",foundColword),x,sep="\n")
   expr.cols <- exprCols
   
   dirs = c(makeOutFile("allLnc/"),makeOutFile("removeOut1/"),makeOutFile("removeOut2/"),makeOutFile("allLnc-removeOut2-Loadings/"))
   for (newDir in dirs){
     if (!file.exists(newDir)){
-      dir.create(newDir)
+      dir.create(newDir,recursive=TRUE)
     }
   }
   
   
+  lncDf[["withinSubset"]] <- ifelse(lncDf[["label"]] == 1, "true", "rest")
   
   ### PCA FULL
   lnc.pca             <- princomp(lncDf[exprCols],cor=COR)
@@ -758,8 +759,8 @@ func.df <- within( func.df, {
 
 f.df <- getAnnotLncDf(lncDf=df.1,annotDf=func.df,exprCol=2:33,annotColName="lncRnaName")
 f.df[["lncRnaName"]] = ifelse(f.df$lncRnaName == "notFound",f.df$gene_id_short,f.df$lncRnaName)
-pcaAnalysisRemoveOutliersGeneral(lncDf=f.df,exprCols=2:33,foundColword="functional-LncRNA",fileBase="",outDir=func.outdir)
-#source("/Users/adam/work/research/researchProjects/encode/encode-manager/analysis/rnaSeq/pcaAnalysisWOoutlier.R");pcaAnalysisRemoveOutliers(lncDf=f.df,exprCols=2:33,foundColword="functional-LncRNA",fileBase="",outDir=func.outdir)
+pcaAnalysisRemoveOutliersGeneral(lncDf=f.df,exprCols=2:33,foundColword="functional-LncRNA",filebase="",outDir=func.outdir)
+#source("/Users/adam/work/research/researchProjects/encode/encode-manager/analysis/rnaSeq/pcaAnalysisWOoutlier.R");pcaAnalysisRemoveOutliers(lncDf=f.df,exprCols=2:33,foundColword="functional-LncRNA",filebase="",outDir=func.outdir)
 
 
 #lnc.out.dir.robust = "/Users/adam/work/research/researchProjects/encode/encode-manager/plots/lncCompare/PCA-funcLncs-robust"
@@ -767,7 +768,7 @@ pcaAnalysisRemoveOutliersGeneral(lncDf=f.df,exprCols=2:33,foundColword="function
 #s = sd(f.df[[x]])
 #mi = (min(f.df[[x]]) - m) / s
 #robust.df <- as.data.frame(sapply(colnames(f.df[,2:33]),function(x){((f.df[[x]] - mean(f.df[[x]])) / sd(f.df[[x]])) + (min(f.df[[x]]) - mean(f.df[[x]])) / sd(f.df[[x]]) + 1  }))
-#pcaAnalysisRemoveOutliersRobust(lncDf=robust.df,exprCols=1:32,foundColword="functional-LncRNA",fileBase="PCA-",outDir=lnc.out.dir.robust)
+#pcaAnalysisRemoveOutliersRobust(lncDf=robust.df,exprCols=1:32,foundColword="functional-LncRNA",filebase="PCA-",outDir=lnc.out.dir.robust)
 
 lnc.out.dir.allCols = "/Users/adam/work/research/researchProjects/encode/encode-manager/plots/lncCompare/PCA-funcLncs-allColsNorm"
 func.outdir        = "/Users/adam/work/research/researchProjects/encode/encode-manager/plots/lncCompare/PCA-funcLncs"
@@ -779,12 +780,12 @@ f.df$nTimesRest  = ifelse(f.df$nTimesRest == Inf, 0,f.df$nTimesRest)
 norm <- as.data.frame(sapply(colnames(f.df[,num.cols]),function(x){(f.df[[x]] - mean(f.df[[x]])) /sd(f.df[[x]])}))
 norm.df <- cbind(norm,f.df[,which(!colnames(f.df) %in% colnames(norm))])
 
-pcaAnalysisRemoveOutliersGeneral(lncDf=f.df,exprCols=2:33,foundColword="functional-LncRNA",fileBase="",outDir=func.outdir,titleMsg="lpa + lnpa rna seq data")
+pcaAnalysisRemoveOutliersGeneral(lncDf=f.df,exprCols=2:33,foundColword="functional-LncRNA",filebase="",outDir=func.outdir,titleMsg="lpa + lnpa rna seq data")
 pcaAnalysisRemoveOutliersGeneral(lncDf=f.df,exprCols=c(num.cols)[-34], # remove sumExpr, as it is equiv to average expression...(linearly dependant)
-                                 foundColword="functional-LncRNA",fileBase="",outDir=lnc.out.dir.allCols,titleMsg="lpa + lnpa rna seq data+\nall other cols")
+                                 foundColword="functional-LncRNA",filebase="",outDir=lnc.out.dir.allCols,titleMsg="lpa + lnpa rna seq data+\nall other cols")
 
-pcaAnalysisRemoveOutliersGeneral(lncDf=f.df,exprCols=grep("longNonPolyA$",colnames(f.df)),foundColword="functional-LncRNA",fileBase="",outDir=lpa.outdir,titleMsg="longNonPolyA rna-seq")
-pcaAnalysisRemoveOutliersGeneral(lncDf=f.df,exprCols=grep("longPolyA$",colnames(f.df)),foundColword="functional-LncRNA",fileBase="",outDir=lpa.outdir,titleMsg="longPolyA rna-seq")
+pcaAnalysisRemoveOutliersGeneral(lncDf=f.df,exprCols=grep("longNonPolyA$",colnames(f.df)),foundColword="functional-LncRNA",filebase="",outDir=lpa.outdir,titleMsg="longNonPolyA rna-seq")
+pcaAnalysisRemoveOutliersGeneral(lncDf=f.df,exprCols=grep("longPolyA$",colnames(f.df)),foundColword="functional-LncRNA",filebase="",outDir=lpa.outdir,titleMsg="longPolyA rna-seq")
 }
 
 #  grep("longNonPolyA$",colnames(f.df))

@@ -11,11 +11,9 @@ clear <- function(save.vec=c()){ ls.vec <- ls(globalenv());del.vec <-setdiff(ls.
 readInTable <- function(file) read.table(file=file,stringsAsFactors=FALSE,header=TRUE)
 
 #pull in exprLib for some helper functions, and getENSGfromBiomartByRefseq.R for the gene BioMart grabs..
-source( "/Users/adam/work/research/researchProjects/encode/encode-manager/analysis/RnaSeq/exprLib.R")
-source( "/Users/adam/work/research/researchProjects/encode/encode-manager/analysis/getENSGfromBiomartByRefseq.R")
-source( "/Users/adam/work/research/researchProjects/encode/encode-manager/analysis/RnaSeq/exprLib.R")
-source( "/Users/adam/work/research/researchProjects/encode/encode-manager/analysis/getENSGfromBiomartByRefseq.R")
-source( "/Users/adam/work/research/researchProjects/encode/encode-manager/analysis/RnaSeq/pcaAnalysisWOoutlier.R")
+source(paste(home, "/work/research/researchProjects/encode/encode-manager/analysis/rnaSeq/exprLib.R",sep=""))
+source(paste(home, "/work/research/researchProjects/encode/encode-manager/analysis/getENSGfromBiomartByRefseq.R",sep=""))
+source(paste(home, "/work/research/researchProjects/encode/encode-manager/analysis/rnaSeq/pcaAnalysisWOoutlier.R",sep=""))
 
 
 getPcaData = function(exprCols=2:33){
@@ -318,7 +316,7 @@ main <- function(){
   
 }
 
-runLogReg = function(lncDf,outdir = "~/Desktop/testPCA",cols,iter=10,debug= TRUE){
+runLogReg = function(lncDf,outdir = "~/Desktop/testPCA",cols,iter=10,debug= FALSE){
   k <- length(cols) + 1
   n <- dim(lncDf)[1]
   
@@ -350,7 +348,7 @@ runLogReg = function(lncDf,outdir = "~/Desktop/testPCA",cols,iter=10,debug= TRUE
   best.theta =matrix(runif(k*k),k)
   for(i in 1:iter){
     print(i)
-    local = optim(fn=cfLambda(X,y,k),par=matrix(-runif(k*k),k),method= "Nelder-Mead")
+    local = optim(fn=cfLambda(X,y,k),par=matrix(-runif(k*k),k),method= "BFGS")
     #local =  optim(fn=cfLambda(X,y,k),par=diag(k),method= "CG") #we know this works with the getLncPcaData() fun set...see main() in this file...
     #local =  optim(fn=cfLambda(X,y,k),par=diag(k),method= "CG")
     

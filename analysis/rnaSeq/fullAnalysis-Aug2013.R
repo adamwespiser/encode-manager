@@ -3,13 +3,15 @@
 #
 #
 #
+home <- Sys.getenv("HOME")
 
-source("/Users/adam/work/research/researchProjects/encode/encode-manager/analysis/rnaSeq/eigenRank_08272013.R")
-source("/Users/adam/work/research/researchProjects/encode/encode-manager/analysis/rnaSeq/logisticRegPcaExprData.R")
-source('~/work/research/researchProjects/encode/encode-manager/analysis/rnaSeq/pcaAnalysisWOoutlier.R')
+source(paste(home,"/work/research/researchProjects/encode/encode-manager/analysis/rnaSeq/eigenRank_08272013.R",sep=""))
+source(paste(home,"/work/research/researchProjects/encode/encode-manager/analysis/rnaSeq/rnaSeq_qc.R",sep=""))
+source(paste(home,"/work/research/researchProjects/encode/encode-manager/analysis/rnaSeq/logisticRegPcaExprData.R",sep=""))
+
+
 #LOG Reg 
 
-runLogReg(outdir=outdir,lncPca=lncExpr.df)
 
 plotLncRNAComparisons <- function(lncDf=local.df,outdir=outdir,
                                    cols=expr.cols ,titleMsg="",
@@ -20,7 +22,7 @@ plotLncRNAComparisons <- function(lncDf=local.df,outdir=outdir,
   n.total = dim(lncDf)[1]
   n.line  = paste("subset =",foundColword,"\n",n.subset,foundColword,"lncRNAs out of",n.total,"total lncRNAs\n",sep=" ")
   titleWithBanner = function(x)paste(n.line,x,sep="\n")
-  makeOutFile <- function(x){outfile<-paste(paste(outdir,fileBase,sep="/"),x,sep="");print(paste("making",outfile));outfile} # requires outDir & fileBase
+  makeOutFile <- function(x){outfile<-paste(paste(outdir,filebase,sep="/"),x,sep="");print(paste("making",outfile));outfile} # requires outDir & filebase
   
   
   annotColName <- "withinSubset"
@@ -158,7 +160,7 @@ plotLncRNAComparisons <- function(lncDf=local.df,outdir=outdir,
 #                                  foundColword="",filebase=""){
   
 
-runPCA_helper <- function(lncDf=local.df,outdir=outdir
+runPCA_helper <- function(lncDf=local.df,outdir=outdir,
                           cols=expr.cols, titleMsg="",
                           foundColword="",filebase=""){
 
@@ -176,7 +178,7 @@ runPCA_helper <- function(lncDf=local.df,outdir=outdir
   f.df <- getAnnotLncDf(lncDf=df.1,annotDf=func.df,exprCol=2:33,annotColName="lncRnaName")
   f.df[["lncRnaName"]] = ifelse(f.df$lncRnaName == "notFound",f.df$gene_id_short,f.df$lncRnaName)
   
-  pcaAnalysisRemoveOutliersGeneral(lncDf=lncDf,exprCols=expr.cols,foundColword="functional-LncRNA",fileBase=filebase,outDir=outdir)
+  pcaAnalysisRemoveOutliersGeneral(lncDf=lncDf,exprCols=expr.cols,foundColword="functional-LncRNA",filebase=filebase,outDir=outdir)
   
   
   
@@ -243,16 +245,30 @@ lnc.pca.df <- getPcaData()
 lnc.pca.df <- lnc.pca.df[order(lnc.pca.df$label,decreasing=TRUE),]
 
 
+
+
+# get quality control 
+qc.df <- preProcessData()
+if (1 == 1){
+rows.list <- list()
+rows.list[["IDRlessthan0_1"]] <- qc.df[which(qc.df$IDR < 0.1),"gene_id_short"]
+biotypes.vec = c("IDRlessthan0_1")
+basedir = "/home/wespisea/sandbox/idrTest/"
+}
+
+
 # TO DO:
 # 1) figure out outdir system to describe exper on lncRNA
 # 2) 
 
-for(columns in c("lpa","lnpa","bothPullDowns")){
-  expr.cols = cols.list[[columns]]
+#for(columns in c("lpa","lnpa","bothPullDowns")){
+for(columns in c("lpa","bothPullDowns")){ 
+expr.cols = cols.list[[columns]]
   for(biotype in biotypes.vec){
    
     ## EigenRank
     expr.rows = rows.list[[biotype]]
+    expr.cols = cols.list[[columns]]
     print(paste("starting",columns,biotype))
     outdir = paste(basedir,columns,"-",biotype,sep="")
     print(outdir)
@@ -269,7 +285,7 @@ for(columns in c("lpa","lnpa","bothPullDowns")){
 #                                      foundColword="",filebase=""){
     
     print("comparison") 
-    plotLncRNAComparisons(lncDf=local.df,outdir=outdir,
+    plotLncRNAComparisons(lncDf=local.df,outdir=paste(outdir,"/comparison/"sep=""),
                              filebase=paste(columns,biotype,sep="-"), cols=expr.cols,
                              titleMsg=paste("LncRNA",biotype,columns,sep=" "))
     
@@ -285,21 +301,31 @@ for(columns in c("lpa","lnpa","bothPullDowns")){
     local.df <- local.df[which(local.df$tissSpec != 1),]
     nolab <- local.df[which(local.df$label == 0),]
     lab <- local.df[which(local.df$label == 1),]
-    plotEigenVectorsDensity(lab=lab,nolab=nolab,outdir=outdir,
+    plotEigenVectorsDensity(lab=lab,nolab=nolab,outdir=paste(outdir,"/pageRank/",sep=""),
                             filename=paste("tissSpecNotOne",columns,biotype,sep="-"),cols=expr.cols ,titleMsg="")
     
 
     
     ## PCA 
     print("PCA w/ outlier removal")
-    pcaAnalysisRemoveOutliersSelectOutliers(lncDf=lncDf,exprCols=expr.cols,
-                                            foundColword="LncRNA",fileBase=paste(columns,biotype,sep="-"),outDir=outdir,
-                                            titleMsg==paste("LncRNA",biotype,columns,sep=" "))
+    
+    pcaAnalysisRemoveOutliersSelectOutliers(lncDf=local.df,exprCols=which(colnames(local.df) %in% expr.cols),
+                                            foundColword="LncRNA",filebase=paste(columns,biotype,sep="-"),outDir=paste(outdir,"pca",sep=""),
+                                            titleMsg=paste("LncRNA",biotype,columns,sep=" "))
     
     ## Log. Regression
       print("logistic regression")
+    
+    bestCols.df <- data.frame(
+      cols = exprCols,
+      score = sapply(expr.cols,function(x){mean(local.df[which(local.df$label == 1),x]) /mean(local.df[which(local.df$label == 0),x])}))
+    topNCols = 5
+    exprLogReg = bestCols.df[order(bestCols.df$score,decreasing=TRUE)[1:topNCols],"cols"]
+
+    
+    
     # logisticRegPcaExprData.R
-     runLogReg = function(lncDf,outdir = "~/Desktop/testPCA",cols,iter=10,debug= TRUE)
+     runLogReg(lncDf=local.df,outdir =outdir,cols=exprLogReg,iter=5,debug= FALSE)
     
   }
 }

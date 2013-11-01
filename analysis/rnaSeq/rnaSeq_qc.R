@@ -170,7 +170,7 @@ plotData <- function(outdir = getFullPath("plots/rnaSeq-QC/allCells/")){
     df.out[[gsub(x=paste("p",p,sep=""),replacement="_",pattern="\\.")]] <- apply(df.out,1,function(x)f(df=df,celltype=x[["celltype"]],pulldown=x[["pulldown"]]))
   }
   
-  exportAsTable(df.out,file = paste(outdir,"lncRNA_foundInEitherCutoff_appliedToAllLncRNA.tab"))
+  exportAsTable(df.out,file = paste(outdir,"lncRNA_foundInEitherCutoff_appliedToAllLncRNA.tab",sep=""))
   
   ########### IDR
   df.out <- expand.grid(c("longPolyA","longNonPolyA"),celltypes)
@@ -219,7 +219,7 @@ plotData <- function(outdir = getFullPath("plots/rnaSeq-QC/allCells/")){
     ggtitle("All celltype/lnc IDR entries")
   ggsave(paste(outdir,"IDR_density.pdf",sep=""))
   
-  ggplot(d, aes(x=IDR,fill=factor(label)))+geom_bar(binwidth=0.02)+theme_bw()+
+  ggplot(df, aes(x=IDR,fill=factor(label)))+geom_bar(binwidth=0.02)+theme_bw()+
     facet_wrap(~label,ncol=1,scale="free_y")+
     ggtitle("IDR distribution of lncRNA s.t. IDR > 0\nfacet 0 = unlabel & facet 1 = label")
   ggsave(paste(outdir,"IDR_distro.pdf",sep=""))
@@ -243,7 +243,7 @@ plotData <- function(outdir = getFullPath("plots/rnaSeq-QC/allCells/")){
   idrlabel.df$idr = 1
   for(i in 2:1000){
     p = (i - 1)/ 1000
-    tmp = as.data.frame(table(dflabel[dflabel$IDR < p,"celltype"]s))
+    tmp = as.data.frame(table(dflabel[dflabel$IDR < p,"celltype"]))
     tmp$idr = p
     idrlabel.df = rbind(idrlabel.df, tmp)
   }
