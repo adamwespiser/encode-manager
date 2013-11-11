@@ -263,7 +263,7 @@ rows.list[["IDRlessthan0_2"]]  <- qc.df[which(qc.df$IDR < 0.2),"gene_id_short"]
 rows.list[["IDRnotNA"]]        <- qc.df[which(!is.na(qc.df$IDR)),"gene_id_short"]
 rows.list[["allLncRNA"]]       <- qc.df[,"gene_id_short"]
 lncGeneIdShorts.vec = c("IDRlessthan0_01", "IDRlessthan0_1","IDRlessthan0_2","IDRnotNA","allLncRNA")
-rows.list = lapply(rows.list, unique)
+lncGeneIdShorts.vec = lapply(rows.list, unique)
 
 basedir =  getFullPath("plots/fullAnalysisExperiment/")
 }
