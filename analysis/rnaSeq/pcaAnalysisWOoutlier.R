@@ -73,8 +73,9 @@ pdTest <- function(){
 
 
 
-plotDistanceAwayRatio <- function(df,exprCols,
-                                  df.center= suppressMessages(melt(ddply(df[exprCols],.(),numcolwise(mean)))[["value"]]),rand=FALSE){
+plotDistanceAwayRatioLocal <- function(df,exprCols,
+                                  df.center= suppressMessages(melt(ddply(df[exprCols],.(),numcolwise(mean)))[["value"]]),
+                                  rand=FALSE){
   
   df[["withinSubset"]] = ifelse(df[["withinSubset"]] == "true",1,0)
   if(rand == TRUE){
@@ -108,7 +109,7 @@ plotDistanceAwayRatio <- function(df,exprCols,
 }
 
 saveToFilePlotDistAway <- function(df,exprCols,outfile,titleMsg){
-  df = plotDistanceAwayRatio(df,seq_along(exprCols))
+  df = plotDistanceAwayRatioLocal(df,exprCols)
   
   ggplot( df, aes(x=sens,y=prec)) + geom_point() +theme_bw()+
     ggtitle(titleMsg)
@@ -633,7 +634,8 @@ findTopOutliersFromPCA <- function(pca,N,exprCols){
 
 
 
-pcaAnalysisRemoveOutliersSelectOutliers  <- function(lncDf,exprCols,titleMsg,normalFun=FALSE,outDir,filebase,foundColword,COR=FALSE ){
+pcaAnalysisRemoveOutliersSelectOutliers  <- function(lncDf,exprCols,titleMsg,normalFun=FALSE,
+                                                     outDir,filebase,foundColword,COR=FALSE ){
   printReport <- function(report){ if(verbose == TRUE){print(report)}}
   makeOutFile <- function(x){outfile<-paste(paste(outDir,filebase,sep="/"),x,sep="");print(paste("making",outfile));outfile} # requires outDir & filebase
   titleWithBanner <<- function(x)paste(paste("lncRNA subsection = ",foundColword),x,sep="\n")
@@ -658,7 +660,7 @@ pcaAnalysisRemoveOutliersSelectOutliers  <- function(lncDf,exprCols,titleMsg,nor
     #normalize for plotting...
   lnc.pca.factors = normalizePcaFactors(pca=lnc.pca,lncDataFrame=lncDf)
  
-  saveToFilePlotDistAway(lnc.pca.factors,seq_along(exprCols),makeOutFile("allLnc/"),"PR curve on PCA - all lncRNA")
+  saveToFilePlotDistAway(df=lnc.pca.factors,exprCols=seq_along(exprCols),makeOutFile("allLnc/"),"PR curve on PCA - all lncRNA")
   plotPcaCompToFileLabelAndWO(pcaFactors=lnc.pca.factors,baseDir=makeOutFile("allLnc/lncRNA-func-"),fileNameMsg="allLncs",titleMsg=paste("all lnc RNAs",titleMsg),
                               comp1range=c(0,4),comp2range=c(2,10),comp3range=c(0,3.5))
   
@@ -706,7 +708,8 @@ pcaAnalysisRemoveOutliersSelectOutliers  <- function(lncDf,exprCols,titleMsg,nor
   print("making r2 loading on all lncRNA")
   lnc.pca.factors.r2.full <- normalizePcaFactorsFromLoading(pca=lnc.pca.r2,lncDataFrame=lncDf,exprCols=exprCols)
   doubleCols = as.vector(which(sapply(colnames(lnc.pca.factors.r2.full),function(x)(typeof(lnc.pca.factors.r2.full[1,x]) == "double"))))
-  saveToFilePlotDistAway(lnc.pca.factors.r2.full,doubleCols,makeOutFile("removeOut2/"),"PR curve on PCA - remove group 2")
+  
+  saveToFilePlotDistAway(df=lnc.pca.factors.r2.full,exprCols=doubleCols,makeOutFile("removeOut2/"),"PR curve on PCA - remove group 2")
   
   
   #normalizePcaFactorsFromLoadingForRatioTestg(pca=lnc.pca.r2,lncDataFrame=lncDf,exprCols=exprCols)

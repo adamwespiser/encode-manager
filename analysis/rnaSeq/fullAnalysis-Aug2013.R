@@ -17,11 +17,17 @@ plotLncRNAComparisons <- function(lncDf=local.df,outdir=outdir,
                                    cols=expr.cols ,titleMsg="",
                                   foundColword="",filebase=""){
   
+  
+  if(!file.exists(outdir)){
+    dir.create(path =outdir,recursive=TRUE)
+    
+    
+  }
   lncDf$withinSubset = ifelse(lncDf$label == 1, "true","false")
   n.subset = length(which(lncDf$withinSubset == "true"))
   n.total = dim(lncDf)[1]
   n.line  = paste("subset =",foundColword,"\n",n.subset,foundColword,"lncRNAs out of",n.total,"total lncRNAs\n",sep=" ")
-  titleWithBanner = function(x)paste(n.line,x,sep="\n")
+  titleWithBanner = function(x)paste(titleMsg,n.line,x,sep="\n")
   makeOutFile <- function(x){outfile<-paste(paste(outdir,filebase,sep="/"),x,sep="");print(paste("making",outfile));outfile} # requires outDir & filebase
   
   
@@ -62,13 +68,13 @@ plotLncRNAComparisons <- function(lncDf=local.df,outdir=outdir,
   # log and nolog
   ggplot(stat.melt,aes(x=log(value),fill=withinSubset))+geom_density(alpha=I(0.4)) + theme_bw()+
     facet_wrap(~variable,scale="free") +
-    ggtitle(titleWithBanner("measures accross all samples(cell-type/pulldown)"))+
+    ggtitle(titleWithBanner("measures across all samples(cell-type/pulldown)"))+
     xlab("value of facet label")+
     scale_colour_manual(values = c("true"="green","false"="red"))
   ggsave(file=makeOutFile("log-density-plot.pdf"),height=8,width=8)
   
   ggplot(stat.melt,aes(x=log(value),fill=withinSubset))+geom_freqpoly() + theme_bw()+
-    facet_grid(withinSubset~variable,scale="free_y") +
+    facet_grid(withinSubset~variable,scale="free") +
     ggtitle(titleWithBanner("measures accross all samples(cell-type/pulldown)"))+
     xlab("value of facet label")+
     scale_colour_manual(values = c("true"="green","false"="red"))
@@ -82,7 +88,7 @@ plotLncRNAComparisons <- function(lncDf=local.df,outdir=outdir,
   ggsave(file=makeOutFile("compare-density-plot.pdf"),height=8,width=8)
   
   ggplot(stat.melt,aes(x=value,fill=withinSubset))+geom_freqpoly() + theme_bw()+
-    facet_grid(withinSubset~variable,scale="free_y") +
+    facet_grid(withinSubset~variable,scale="free") +
     ggtitle(titleWithBanner("measures accross all samples(cell-type/pulldown)"))+
     xlab("value of facet label")+
     scale_colour_manual(values = c("true"="green","false"="red"))
@@ -94,14 +100,14 @@ plotLncRNAComparisons <- function(lncDf=local.df,outdir=outdir,
   # log and no log
   ggplot(stat.melt,aes(x=withinSubset,y=log(value),fill=withinSubset))+geom_boxplot() + theme_bw()+
     facet_wrap(~variable,scale="free") +
-    ggtitle(titleWithBanner("measures accross all samples(cell-type/pulldown)"))+
+    ggtitle(titleWithBanner("measures across all samples(cell-type/pulldown)"))+
     xlab("value of facet label")
   #+scale_colour_manual(values = c("true"="green","false"="red"))
   ggsave(file=makeOutFile("lncRNA-allcols-log-box-plot.pdf"),height=8,width=8)
   
   ggplot(stat.melt,aes(x=withinSubset,y=value,fill=withinSubset))+geom_boxplot() + theme_bw()+
     facet_wrap(~variable,scale="free") +
-    ggtitle(titleWithBanner("measures accross all samples(cell-type/pulldown)"))+
+    ggtitle(titleWithBanner("measures across all samples(cell-type/pulldown)"))+
     xlab("value of facet label")
   #+scale_colour_manual(values = c("true"="green","false"="red"))
   ggsave(file=makeOutFile("lncRNA-allcols-box-plot.pdf"),height=8,width=8)
@@ -251,9 +257,15 @@ lnc.pca.df <- lnc.pca.df[order(lnc.pca.df$label,decreasing=TRUE),]
 qc.df <- preProcessData()
 if (1 == 1){
 rows.list <- list()
-rows.list[["IDRlessthan0_1"]] <- qc.df[which(qc.df$IDR < 0.1),"gene_id_short"]
-biotypes.vec = c("IDRlessthan0_1")
-basedir = "/home/wespisea/sandbox/idrTest/"
+rows.list[["IDRlessthan0_01"]] <- qc.df[which(qc.df$IDR < 0.01),"gene_id_short"]
+rows.list[["IDRlessthan0_1"]]  <- qc.df[which(qc.df$IDR < 0.1),"gene_id_short"]
+rows.list[["IDRlessthan0_2"]]  <- qc.df[which(qc.df$IDR < 0.2),"gene_id_short"]
+rows.list[["IDRnotNA"]]        <- qc.df[which(!is.na(qc.df$IDR)),"gene_id_short"]
+rows.list[["allLncRNA"]]       <- qc.df[,"gene_id_short"]
+lncGeneIdShorts.vec = c("IDRlessthan0_01", "IDRlessthan0_1","IDRlessthan0_2","IDRnotNA","allLncRNA")
+rows.list = lapply(rows.list, unique)
+
+basedir =  getFullPath("plots/fullAnalysisExperiment/")
 }
 
 
@@ -264,13 +276,13 @@ basedir = "/home/wespisea/sandbox/idrTest/"
 #for(columns in c("lpa","lnpa","bothPullDowns")){
 for(columns in c("lpa","bothPullDowns")){ 
 expr.cols = cols.list[[columns]]
-  for(biotype in biotypes.vec){
+  for(lncGroup in lncGeneIdShorts.vec){
    
     ## EigenRank
-    expr.rows = rows.list[[biotype]]
+    expr.rows = rows.list[[lncGroup]]
     expr.cols = cols.list[[columns]]
-    print(paste("starting",columns,biotype))
-    outdir = paste(basedir,columns,"-",biotype,sep="")
+    print(paste("starting",columns,lncGroup))
+    outdir = paste(basedir,columns,"-",lncGroup,sep="")
     print(outdir)
     if(!file.exists(outdir)){dir.create(outdir)}
     outdir = paste(outdir,"/",sep="")
@@ -285,9 +297,9 @@ expr.cols = cols.list[[columns]]
 #                                      foundColword="",filebase=""){
     
     print("comparison") 
-    plotLncRNAComparisons(lncDf=local.df,outdir=paste(outdir,"/comparison/"sep=""),
-                             filebase=paste(columns,biotype,sep="-"), cols=expr.cols,
-                             titleMsg=paste("LncRNA",biotype,columns,sep=" "))
+    plotLncRNAComparisons(lncDf=local.df,outdir=paste(outdir,"/comparison/",sep=""),
+                             filebase=paste(columns,lncGroup,sep="-"), cols=expr.cols,
+                             titleMsg=paste("LncRNA",lncGroup,columns,sep=" "))
     
     
 
@@ -302,7 +314,7 @@ expr.cols = cols.list[[columns]]
     nolab <- local.df[which(local.df$label == 0),]
     lab <- local.df[which(local.df$label == 1),]
     plotEigenVectorsDensity(lab=lab,nolab=nolab,outdir=paste(outdir,"/pageRank/",sep=""),
-                            filename=paste("tissSpecNotOne",columns,biotype,sep="-"),cols=expr.cols ,titleMsg="")
+                            filename=paste("tissSpecNotOne",columns,lncGroup,sep="-"),cols=expr.cols ,titleMsg="")
     
 
     
@@ -310,8 +322,8 @@ expr.cols = cols.list[[columns]]
     print("PCA w/ outlier removal")
     
     pcaAnalysisRemoveOutliersSelectOutliers(lncDf=local.df,exprCols=which(colnames(local.df) %in% expr.cols),
-                                            foundColword="LncRNA",filebase=paste(columns,biotype,sep="-"),outDir=paste(outdir,"pca",sep=""),
-                                            titleMsg=paste("LncRNA",biotype,columns,sep=" "))
+                                            foundColword="LncRNA",filebase=paste(columns,lncGroup,sep="-"),outDir=paste(outdir,"pca",sep=""),
+                                            titleMsg=paste("LncRNA",lncGroup,columns,sep=" "))
     
     ## Log. Regression
       print("logistic regression")
@@ -320,8 +332,8 @@ expr.cols = cols.list[[columns]]
       cols = exprCols,
       score = sapply(expr.cols,function(x){mean(local.df[which(local.df$label == 1),x]) /mean(local.df[which(local.df$label == 0),x])}))
     topNCols = 5
-    exprLogReg = bestCols.df[order(bestCols.df$score,decreasing=TRUE)[1:topNCols],"cols"]
-
+    exprColsBestIndex = bestCols.df[order(bestCols.df$score,decreasing=TRUE)[1:topNCols],"cols"]
+     exprLogReg = expr.cols[exprColsBestIndex] 
     
     
     # logisticRegPcaExprData.R
