@@ -92,7 +92,7 @@ preProcessData = function(file.split=getFullPath("data/lncRnaExpr_2reps_idr_spli
   df.long[["averageExpr"]] <- apply(df.long[,colnames(df.long)[grep(x=colnames(df.long),pattern="COMB")]],1,function(x)mean(x))
   df.long[["gene_id_short"]] <-  sapply(as.character(df.long$gene_id),function(x){as.vector(strsplit(x,"\\.")[[1]])[1]})
   
-  df.long <- df.long[which(df.long$averageExpr != 0),]
+ # df.long <- df.long[which(df.long$averageExpr != 0),]
   ensg.expressed <- df.long$gene_id_short  
   
   ens.df <- getEnslist()
@@ -105,7 +105,7 @@ preProcessData = function(file.split=getFullPath("data/lncRnaExpr_2reps_idr_spli
   
   # add external id 
   df.one <- df[which(df$label == 1),]
-  df.zero <- df[which(df$labe == 0),]
+  df.zero <- df[which(df$label == 0),]
   df.zero$external_gene_id <- df.zero$gene_id_short
   df.one <- merge(df.one,ensg.extern.df, by.x = "gene_id_short", by.y = "ensembl_gene_id")
   df.comb <- rbind(df.one[,colnames(df.one)],df.zero[,colnames(df.one)])

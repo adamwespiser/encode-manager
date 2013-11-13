@@ -132,7 +132,7 @@ plotLoadingsToFile <- function(pca,outfile,titleMsg=""){
   # plot the heatmap with grey neutral, and green/red as plus minus loading 
   ggplot(loadings.melt,aes(y=cellType,x=as.numeric(component),fill=value))+geom_raster()+xlab("Comp") + 
     scale_fill_gradient2(low="darkred",mid="lightgrey",high="green") + theme_bw()+
-    ggtitle(titleWithBanner(paste("PCA loadings :",titleMsg,sep="")))
+    ggtitle(paste("PCA loadings",titleMsg,sep="\n"))
   ggsave(file=outfile,height=8,width=8)
   
 }
@@ -144,11 +144,11 @@ plotScreeToFile <- function(pca,outfile,outfileECDF,titleMsg=""){
   comp.var.melt <- melt(comp.var, id.var="component")  
   
   ggplot(comp.var.melt,aes(x=component,y=value))+geom_line()+theme_bw()+
-    ggtitle("PCA lncRNA expressionmatrix\nComponent variation over all components")
+    ggtitle(paste("PCA lncRNA expressionmatrix\nComponent variation over all components",titleMsg,sep="\n"))
   ggsave(file=outfile,height=8,width=8)
   
   ggplot(data.frame(cumVar=cumsum(comp.var$pca.std.dev^2)/sum(comp.var$pca.std.dev^2),component=seq_along(colnames(pca$scores))),aes(x=component,y=cumVar))+geom_line()+geom_point()+theme_bw()+
-    ggtitle(titleWithBanner("variance of PCA components"))+xlab("cummulative component")
+    ggtitle(paste("variance of PCA components",titleMsg, sep="\n"))+xlab("cummulative component")
   ggsave(file=outfileECDF,height=8,width=8)
   
   
@@ -634,11 +634,11 @@ findTopOutliersFromPCA <- function(pca,N,exprCols){
 
 
 
-pcaAnalysisRemoveOutliersSelectOutliers  <- function(lncDf,exprCols,titleMsg,normalFun=FALSE,
-                                                     outDir,filebase,foundColword,COR=FALSE ){
+pcaAnalysisRemoveOutliersSelectOutliers  <- function(lncDf,exprCols,normalFun=FALSE,
+                                                     outDir,filebase,foundColword,COR=FALSE, titleMsg=""){
   printReport <- function(report){ if(verbose == TRUE){print(report)}}
   makeOutFile <- function(x){outfile<-paste(paste(outDir,filebase,sep="/"),x,sep="");print(paste("making",outfile));outfile} # requires outDir & filebase
-  titleWithBanner <<- function(x)paste(paste("lncRNA subsection = ",foundColword),x,sep="\n")
+  titleWithBanner <<- function(x)paste(titleMsg,x,sep="\n")
   expr.cols <- exprCols
   
   dirs = c(makeOutFile("allLnc/"),makeOutFile("removeOut1/"),makeOutFile("removeOut2/"),makeOutFile("allLnc-removeOut2-Loadings/"))

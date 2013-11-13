@@ -316,10 +316,16 @@ main <- function(){
   
 }
 
-runLogReg = function(lncDf,outdir = "~/Desktop/testPCA",cols,iter=10,debug= FALSE){
+runLogReg = function(lncDf,outdir = "~/Desktop/testPCA",cols,iter=10,debug= FALSE,
+                     titleMsg="",filebase=""){
   k <- length(cols) + 1
   n <- dim(lncDf)[1]
   
+  if(!file.exists(outdir)){dir.create(outdir,recursive=TRUE)}
+    
+  
+  makeOutFile <- function(x){outfile<-paste(paste(outdir,filebase,sep="/"),x,sep="");print(paste("making",outfile));gsub(" ", "",outfile)} # requires outDir & filebase
+  titleWithBanner <<- function(x)paste(titleMsg,x,sep="\n")
   
   yCount <- length(which(lncDf$label == 1))
   #dataSample = c(1:94,sample(94:length(lnc.pca.df$label),(n-yCount)))
@@ -385,13 +391,13 @@ runLogReg = function(lncDf,outdir = "~/Desktop/testPCA",cols,iter=10,debug= FALS
   df.comb = rbind(dfo.circle,df.ellipse)
   ggplot(df.comb,aes(y=prec,x=sens))+geom_point()+xlim(0,1)+ylim(0,1) + 
     theme_bw() + geom_smooth() + facet_wrap(~type) +
-    ggtitle("Precision/Sensitivity Curve for logistic regression")
-  ggsave(paste(outdir,"elipse.pdf"),height=4,width=6)
+    ggtitle(paste(titleMsg,"Precision/Sensitivity Curve for logistic regression",sep="\n"))
+  ggsave(makeOutFile("elipse.pdf"),height=4,width=6)
   
   df.comb.roc = rbind(df.comb,df.random)
   ggplot(df.comb.roc,aes(x=FPR,y=TPR,color=type))+geom_line()+geom_point()+theme_bw()+geom_abline(slope=1)+
-    ggtitle("ROC Curve of radius based prediction on pca\n")+xlab("False Positive Rate")+ylab("True Positive Rate")
-  ggsave(paste(outdir,"elipse-ROC.pdf"),height=4,width=5)
+    ggtitle(paste(titleMsg,"ROC Curve of radius based prediction on pca\n", sep="\n"))+xlab("False Positive Rate")+ylab("True Positive Rate")
+  ggsave(makeOutFile("elipse-ROC.pdf"),height=4,width=5)
   
   
 }

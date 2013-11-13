@@ -8,7 +8,7 @@ home <- Sys.getenv("HOME")
 source(paste(home,"/work/research/researchProjects/encode/encode-manager/analysis/rnaSeq/eigenRank_08272013.R",sep=""))
 source(paste(home,"/work/research/researchProjects/encode/encode-manager/analysis/rnaSeq/rnaSeq_qc.R",sep=""))
 source(paste(home,"/work/research/researchProjects/encode/encode-manager/analysis/rnaSeq/logisticRegPcaExprData.R",sep=""))
-
+#source(paste(home,"/work/research/researchProjects/encode/encode-manager/analysis/getENSGfromBiomartByRefseq.R",sep=""))
 
 #LOG Reg 
 
@@ -51,6 +51,51 @@ plotLncRNAComparisons <- function(lncDf=local.df,outdir=outdir,
   combinedDerr.df <- merge(lncDf[c("gene_id","withinSubset")],derr.df,by.x="gene_id",by.y="LncRNA_GeneId")
   derr.melt <- melt(combinedDerr.df,id.vars=c("gene_id","withinSubset"))
   comDer.df <- merge(combinedDerr.df,lncDf[c("gene_id","lncRnaName")],by="gene_id")
+  
+  
+  
+  
+  #polar plot 
+  ggplot(melt.df,aes(x=variable,y=value,group=gene_id,color=factor(withinSubset))) + 
+    geom_line()+coord_polar()+
+    theme_bw()+
+    ggtitle(titleWithBanner("star plot of total expression over all samples"))
+  ggsave(file=makeOutFile("polar.pdf"),height=16,width=16)
+  
+  
+  top10LncRNA = unique(melt.df[order(melt.df$value,decreasing=TRUE),"gene_id"])[1:10]
+  ggplot(melt.df[which(!melt.df$gene_id %in% top10LncRNA),],aes(x=variable,y=value,group=gene_id,color=factor(withinSubset))) + 
+    geom_line()+coord_polar()+
+    theme_bw()+
+    ggtitle(titleWithBanner("star plot of total expression over all samples\nwithout top 10 highest lncRNA"))
+  ggsave(file=makeOutFile("polar-removTop10.pdf"),height=16,width=16)
+  
+  ggplot(melt.df,aes(x=variable,y=log2(value),group=gene_id,color=factor(withinSubset))) + 
+    geom_line()+coord_polar()+
+    theme_bw()+
+    ggtitle(titleWithBanner("star plot of total expression over all samples"))
+  ggsave(file=makeOutFile("log-polar.pdf"),height=16,width=16)
+  
+  ggplot(lncDf, aes(x= averageExpr, y = tissSpec, color = factor(withinSubset)))+
+    geom_point() +
+    theme_bw() +
+    ggtitle(titleWithBanner("average expression vs. tissue specificity (JSD)"))
+  ggsave(file=makeOutFile("tissSpec-vs-aveExpr.pdf"),height=16,width=16)
+  
+  
+  ggplot(lncDf, aes(x= log(averageExpr), y = tissSpec, color = factor(withinSubset),size=label))+
+    geom_point() +
+    theme_bw() +
+    ggtitle(titleWithBanner("average expression vs. tissue specificity (JSD)"))
+  ggsave(file=makeOutFile("log-tissSpec-vs-aveExpr.pdf"),height=16,width=16)
+  
+  foundInExpr.df = as.data.frame(table(melt.df[which(melt.df$value > 0 ), "maxExprType"]))
+  colnames(foundInExpr.df) <- c("expr", "count")
+  ggplot(foundInExpr.df, aes(x = expr, y = count))+ geom_bar(stat="identity")+
+    theme_bw()+
+    coord_flip()
+  ggsave(file=makeOutFile("lncRNA-foundInEachExpr.pdf"),height=9,width=6)
+  
   
   ggplot(lncDf,aes(x=tissSpec,fill=withinSubset))+geom_density(alpha=I(0.4)) + theme_bw()+
     ggtitle(titleWithBanner("expression accross all samples(cell-type/pulldown)"))+
@@ -123,7 +168,7 @@ plotLncRNAComparisons <- function(lncDf=local.df,outdir=outdir,
   ggsave(file=makeOutFile("lncRNA-derrien-log-density-plot.pdf"),height=8,width=8)
   
   ggplot(derr.melt,aes(x=log(value),fill=withinSubset))+geom_freqpoly() + theme_bw()+
-    facet_grid(withinSubset~variable,scale="free_y") +
+    facet_grid(withinSubset~variable,scale="free") +
     ggtitle(titleWithBanner("average features from Derrien 2012 datasheet"))+
     xlab("value of facet label")+
     scale_colour_manual(values = c("true"="green","false"="red"))
@@ -144,7 +189,7 @@ plotLncRNAComparisons <- function(lncDf=local.df,outdir=outdir,
   ggsave(file=makeOutFile("lncRNA-derrien-allcols-density-plot.pdf"),height=8,width=8)
   
   ggplot(derr.melt,aes(x=value,fill=withinSubset))+geom_freqpoly() + theme_bw()+
-    facet_grid(withinSubset~variable,scale="free_y") +
+    facet_grid(withinSubset~variable,scale="free") +
     ggtitle(titleWithBanner("average features from Derrien 2012 datasheet"))+
     xlab("value of facet label")+
     scale_colour_manual(values = c("true"="green","false"="red"))
@@ -204,148 +249,167 @@ runPCA_helper <- function(lncDf=local.df,outdir=outdir,
 #####################################################################################
 #####################################################################################
 
-
-
+runCompleteAnalysis <-function(basedir =  getFullPath("plots/fullAnalysisExperiment/")){
+  
+  #get biotype info
+  bm.file= getFullPath("data/lnc_biotype.tab")
+  bm.df <- read.csv(file=bm.file,sep="\t", stringsAsFactors = FALSE)
+  biotypes.list = list(antisense = bm.df[which(bm.df$bm_biotype == "antisense"),"gene_id_short"],
+                       processed_transcript = bm.df[which(bm.df$bm_biotype == "processed_transcript"),"gene_id_short"],
+                       lincRNA = bm.df[which(bm.df$bm_biotype == "lincRNA"),"gene_id_short"],
+                       all_biotypes = bm.df[["gene_id_short"]],
+                       remove_antisense =  bm.df[which(bm.df$bm_biotype != "antisense"),"gene_id_short"]
+  )
+  
+  biotypes.vec = c("antisense","lincRNA","processed_transcript","all_biotypes","remove_antisense")
+  
+  
   ## EigenRank Setup
-sourceFile = getFullPath("data/lncExprWithStats_transEachSample.tab")
-df = readInTable(sourceFile)
-df = df[which(df$averageExpr != 0),]   #df.1 = df.1[which(df.1$averageExpr != 0),]
-df[["gene_id_short"]] =  sapply(as.character(df$gene_id),function(x){as.vector(strsplit(x,"\\.")[[1]])[1]})
-
-doubleCols = colnames(df)[as.vector(sapply(colnames(df),function(x)(typeof(df[1,x]) == "double")))]
-exprCols.lnpa = doubleCols[grep("longNonPolyA$",doubleCols)]
-exprCols.lpa  = doubleCols[grep("longPolyA$",doubleCols)]
-
-lncFound.df = getEnslist()
-lncFound.df = unique(data.frame(ensembl_gene_id=lncFound.df$ensembl_gene_id,external_gene_id=lncFound.df$external_gene_id,gene_biotype=lncFound.df$gene_biotype))
-lncFound.df = lncFound.df[which(lncFound.df$ensembl_gene_id %in% df[["gene_id_short"]]), ]
-
-df$label = 0
-df[which(df$gene_id_short %in% lncFound.df$ensembl_gene_id),"label"] = 1
-
-biotype.df = readInTable(getFullPath("data/lnc_biotype.tab"))
-df = merge(df,biotype.df[c("gene_id_short","bm_biotype")],by.x="gene_id_short",by.y="gene_id_short")
-
-
-
-
-
-cols.list = list(lpa=exprCols.lpa,lnpa=exprCols.lnpa,bothPullDowns=c(exprCols.lpa,exprCols.lnpa))
-
-biotypes.vec = c("antisense","lincRNA","processed_transcript","all_biotypes","remove_antisense")
-
-rows.list = list(antisense = df[which(df$bm_biotype == "antisense"),"gene_id_short"],
-                   processed_transcript = df[which(df$bm_biotype == "processed_transcript"),"gene_id_short"],
-                   lincRNA = df[which(df$bm_biotype == "lincRNA"),"gene_id_short"],
-                   all_biotypes = df[["gene_id_short"]],
-                   remove_antisense =  df[which(df$bm_biotype != "antisense"),"gene_id_short"]
-                   )
-
-basedir = getFullPath("plots/rnaSeq-eigenRank/functionalTypes/")
-
-
-## LogReg Setup
-lnc.pca.df <- getPcaData()
-
-#put label y=1 at top...
-lnc.pca.df <- lnc.pca.df[order(lnc.pca.df$label,decreasing=TRUE),]
-
-
-
-
-# get quality control 
-qc.df <- preProcessData()
-if (1 == 1){
-rows.list <- list()
-rows.list[["IDRlessthan0_01"]] <- qc.df[which(qc.df$IDR < 0.01),"gene_id_short"]
-rows.list[["IDRlessthan0_1"]]  <- qc.df[which(qc.df$IDR < 0.1),"gene_id_short"]
-rows.list[["IDRlessthan0_2"]]  <- qc.df[which(qc.df$IDR < 0.2),"gene_id_short"]
-rows.list[["IDRnotNA"]]        <- qc.df[which(!is.na(qc.df$IDR)),"gene_id_short"]
-rows.list[["allLncRNA"]]       <- qc.df[,"gene_id_short"]
-lncGeneIdShorts.vec = c("IDRlessthan0_01", "IDRlessthan0_1","IDRlessthan0_2","allLncRNA")
-rows.list = lapply(rows.list, unique)
-
-basedir =  getFullPath("plots/fullAnalysisExperiment/")
-}
-
-
-# TO DO:
-# 1) figure out outdir system to describe exper on lncRNA
-# 2) 
-
-#for(columns in c("lpa","lnpa","bothPullDowns")){
-for(columns in c("lpa","bothPullDowns")){ 
-expr.cols = cols.list[[columns]]
-  for(lncGroup in lncGeneIdShorts.vec){
-   
-    ## EigenRank
-    expr.rows = rows.list[[lncGroup]]
-    expr.cols = cols.list[[columns]]
-    print(paste("starting",columns,lncGroup))
-    outdir = paste(basedir,columns,"-",lncGroup,sep="")
-    print(outdir)
-    if(!file.exists(outdir)){dir.create(outdir)}
-    outdir = paste(outdir,"/",sep="")
+  sourceFile = getFullPath("data/lncExprWithStats_transEachSample.tab")
+  df = readInTable(sourceFile)
+  df = df[which(df$averageExpr != 0),]   #df.1 = df.1[which(df.1$averageExpr != 0),]
+  df[["gene_id_short"]] =  sapply(as.character(df$gene_id),function(x){as.vector(strsplit(x,"\\.")[[1]])[1]})
+  
+  doubleCols = colnames(df)[as.vector(sapply(colnames(df),function(x)(typeof(df[1,x]) == "double")))]
+  exprCols.lnpa = doubleCols[grep("longNonPolyA$",doubleCols)]
+  exprCols.lpa  = doubleCols[grep("longPolyA$",doubleCols)]
+  cols.list = list(lpa=exprCols.lpa,lnpa=exprCols.lnpa,bothPullDowns=c(exprCols.lpa,exprCols.lnpa))
+  
+  lncFound.df = getEnslist()
+  lncFound.df = unique(data.frame(ensembl_gene_id=lncFound.df$ensembl_gene_id,external_gene_id=lncFound.df$external_gene_id,gene_biotype=lncFound.df$gene_biotype))
+  lncFound.df = lncFound.df[which(lncFound.df$ensembl_gene_id %in% df[["gene_id_short"]]), ]
+  
+  df$label = 0
+  df[which(df$gene_id_short %in% lncFound.df$ensembl_gene_id),"label"] = 1
+  
+  #biotype.df = readInTable(getFullPath("data/lnc_biotype.tab"))
+  #df = merge(df,biotype.df[c("gene_id_short","bm_biotype")],by.x="gene_id_short",by.y="gene_id_short")  
+  
+  
+  
+  qc.df <- preProcessData()
+  if (1 == 1){
+    rows.list <- list()
+    rows.list[["IDRlessthan0_01"]] <- qc.df[which(qc.df$IDR < 0.01),"gene_id_short"]
+    rows.list[["IDRlessthan0_1"]]  <- qc.df[which(qc.df$IDR < 0.1),"gene_id_short"]
+    rows.list[["IDRlessthan0_2"]]  <- qc.df[which(qc.df$IDR < 0.2),"gene_id_short"]
+    rows.list[["IDRnotNA"]]        <- qc.df[which(!is.na(qc.df$IDR)),"gene_id_short"]
+    rows.list[["allLncRNA"]]       <- qc.df[,"gene_id_short"]
+    lncGeneIdShorts.vec = c("IDRlessthan0_01", "IDRlessthan0_1","IDRlessthan0_2","allLncRNA")
+    rows.list = lapply(rows.list, unique)
+  }
+  
+  
+  
+  analysisPref = list(
+    pca = TRUE,
+    page = TRUE,
+    logreg = TRUE,
+    compare = TRUE)
+  
+  print("starting run ... all libs are loaded...")
+  
+  #for(columns in c("lpa","lnpa","bothPullDowns")){
+  
+  for (biotype in biotypes.vec){
+    lncRNA.biotype <- biotypes.list[[biotype]]
+    basedir = paste(basedir, "/", biotype,"/", sep = "")
+    for(columns in c("lpa","bothPullDowns","lnpa")){ 
+      expr.cols <- cols.list[[columns]]
+      for(lncGroup in lncGeneIdShorts.vec){
+        
+        
+        
+        ## EigenRank
+        expr.rows.group <- rows.list[[lncGroup]]
+        expr.rows <- expr.rows.group[which(expr.rows.group %in% lncRNA.biotype )]
+        
+        expr.cols <- cols.list[[columns]]
+        print(paste("starting",columns,lncGroup))
+        outdir = paste(basedir,columns,"-",lncGroup,sep="")
+        
+        if(!file.exists(outdir)){dir.create(outdir)}
+        outdir = paste(outdir,"/",sep="")
+        
+        
+        local.df = df[which(df$gene_id_short %in% as.vector(expr.rows)),]
+        local.df = local.df[which(!apply(local.df[expr.cols],1,function(x)sum(x)) == 0),]
+        
+        
+        plotMsg = paste("lncRNA group =",lncGroup,"::: data cols =",columns,"\n(",sum(local.df$label), "/", 
+                        dim(local.df)[1], ") = (func/total lncRNA) ::: biotype =",biotype, sep=" ")      
+        #    plotLncRNAComparisons <- function(lncDf=local.df,outdir=outdir,
+        #                                      filename=paste(columns,biotype,sep="-"),cols=expr.cols ,titleMsg="",
+        #                                      foundColword="",filebase=""){
+        
+        if (identical(analysisPref$compare,TRUE)){
+          print("comparison") 
+          plotLncRNAComparisons(lncDf=local.df,outdir=paste(outdir,"/comparison/",sep=""),
+                                filebase=paste(columns,lncGroup,sep="-"), cols=expr.cols,
+                                titleMsg=plotMsg)
+        }
+        
+        
+        
+        if (identical(analysisPref$page,TRUE)){
+          print("page rank")
+          # find fn in eigenRank_08272013.R
+          #plotEigenVectorsDensity(lab=lab,nolab=nolab,outdir=outdir,
+          #                        filename=paste(columns,biotype,sep="-"),cols=expr.cols ,titleMsg="")
+          
+          #plot w/o tissSpec == 1 ( what should by on axis is easier to cluster, w/o ts == 1 we can remove axis effects)
+          #local.df <- df[which(df$gene_id_short %in% as.vector(expr.rows)),]
+         
+          nolab <- local.df[which(local.df$label == 0),]
+          lab <- local.df[which(local.df$label == 1),]
+          plotEigenVectorsDensity(lab=lab,nolab=nolab,outdir=paste(outdir,"/pageRank/",sep=""),
+                                  filename=paste(columns,lncGroup,sep="-"),cols=expr.cols ,titleMsg=plotMsg)
+          
+          localts.df <- local.df[which(local.df$tissSpec != 1),]
+          nolabts <- localts.df[which(localts.df$label == 0),]
+          labts <- localts.df[which(localts.df$label == 1),]
+          plotMsgTs = paste("lncRNA group =",lncGroup,"::: data cols =",columns,"\n(",sum(localts.df$label), "/", 
+                          dim(localts.df)[1], ") = (func/total lncRNA) ::: biotype =",biotype, sep=" ") 
+          plotEigenVectorsDensity(lab=labts,nolab=nolabts,outdir=paste(outdir,"/pageRank/",sep=""),
+                                  filename=paste("tissSpecNotOne",columns,lncGroup,sep="-"),cols=expr.cols ,titleMsg=plotMsgTs)
+          
+          
+          
+        } # end page
+        
+        
+        ## PCA 
+        if (identical(analysisPref$pca,TRUE)){
+          print("PCA w/ outlier removal")
+          
+          pcaAnalysisRemoveOutliersSelectOutliers(lncDf=local.df,exprCols=which(colnames(local.df) %in% expr.cols),
+                                                  foundColword="LncRNA",filebase=paste(columns,lncGroup,sep="-"),outDir=paste(outdir,"pca",sep=""),
+                                                  titleMsg=plotMsg)
+        }
+        ## Log. Regression
+        if (identical(analysisPref$logreg,TRUE)){
+          print("logistic regression")
+          
+          bestCols.df <- data.frame(
+            cols = exprCols,
+            score = sapply(expr.cols,function(x){mean(local.df[which(local.df$label == 1),x]) /mean(local.df[which(local.df$label == 0),x])}))
+          topNCols = 5
+          exprColsBestIndex = bestCols.df[order(bestCols.df$score,decreasing=TRUE)[1:topNCols],"cols"]
+          exprLogReg = expr.cols[exprColsBestIndex] 
+          
+          
+          # logisticRegPcaExprData.R
+          runLogReg(lncDf=local.df,outdir=paste(outdir,"logReg",sep=""),
+                    cols=exprLogReg,iter=5,debug= FALSE,
+                    filebase=paste(columns,lncGroup,sep="-"),
+                    titleMsg=plotMsg)
+        } # end log reg
+      }
+    }
     
-    
-    local.df = df[which(df$gene_id_short %in% as.vector(expr.rows)),]
-   
-    
-    
-#    plotLncRNAComparisons <- function(lncDf=local.df,outdir=outdir,
-#                                      filename=paste(columns,biotype,sep="-"),cols=expr.cols ,titleMsg="",
-#                                      foundColword="",filebase=""){
-    
-    print("comparison") 
-    plotLncRNAComparisons(lncDf=local.df,outdir=paste(outdir,"/comparison/",sep=""),
-                             filebase=paste(columns,lncGroup,sep="-"), cols=expr.cols,
-                             titleMsg=paste("LncRNA",lncGroup,columns,sep=" "))
-    
-    
-
-    print("page rank")
-    # find fn in eigenRank_08272013.R
-    #plotEigenVectorsDensity(lab=lab,nolab=nolab,outdir=outdir,
-    #                        filename=paste(columns,biotype,sep="-"),cols=expr.cols ,titleMsg="")
-    
-    #plot w/o tissSpec == 1 ( what should by on axis is easier to cluster, w/o ts == 1 we can remove axis effects)
-    local.df <- df[which(df$gene_id_short %in% as.vector(expr.rows)),]
-    local.df <- local.df[which(local.df$tissSpec != 1),]
-    nolab <- local.df[which(local.df$label == 0),]
-    lab <- local.df[which(local.df$label == 1),]
-    plotEigenVectorsDensity(lab=lab,nolab=nolab,outdir=paste(outdir,"/pageRank/",sep=""),
-                            filename=paste("tissSpecNotOne",columns,lncGroup,sep="-"),cols=expr.cols ,titleMsg="")
-    
-
-    
-    ## PCA 
-    print("PCA w/ outlier removal")
-    
-    pcaAnalysisRemoveOutliersSelectOutliers(lncDf=local.df,exprCols=which(colnames(local.df) %in% expr.cols),
-                                            foundColword="LncRNA",filebase=paste(columns,lncGroup,sep="-"),outDir=paste(outdir,"pca",sep=""),
-                                            titleMsg=paste("LncRNA",lncGroup,columns,sep=" "))
-    
-    ## Log. Regression
-      print("logistic regression")
-    
-    bestCols.df <- data.frame(
-      cols = exprCols,
-      score = sapply(expr.cols,function(x){mean(local.df[which(local.df$label == 1),x]) /mean(local.df[which(local.df$label == 0),x])}))
-    topNCols = 5
-    exprColsBestIndex = bestCols.df[order(bestCols.df$score,decreasing=TRUE)[1:topNCols],"cols"]
-     exprLogReg = expr.cols[exprColsBestIndex] 
-    
-    
-    # logisticRegPcaExprData.R
-     runLogReg(lncDf=local.df,outdir =outdir,cols=exprLogReg,iter=5,debug= FALSE)
     
   }
 }
-
-
-
-
-#function(df,lab,nolab,outdir,filename,cols,titleMsg="")
 
 
 
