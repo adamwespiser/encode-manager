@@ -27,7 +27,7 @@ plotLncRNAComparisons <- function(lncDf=local.df,outdir=outdir,
   n.subset = length(which(lncDf$withinSubset == "true"))
   n.total = dim(lncDf)[1]
   n.line  = paste("subset =",foundColword,"\n",n.subset,foundColword,"lncRNAs out of",n.total,"total lncRNAs\n",sep=" ")
-  titleWithBanner = function(x)paste(titleMsg,n.line,x,sep="\n")
+  titleWithBanner = function(x)paste(titleMsg,x,sep="\n")
   makeOutFile <- function(x){outfile<-paste(paste(outdir,filebase,sep="/"),x,sep="");print(paste("making",outfile));outfile} # requires outDir & filebase
   
   
@@ -249,7 +249,7 @@ runPCA_helper <- function(lncDf=local.df,outdir=outdir,
 #####################################################################################
 #####################################################################################
 
-runCompleteAnalysis <-function(basedir =  getFullPath("plots/fullAnalysisExperiment/")){
+runCompleteAnalysis <-function(outdir =  getFullPath("plots/fullAnalysisExperiment/")){
   
   #get biotype info
   bm.file= getFullPath("data/lnc_biotype.tab")
@@ -313,7 +313,7 @@ runCompleteAnalysis <-function(basedir =  getFullPath("plots/fullAnalysisExperim
   
   for (biotype in biotypes.vec){
     lncRNA.biotype <- biotypes.list[[biotype]]
-    basedir = paste(basedir, "/", biotype,"/", sep = "")
+    basedir = paste(outdir, "/", biotype,"/", sep = "")
     for(columns in c("lpa","bothPullDowns","lnpa")){ 
       expr.cols <- cols.list[[columns]]
       for(lncGroup in lncGeneIdShorts.vec){
@@ -348,7 +348,6 @@ runCompleteAnalysis <-function(basedir =  getFullPath("plots/fullAnalysisExperim
                                 filebase=paste(columns,lncGroup,sep="-"), cols=expr.cols,
                                 titleMsg=plotMsg)
         }
-        
         
         
         if (identical(analysisPref$page,TRUE)){
