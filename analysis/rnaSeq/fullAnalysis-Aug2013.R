@@ -12,6 +12,24 @@ source(paste(home,"/work/research/researchProjects/encode/encode-manager/analysi
 
 #LOG Reg 
 
+editStatsForLncDf <- function(expr.df, cols){
+  
+  expr.df <- applyAndAppendFnDf(expr.df,expr.cols,entropy,"entropyExpr")
+  expr.df <- applyAndAppendFnDf(expr.df,expr.cols,sum,"sumExpr")
+  expr.df <- applyAndAppendFnDf(expr.df,expr.cols,var,"varianceExpr")
+  expr.df <- applyAndAppendFnDf(expr.df,expr.cols,mean,"averageExpr")
+  expr.df <- applyAndAppendFnDf(expr.df,expr.cols,min,"minExpr")
+  expr.df <- applyAndAppendFnDf(expr.df,expr.cols,max,"maxExpr")
+  
+  expr.df <- applyAndAppendFnDf(expr.df,expr.cols,function(x)maxExpr(x,expr.cols),"maxExprType")
+  expr.df <- applyAndAppendFnDf(df=expr.df,cols=expr.cols,FUN=function(x)threeTimesRestSpecifity(x,expr.cols),"threeTimesRest")
+  expr.df <- applyAndAppendFnDf(df=expr.df,cols=expr.cols,FUN=function(x)nTimesRestSpecifity(x,expr.cols),"nTimesRest")
+  expr.df <- applyAndAppendFnDf(df=expr.df,cols=expr.cols,FUN=function(x)calcTissSpec(x,expr.cols),"tissSpec")
+  expr.df
+  
+}
+
+
 
 plotLncRNAComparisons <- function(lncDf=local.df,outdir=outdir,
                                    cols=expr.cols ,titleMsg="",
@@ -21,7 +39,6 @@ plotLncRNAComparisons <- function(lncDf=local.df,outdir=outdir,
   if(!file.exists(outdir)){
     dir.create(path =outdir,recursive=TRUE)
     
-    
   }
   lncDf$withinSubset = ifelse(lncDf$label == 1, "true","false")
   n.subset = length(which(lncDf$withinSubset == "true"))
@@ -30,6 +47,8 @@ plotLncRNAComparisons <- function(lncDf=local.df,outdir=outdir,
   titleWithBanner = function(x)paste(titleMsg,x,sep="\n")
   makeOutFile <- function(x){outfile<-paste(paste(outdir,filebase,sep="/"),x,sep="");print(paste("making",outfile));outfile} # requires outDir & filebase
   
+  
+  lncDf <- editStatsForLncDf(expr.df = lncDf, cols = cols)
   
   annotColName <- "withinSubset"
   id.vec <- c("entropyExpr","threeTimesRest","maxExprType","tissSpec","withinSubset")
@@ -306,6 +325,9 @@ runCompleteAnalysis <-function(outdir =  getFullPath("plots/fullAnalysisExperime
     page = TRUE,
     logreg = TRUE,
     compare = TRUE)
+  analysisPref$pca = FALSE;analysisPref$page = FALSE; analysisPref$logreg = FALSE;
+  
+  
   
   print("starting run ... all libs are loaded...")
   
@@ -392,9 +414,9 @@ runCompleteAnalysis <-function(outdir =  getFullPath("plots/fullAnalysisExperime
           bestCols.df <- data.frame(
             cols = exprCols,
             score = sapply(expr.cols,function(x){mean(local.df[which(local.df$label == 1),x]) /mean(local.df[which(local.df$label == 0),x])}))
-          topNCols = 5
+          topNCols = 10
           exprColsBestIndex = bestCols.df[order(bestCols.df$score,decreasing=TRUE)[1:topNCols],"cols"]
-          exprLogReg = expr.cols[exprColsBestIndex] 
+          exprLogReg = expr.cols[which(exprCols %in% exprColsBestIndex)] 
           
           
           # logisticRegPcaExprData.R

@@ -137,29 +137,40 @@ gfLambda <- function(X,y,k){
   
 }
 
+
+
+
+gfLambdaT <- function(X,y,k){
+  function(thetaVec){
+    theta = matrix(thetaVec,k)
+    xTx = apply(X,1,function(row)t(row) %*% theta %*% row)
+    sig = sigmoid(xTx)
+    # print(length(y),length(sig))
+    s1 = sum(sig-y)
+   # as.vector(unlist(numcolwise(mean)(as.data.frame(t(apply(X,1,function(x){x %*% t(x)})))) * dim(X)[1])) * s1
+    matrix(apply(X,1,function(x){as.vector(tcrossprod(x))}) %*% (sig-y),k)
+  }
+  
+}
+
 gfLambdaIterate <- function(X,y,k){
   function(thetaVec){
     theta = matrix(thetaVec,k)
     xTx = apply(X,1,function(row)t(row) %*% theta %*% row)
     sig = sigmoid(xTx)
     outMat = matrix(rep(0,k*k),k)
-    for( row in 1:length(y)){
-      xRow = X[row,]
-      rowSum = y[row] - sig[row]
-      xxT =  X[row,] %*% t(X[row,]) * rowSum * 1/length(y)      
-      for(j in 1:k){
-       for(i in 1:k){ 
-        outMat[i,j] = outMat[i,j] + xxT[i,j]
-  
-       }
-       }
+    for(j in 1:k){
+      for(i in 1:k){ 
+        for(row in 1:length(y)){
+          xxTLocal =  X[row,i] * X[row,j] 
+          outMat[i,j] = outMat[i,j] + (sig[row] - y[row]) * xxTLocal 
+        }
+      }
     }
-    
-    outMat 
-    
+    outMat
   }
-  
 }
+
 
 
 filterXbyOptimTheta <- function(X,thetaVec,k){
@@ -344,6 +355,7 @@ runLogReg = function(lncDf,outdir = "~/Desktop/testPCA",cols,iter=10,debug= FALS
   #opt.lnc = optim(fn=cfLamda(X,y,k),gr=gfLambda(X,y,k),par=thetaGuess,method= "L-BFGS-B")
   #optim(fn=cfLamda(X,y,k),gr=gfLambda(X,y,k),par=thetaGuess,method= "CG") -> o #400
   #optim(fn=cfLamda(X,y,k),par=matrix(runif(k*k),k),method= "BFGS")
+  o <- optim(fn=cfLambda(X,y,k),gr=gfLambdaIterate(X,y,k),par=matrix(runif(k*k),k),method= "BFGS");o$value
   o <- optim(fn=cfLambda(X,y,k),gr=gfLambda(X,y,k),par=matrix(thetaGuess,k),method= "BFGS")
   # create cost function
   # create gradient
