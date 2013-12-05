@@ -25,7 +25,7 @@ getPcaData = function(exprCols=2:33){
   lnc.expr=readInTable(lnc.in.file)
   lnc.expr$gene_id_short <- sapply(lnc.expr$gene_id,function(x){as.vector(strsplit(x,"\\.")[[1]])[1]})
   func.df <- getEnslist()
- 
+  
   
   normalizePcaFactorsFromLoadingForRatioTestLocal <- function(pca,lncDataFrame,exprCols){
     lncDataFrame[exprCols] = transformDataByPCA(df=lncDataFrame[,exprCols],pca=pca)
@@ -50,7 +50,7 @@ getPcaData = function(exprCols=2:33){
   lncDf.reduced.2 <- f.df[which(!f.df$lncRnaName %in% r2.vec),]
   
   lnc.pca             <- princomp(lncDf.reduced.2[exprCols],cor=FALSE)
-
+  
   exprCols=2:33
   lnc.pca.factors.r2.full <- normalizePcaFactorsFromLoadingForRatioTestLocal(pca=lnc.pca,lncDataFrame=comb.df,exprCols=exprCols)
   
@@ -61,9 +61,11 @@ getPcaData = function(exprCols=2:33){
   pca.df
 }
 
+#sigmoid <- function(x){ 1 / (1 + exp(-1 * x/1000))}
 sigmoid <- function(x){ 1 / (1 + exp(-1 * x))}
 
-#must accept theata as vector
+
+#must accept theata as vectore
 costFunction <- function(X,y,thetaVec,k){
   theta = matrix(thetaVec,k,k)
   xTx = apply(X,1,function(row)t(row) %*% theta %*% row)
@@ -76,30 +78,32 @@ costFunction <- function(X,y,thetaVec,k){
 
 cfLambda_old <- function(X,y,k){
   function(thetaVec){
-  theta = matrix(thetaVec,k)
-  xTx = apply(X,1,function(row){t(row) %*% theta %*% row})
-  sig = abs(sigmoid(xTx))
-  z1 = ifelse(y ==1, -log(sig),-log(1- sig))
-  -1/length(y) * sum(ifelse(z1 == Inf, 0, z1))
+    theta = matrix(thetaVec,k)
+    xTx = apply(X,1,function(row){t(row) %*% theta %*% row})
+    sig = abs(sigmoid(xTx))
+    z1 = ifelse(y ==1, -log(sig),-log(1- sig))
+    -1/length(y) * sum(ifelse(z1 == Inf, 0, z1))
   }
 }
 
 
-cfLambdatt <- function(X,y,k,c){
-    theta = diag(k) * c
+cfLambdaT <- function(X,y,k){
+  function(thetaVec){
+    theta = matrix(thetaVec,k)
     xTx = apply(X,1,function(row){t(row) %*% theta %*% row})
     sig = sigmoid(xTx)
-    z1 = ifelse(y ==1, log(sig),log(1- sig))
+    z1 = ifelse(y ==1, log(sig),-log(exp(xTx) + 1))
     -1/length(y) * sum(ifelse(z1 == -Inf, 0, z1))
+  }
 }
 
 cfLambda <- function(X,y,k){
   function(thetaVec){
-  theta = matrix(thetaVec,k)
-  xTx = apply(X,1,function(row){t(row) %*% theta %*% row})
-  sig = sigmoid(xTx)
-  z1 = ifelse(y ==1, log(sig),log(1- sig))
-  -1/length(y) * sum(ifelse(z1 == -Inf, 0, z1))
+    theta = matrix(thetaVec,k)
+    xTx = apply(X,1,function(row){t(row) %*% theta %*% row})
+    sig = sigmoid(xTx)
+    z1 = ifelse(y ==1, log(sig),log(1- sig))
+    -1/length(y) * sum(ifelse(z1 == -Inf, 0, z1))
   }
 }
 
@@ -108,23 +112,23 @@ cfLambdaReg <- function(X,y,k,lambda){
     theta = matrix(thetaVec,k)
     xTx = apply(X,1,function(row){t(row) %*% theta %*% row})
     sig = sigmoid(xTx)
-    z1 = ifelse(y ==1, log(sig),log(1- sig))
+    z1 = ifelse(y ==1, log(sig),-log(exp(xTx) + 1))
     -1/length(y) * sum(ifelse(z1 == -Inf, 0, z1)) + (lambda/(2 * length(y))) * sum(thetaVec ^2 )
   }
 }
 
 cfLambdaIterate <- function(X,y,k){
-    function(thetaVec){
-      theta = matrix(thetaVec,k)
-      xTx = apply(X,1,function(row)t(row) %*% theta %*% row)
-      sig = sigmoid(xTx)
-      cost = 0
-      for( row in 1:length(y)){
-        tmp = y[row]*log(sig[row]) + (1 - y[row])*log(1- sig[row])
-        
-      }
+  function(thetaVec){
+    theta = matrix(thetaVec,k)
+    xTx = apply(X,1,function(row)t(row) %*% theta %*% row)
+    sig = sigmoid(xTx)
+    cost = 0
+    for( row in 1:length(y)){
+      tmp = y[row]*log(sig[row]) + (1 - y[row])*log(1- sig[row])
+      cost = cost + tmp
+    }
     cost * (-1/length(y))
-}}
+  }}
 
 
 gradFunction <- function(X,y,thetaVec){
@@ -140,7 +144,7 @@ gfLambda <- function(X,y,k){
     theta = matrix(thetaVec,k)
     xTx = apply(X,1,function(row)t(row) %*% theta %*% row)
     sig = sigmoid(xTx)
-   # print(length(y),length(sig))
+    # print(length(y),length(sig))
     s1 = sum(sig-y)
     (1/length(y))* (as.vector(unlist(numcolwise(mean)(as.data.frame(t(apply(X,1,function(x){x %*% t(x)})))) * dim(X)[1])) * s1)
   }
@@ -157,7 +161,7 @@ gfLambdaT <- function(X,y,k){
     sig = sigmoid(xTx)
     # print(length(y),length(sig))
     s1 = sum(sig-y)
-   # as.vector(unlist(numcolwise(mean)(as.data.frame(t(apply(X,1,function(x){x %*% t(x)})))) * dim(X)[1])) * s1
+    # as.vector(unlist(numcolwise(mean)(as.data.frame(t(apply(X,1,function(x){x %*% t(x)})))) * dim(X)[1])) * s1
     (1/length(y)) * matrix(apply(X,1,function(x){as.vector(tcrossprod(x))}) %*% (sig-y),k)
   } 
 }
@@ -165,7 +169,7 @@ gfLambdaT <- function(X,y,k){
 # a <- gfLambdaT(X,y,k)(thetaVec)
 # gfLambdaIterate(X,y,k)(thetaVec)
 
-gfLambdaT_reg <- function(X,y,k,lambda){
+gfLambdaReg <- function(X,y,k,lambda){
   function(thetaVec){
     theta = matrix(thetaVec,k)
     regTheta = theta * (lambda / length(y))
@@ -174,7 +178,7 @@ gfLambdaT_reg <- function(X,y,k,lambda){
     # print(length(y),length(sig))
     s1 = sum(sig-y)
     # as.vector(unlist(numcolwise(mean)(as.data.frame(t(apply(X,1,function(x){x %*% t(x)})))) * dim(X)[1])) * s1
-    matrix(apply(X,1,function(x){as.vector(tcrossprod(x))}) %*% (sig-y),k) + regTheta
+    (1/length(y)) * matrix(apply(X,1,function(x){as.vector(tcrossprod(x))}) %*% (sig-y),k) + regTheta
   }
   
 }
@@ -196,9 +200,9 @@ gfLambdaIterate <- function(X,y,k){
         }
         outMat[i,j] <- tmp
       }
-     
+      
     }
-    as.vector(outMat * (1/length(y)))
+    outMat * (1/length(y))
   }
 }
 
@@ -209,8 +213,8 @@ filterXbyOptimTheta <- function(X,thetaVec,k){
   guess = apply(X,1,function(row) t(row) %*% matrix(thetaVec,k) %*% row)
   
   optim(fn=cfLamda(X,y,k),par=runif(k*k),method= "CG") -> o #$;o$value
-   X = as.matrix(lnc.pca.df[1:n,1:k-1])
-   X = cbind(rep(1,dim(X)[1]),X)
+  X = as.matrix(lnc.pca.df[1:n,1:k-1])
+  X = cbind(rep(1,dim(X)[1]),X)
   y = as.matrix(lnc.pca.df[1:n,33])
   
   guess = apply(X,1,function(row) t(row) %*% matrix(o$par,k) %*% row)
@@ -226,13 +230,13 @@ filterXbyOptimTheta_getGuess <- function(X,thetaVec,k){
   theta = matrix(thetaVec,k)
   guess = apply(X,1,function(row) t(row) %*% matrix(thetaVec,k) %*% row)
   
- # optim(fn=cfLambda(X,y,k),par=runif(k*k),method= "CG") -> o #$;o$value
- # X = as.matrix(lnc.pca.df[1:n,1:k-1])
-#  X = cbind(rep(1,dim(X)[1]),X)
-#  y = as.matrix(lnc.pca.df[1:n,33])
+  # optim(fn=cfLambda(X,y,k),par=runif(k*k),method= "CG") -> o #$;o$value
+  # X = as.matrix(lnc.pca.df[1:n,1:k-1])
+  #  X = cbind(rep(1,dim(X)[1]),X)
+  #  y = as.matrix(lnc.pca.df[1:n,33])
   
-#  guess = apply(X,1,function(row) t(row) %*% matrix(thetaVec,k) %*% row)
-#  guess
+  #  guess = apply(X,1,function(row) t(row) %*% matrix(thetaVec,k) %*% row)
+  #  guess
 }
 
 
@@ -294,7 +298,7 @@ main <- function(){
   X = as.matrix(lnc.pca.df[dataSample,1:k-1])
   X = cbind(rep(1,dim(X)[1]),X)
   y = as.matrix(lnc.pca.df[dataSample,33])
-    
+  
   X.full = as.matrix(lnc.pca.df[,1:k-1])
   X.full = cbind(rep(1,dim(X.full)[1]),X.full)
   y.full = as.matrix(lnc.pca.df[,33])
@@ -303,7 +307,7 @@ main <- function(){
   
   thetaGuess = runif(k*k)
   zeroGuess  = rep(0,k*k)
-    
+  
   #opt.lnc = optim(fn=cfLamda(X,y,k),gr=gfLambda(X,y,k),par=thetaGuess,method= "L-BFGS-B")
   #optim(fn=cfLamda(X,y,k),gr=gfLambda(X,y,k),par=thetaGuess,method= "CG") -> o #400
   #optim(fn=cfLamda(X,y,k),par=matrix(runif(k*k),k),method= "BFGS")
@@ -324,7 +328,7 @@ main <- function(){
       best.cost = local$value
       best.theta = local$par
     }
-    }
+  }
   
   dfo = plotDistanceAwayRatio(df=as.data.frame(X.full),label=y.full,exprCols=1:k,ellipse=FALSE)
   #ggplot(dfo,aes(y=prec,x=sens))+geom_point()+xlim(0,1)+ylim(0,1)+theme_bw()+geom_smooth()
@@ -332,7 +336,7 @@ main <- function(){
   
   guess = apply(X.full,1,function(row) t(row) %*% matrix(best.theta,k) %*% row)
   df = data.frame(x=guess,ellipse=guess,y=y.full,label=y.full)
- # ggplot(df,aes(x=log(x),fill=factor(y)))+geom_density(alpha=I(0.6))
+  # ggplot(df,aes(x=log(x),fill=factor(y)))+geom_density(alpha=I(0.6))
   df.plot= plotDistanceAwayRatio(df,label=y.full)
   df.plot$type = "ellipse"
   
@@ -347,7 +351,7 @@ main <- function(){
     geom_smooth() + 
     facet_wrap(~type)+
     ggtitle(paste("Log Reg: rows =",n,"cols=",k,"\nPCA data used"))
-
+  
   ggsave("~/Desktop/ellipse2.pdf",height=4,width=6)
   
   df.comb.roc = rbind(dfo,df.plot,df.random)
@@ -364,20 +368,20 @@ runLogReg = function(lncDf,outdir = "~/Desktop/testPCA",cols,iter=10,debug= FALS
   n <- dim(lncDf)[1]
   
   if(!file.exists(outdir)){dir.create(outdir,recursive=TRUE)}
-    
+  
   
   makeOutFile <- function(x){outfile<-paste(paste(outdir,filebase,sep="/"),x,sep="");print(paste("making",outfile));gsub(" ", "",outfile)} # requires outDir & filebase
   titleWithBanner <<- function(x)paste(titleMsg,x,sep="\n")
   
   yCount <- length(which(lncDf$label == 1))
   #dataSample = c(1:94,sample(94:length(lnc.pca.df$label),(n-yCount)))
- # dataSample = 1:n
+  # dataSample = 1:n
   X <- as.matrix(lncDf[,cols])
   X <- cbind(rep(1,dim(X)[1]),X)
   y <- as.matrix(lncDf[,"label"])
   
   # we need to center X:
-#  X <- apply(X,2,function(x){x - mean(x)})
+  #  X <- apply(X,2,function(x){x - mean(x)})
   X[,1] <- 1
   
   thetaGuess <- runif(k*k)
@@ -408,7 +412,7 @@ runLogReg = function(lncDf,outdir = "~/Desktop/testPCA",cols,iter=10,debug= FALS
       best.theta = local$par
     }
   }
- # guess = filterXbyOptimTheta_getGuess(X,best.theta,k)
+  # guess = filterXbyOptimTheta_getGuess(X,best.theta,k)
   if("o" %in% ls() && debug == TRUE){
     best.cost = o$value
     best.theta = o$par
@@ -471,11 +475,11 @@ runLogRegTheta = function(X,k,y,cols,iter=10,reg= FALSE,lambda = 1){
     }
   }
   # guess = filterXbyOptimTheta_getGuess(X,best.theta,k)
-   best.theta;
+  best.theta;
 }
 
 testTheta <- function(X,k,y,cols, theta){
-
+  
   predictLabel <- ifelse(apply(X,1,function(x){t(x) %*% theta %*% x} ) < 0, 0, 1)
   predictY <- ifelse(predictLabel == y, 1, 0)
   sum(predictY)/ length(predictY)
@@ -490,24 +494,27 @@ trainAndTestLogReg <- function(lncDf, ratio, cols, mainEffects=TRUE,reg=FALSE,la
   k <- length(cols) + 1
   n <- dim(lncDf)[1]
   yCount <- length(which(lncDf$label == 1))
-
+  
   X <- as.matrix(lncDf[,cols])
   X <- cbind(rep(1,dim(X)[1]),X)
   y <- as.matrix(lncDf[,"label"])
   
   # we need to center X:
   #  X <- apply(X,2,function(x){x - mean(x)})
-
+  
   if (TRUE == mainEffects){
-  X[,1] <- 1
+    X[,1] <- 1
   } else{
     X <- X[,-1]
     k <- k - 1
   }
   
+  X <- X / max(X)
+  
   train = sample(1:totalCount, totalCount * ratio)
-  theta = runLogRegTheta(X[train,],k,y,cols,iter=iter,reg=reg,lambda=lambda)
-  testTheta(X[-train,],k,y,cols,theta)
+  #theta = runLogRegTheta(X[train,],k,y,cols,iter=iter,reg=reg,lambda=lambda)
+  theta = matrix(runNLM(X[train,],y[train],k,reg,lambda)$estimate,k)
+  testTheta(X[-train,],k,y[-train],cols,theta)
   
 }
 
@@ -530,8 +537,8 @@ test1 = function(){
   nn = 1000
   lower.df= data.frame(x0 = rep(1,nn),
                        x1 = runif(nn)*2 -1 ,
-             x2 = runif(nn)*2 - 1,
-            y = rep(0,nn))
+                       x2 = runif(nn)*2 - 1,
+                       y = rep(0,nn))
   lower.df$dist <- apply(lower.df, 1, function(x)sqrt(x[["x2"]]^2  + x[["x1"]]^2))
   lower.df <- lower.df[which(lower.df$dist < 1),]
   lowerMax =  ifelse(dim(lower.df)[1] > 100, 100, dim(lower.df)[1])
@@ -558,16 +565,59 @@ test1 = function(){
   
   ggplot(t1,aes(x,y))+geom_point()+theme_bw()
   ggsave("~/Desktop/test.pdf")
-
+  
   ggplot(t1,aes(x,y)) + geom_point() + theme_bw() + 
     geom_vline(x=t1[which(t1$y == min(t1$y)),"x"]) +
     xlim(-5,5)
   
   ggsave("~/Desktop/test.pdf")
   
-
-
+  
+  
 }
 
+runNLM <- function(X,y,k,reg,lambda){
+  
+  if (TRUE == reg){
+    a <- cfLambdaReg(X,y,k,lambda)
+    b <- gfLambdaReg(X,y,k,lambda)
+  } else {
+    a <- cfLambdaT(X,y,k)
+    b <- gfLambdaT(X,y,k)
+  }
+  
+  fgh <- function(x){
+    res <- a(x)
+    attr(res, "gradient") <- b(x)
+    return(res)
+  }
+  nlm(f= fgh, p = runif(k*k),check.analyticals=TRUE)
+  
+}
 
-
+nlmTest <- function(){
+  # X <- X / max(X)
+  a <- cfLambdaT(X,y,k)
+  yy <- ifelse(y == 1, 0,1)
+  b <- gfLambdaT(X,y,k)
+  fgh <- function(x){
+    res <- a(x)
+    attr(res, "gradient") <- b(x)
+    return(res)
+  }
+  #thetaVec = runif(k*k)
+  nlm(f= fgh, p = runif(k*k),check.analyticals=TRUE)
+  
+}
+nlmTestReg <- function(){
+  # X <- X / max(X)
+  a <- cfLambdaReg(X,y,k,lambda=1000)
+  b <- gfLambdaReg(X, ifelse(y == 1, 1,1),k,lambda=1000)
+  fgh <- function(x){
+    res <- a(x)
+    attr(res, "gradient") <- b(x)
+    return(res)
+  }
+  #thetaVec = runif(k*k)
+  nlm(f= fgh, p = runif(k*k),check.analyticals=TRUE)
+}

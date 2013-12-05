@@ -32,7 +32,7 @@ editStatsForLncDf <- function(expr.df, cols){
 
 
 plotLncRNAComparisons <- function(lncDf=local.df,outdir=outdir,
-                                   cols=expr.cols ,titleMsg="",
+                                  cols=expr.cols ,titleMsg="",
                                   foundColword="",filebase=""){
   
   
@@ -57,7 +57,7 @@ plotLncRNAComparisons <- function(lncDf=local.df,outdir=outdir,
                   id.vars=c("gene_id",id.vec))
   
   
-
+  
   ##############################  ##############################  ##############################  ##############################
   lncDf$annotName <-with(lncDf,get(annotColName))
   melt.df$annotName <- with(melt.df,get(annotColName))
@@ -228,12 +228,12 @@ plotLncRNAComparisons <- function(lncDf=local.df,outdir=outdir,
 #plotLncRNAComparisons <- function(lncDf=local.df,outdir=outdir,
 #                                  cols=expr.cols ,titleMsg="",
 #                                  foundColword="",filebase=""){
-  
+
 
 runPCA_helper <- function(lncDf=local.df,outdir=outdir,
                           cols=expr.cols, titleMsg="",
                           foundColword="",filebase=""){
-
+  
   func.df <- getEnslist()
   func.outdir = "/Users/adam/work/research/researchProjects/encode/encode-manager/plots/lncCompare/PCA-funcLncs"
   
@@ -380,7 +380,7 @@ runCompleteAnalysis <-function(outdir =  getFullPath("plots/fullAnalysisExperime
           
           #plot w/o tissSpec == 1 ( what should by on axis is easier to cluster, w/o ts == 1 we can remove axis effects)
           #local.df <- df[which(df$gene_id_short %in% as.vector(expr.rows)),]
-         
+          
           nolab <- local.df[which(local.df$label == 0),]
           lab <- local.df[which(local.df$label == 1),]
           plotEigenVectorsDensity(lab=lab,nolab=nolab,outdir=paste(outdir,"/pageRank/",sep=""),
@@ -390,7 +390,7 @@ runCompleteAnalysis <-function(outdir =  getFullPath("plots/fullAnalysisExperime
           nolabts <- localts.df[which(localts.df$label == 0),]
           labts <- localts.df[which(localts.df$label == 1),]
           plotMsgTs = paste("lncRNA group =",lncGroup,"::: data cols =",columns,"\n(",sum(localts.df$label), "/", 
-                          dim(localts.df)[1], ") = (func/total lncRNA) ::: biotype =",biotype, sep=" ") 
+                            dim(localts.df)[1], ") = (func/total lncRNA) ::: biotype =",biotype, sep=" ") 
           plotEigenVectorsDensity(lab=labts,nolab=nolabts,outdir=paste(outdir,"/pageRank/",sep=""),
                                   filename=paste("tissSpecNotOne",columns,lncGroup,sep="-"),cols=expr.cols ,titleMsg=plotMsgTs)
           
@@ -499,36 +499,36 @@ runLogRegTest <-function(outdir =  getFullPath("plots/fullAnalysisExperiment/"))
   #for(columns in c("lpa","lnpa","bothPullDowns")){
   
   biotype <- "remove_antisense"
-    lncRNA.biotype <- biotypes.list[[biotype]]
-    basedir = paste(outdir, "/", biotype,"/", sep = "")
-    columns = "lpa" 
-    expr.cols <- cols.list[[columns]]
-    lncGroup <- "IDRlessthan0_1"
-        
-        
-        
-        ## EigenRank
-        expr.rows.group <- rows.list[[lncGroup]]
-        expr.rows <- expr.rows.group[which(expr.rows.group %in% lncRNA.biotype )]
-        
-        expr.cols <- cols.list[[columns]]
-        print(paste("starting",columns,lncGroup))
-        outdir = paste(basedir,columns,"-",lncGroup,"logRegressionTest",sep="")
-        
-        if(!file.exists(outdir)){dir.create(outdir)}
-        outdir = paste(outdir,"/",sep="")
-        
-        
-        local.df = df[which(df$gene_id_short %in% as.vector(expr.rows)),]
-        local.df = local.df[which(!apply(local.df[expr.cols],1,function(x)sum(x)) == 0),]
-        
-        
-        plotMsg = paste("lncRNA group =",lncGroup,"::: data cols =",columns,"\n(",sum(local.df$label), "/", 
-                        dim(local.df)[1], ") = (func/total lncRNA) ::: biotype =",biotype, sep=" ")      
-        #    plotLncRNAComparisons <- function(lncDf=local.df,outdir=outdir,
-        #                                      filename=paste(columns,biotype,sep="-"),cols=expr.cols ,titleMsg="",
-        #                                      foundColword="",filebase=""){
-     
+  lncRNA.biotype <- biotypes.list[[biotype]]
+  basedir = paste(outdir, "/", biotype,"/", sep = "")
+  columns = "lpa" 
+  expr.cols <- cols.list[[columns]]
+  lncGroup <- "IDRlessthan0_1"
+  
+  
+  
+  ## EigenRank
+  expr.rows.group <- rows.list[[lncGroup]]
+  expr.rows <- expr.rows.group[which(expr.rows.group %in% lncRNA.biotype )]
+  
+  expr.cols <- cols.list[[columns]]
+  print(paste("starting",columns,lncGroup))
+  outdir = paste(basedir,columns,"-",lncGroup,"logRegressionTest",sep="")
+  
+  if(!file.exists(outdir)){dir.create(outdir)}
+  outdir = paste(outdir,"/",sep="")
+  
+  
+  local.df = df[which(df$gene_id_short %in% as.vector(expr.rows)),]
+  local.df = local.df[which(!apply(local.df[expr.cols],1,function(x)sum(x)) == 0),]
+  
+  
+  plotMsg = paste("lncRNA group =",lncGroup,"::: data cols =",columns,"\n(",sum(local.df$label), "/", 
+                  dim(local.df)[1], ") = (func/total lncRNA) ::: biotype =",biotype, sep=" ")      
+  #    plotLncRNAComparisons <- function(lncDf=local.df,outdir=outdir,
+  #                                      filename=paste(columns,biotype,sep="-"),cols=expr.cols ,titleMsg="",
+  #                                      foundColword="",filebase=""){
+  
   print("logistic regression")
   
   bestCols.df <- data.frame(
@@ -540,33 +540,31 @@ runLogRegTest <-function(outdir =  getFullPath("plots/fullAnalysisExperiment/"))
   
   
   # logisticRegPcaExprData.R
-#  runLogReg(lncDf=local.df,outdir=paste(outdir,"logReg",sep=""),
-#            cols=exprLogReg,iter=5,debug= FALSE,
-#            filebase=paste(columns,lncGroup,sep="-"),
-#            titleMsg=plotMsg)
+  #  runLogReg(lncDf=local.df,outdir=paste(outdir,"logReg",sep=""),
+  #            cols=exprLogReg,iter=5,debug= FALSE,
+  #            filebase=paste(columns,lncGroup,sep="-"),
+  #            titleMsg=plotMsg)
   
   
-        #ratio value exper
-        ratio.df <- expand.grid(mainEffects = c(TRUE),reg = c(FALSE),ratio=seq(0.5,1,0.1),run=1:10)
-        ratio.df$predict <- NA
-        for(i in 1:dim(lambda.df)){
-          line <- ratio.df[i,]
-          ratio.df$predict[i] <- trainAndTestLogReg(lncDf=local.df,cols=exprLogReg, ratio = line$ratio, mainEffects=line$mainEffects,reg=line$reg)
-          
-          
-        }
-       exportAsTable(ratio.df, paste(outdir,"ratioExpr.tab",sep="/"))
-        #lambda exper
+  #ratio value exper
+  ratio.df <- expand.grid(mainEffects = c(TRUE),reg = c(FALSE),ratio=seq(0.5,1,0.1),run=1:10)
+  ratio.df$predict <- NA
+  for(i in 1:dim(lambda.df)[1]){
+    line <- ratio.df[i,]
+    ratio.df$predict[i] <- trainAndTestLogReg(lncDf=local.df,cols=exprLogReg, ratio = line$ratio, mainEffects=line$mainEffects,reg=line$reg)
+    
+  }
+  exportAsTable(ratio.df, paste(outdir,"ratioExpr.tab",sep="/"))
+  #lambda exper
   lambda.df <- expand.grid(mainEffects = c(TRUE),reg = c(TRUE),lambda=c(0,10 ^ (seq(-2,8))),run=1:10)
   lambda.df$predict <- NA
-  for(i in 1:dim(lambda.df)){
+  for(i in 1:dim(lambda.df)[1]){
     line <- lambda.df[i,]
     lambda.df$predict[i] <- trainAndTestLogReg(lncDf=local.df,cols=exprLogReg, ratio = line$ratio, mainEffects=line$mainEffects,reg=line$reg)
     
-    
   }
   exportAsTable(lambda.df, paste(outdir,"lambdaExpr.tab",sep="/"))
-    
+  
 }
 
 
@@ -618,7 +616,7 @@ plotTissSpecVaverageExpr <- function(outdir = getFullPath("plots/lncCompare/glob
   ggsave(file=paste(outdir,"aveExprVtissSpec_func=Size_zoom.pdf",sep="/"),height=6,width=8)
   
   
- 
+  
   df$tissSpecUnity = ifelse(df$tissSpec == 1, 1, 0)
   N.tissSpecUnity = sum(df$tissSpecUnity)
   N.tissSpecNotUnity = dim(df)[1] - N.tissSpecUnity
