@@ -433,8 +433,141 @@ runCompleteAnalysis <-function(outdir =  getFullPath("plots/fullAnalysisExperime
 }
 
 
-
-
+runLogRegTest <-function(outdir =  getFullPath("plots/fullAnalysisExperiment/")){
+  
+  #get biotype info
+  bm.file= getFullPath("data/lnc_biotype.tab")
+  bm.df <- read.csv(file=bm.file,sep="\t", stringsAsFactors = FALSE)
+  biotypes.list = list(antisense = bm.df[which(bm.df$bm_biotype == "antisense"),"gene_id_short"],
+                       processed_transcript = bm.df[which(bm.df$bm_biotype == "processed_transcript"),"gene_id_short"],
+                       lincRNA = bm.df[which(bm.df$bm_biotype == "lincRNA"),"gene_id_short"],
+                       all_biotypes = bm.df[["gene_id_short"]],
+                       remove_antisense =  bm.df[which(bm.df$bm_biotype != "antisense"),"gene_id_short"]
+  )
+  
+  biotypes.vec = c("antisense","lincRNA","processed_transcript","all_biotypes","remove_antisense")
+  
+  
+  ## EigenRank Setup
+  sourceFile = getFullPath("data/lncExprWithStats_transEachSample.tab")
+  df = readInTable(sourceFile)
+  df = df[which(df$averageExpr != 0),]   #df.1 = df.1[which(df.1$averageExpr != 0),]
+  df[["gene_id_short"]] =  sapply(as.character(df$gene_id),function(x){as.vector(strsplit(x,"\\.")[[1]])[1]})
+  
+  doubleCols = colnames(df)[as.vector(sapply(colnames(df),function(x)(typeof(df[1,x]) == "double")))]
+  exprCols.lnpa = doubleCols[grep("longNonPolyA$",doubleCols)]
+  exprCols.lpa  = doubleCols[grep("longPolyA$",doubleCols)]
+  cols.list = list(lpa=exprCols.lpa,lnpa=exprCols.lnpa,bothPullDowns=c(exprCols.lpa,exprCols.lnpa))
+  
+  lncFound.df = getEnslist()
+  lncFound.df = unique(data.frame(ensembl_gene_id=lncFound.df$ensembl_gene_id,external_gene_id=lncFound.df$external_gene_id,gene_biotype=lncFound.df$gene_biotype))
+  lncFound.df = lncFound.df[which(lncFound.df$ensembl_gene_id %in% df[["gene_id_short"]]), ]
+  
+  df$label = 0
+  df[which(df$gene_id_short %in% lncFound.df$ensembl_gene_id),"label"] = 1
+  
+  #biotype.df = readInTable(getFullPath("data/lnc_biotype.tab"))
+  #df = merge(df,biotype.df[c("gene_id_short","bm_biotype")],by.x="gene_id_short",by.y="gene_id_short")  
+  
+  
+  
+  qc.df <- preProcessData()
+  if (1 == 1){
+    rows.list <- list()
+    rows.list[["IDRlessthan0_01"]] <- qc.df[which(qc.df$IDR < 0.01),"gene_id_short"]
+    rows.list[["IDRlessthan0_1"]]  <- qc.df[which(qc.df$IDR < 0.1),"gene_id_short"]
+    rows.list[["IDRlessthan0_2"]]  <- qc.df[which(qc.df$IDR < 0.2),"gene_id_short"]
+    rows.list[["IDRnotNA"]]        <- qc.df[which(!is.na(qc.df$IDR)),"gene_id_short"]
+    rows.list[["allLncRNA"]]       <- qc.df[,"gene_id_short"]
+    lncGeneIdShorts.vec = c("IDRlessthan0_01", "IDRlessthan0_1","IDRlessthan0_2","allLncRNA")
+    rows.list = lapply(rows.list, unique)
+  }
+  
+  
+  
+  analysisPref = list(
+    pca = TRUE,
+    page = TRUE,
+    logreg = TRUE,
+    compare = TRUE)
+  analysisPref$pca = FALSE;analysisPref$page = FALSE; analysisPref$logreg = FALSE;
+  
+  
+  
+  print("starting run ... all libs are loaded...")
+  
+  #for(columns in c("lpa","lnpa","bothPullDowns")){
+  
+  biotype <- "remove_antisense"
+    lncRNA.biotype <- biotypes.list[[biotype]]
+    basedir = paste(outdir, "/", biotype,"/", sep = "")
+    columns = "lpa" 
+    expr.cols <- cols.list[[columns]]
+    lncGroup <- "IDRlessthan0_1"
+        
+        
+        
+        ## EigenRank
+        expr.rows.group <- rows.list[[lncGroup]]
+        expr.rows <- expr.rows.group[which(expr.rows.group %in% lncRNA.biotype )]
+        
+        expr.cols <- cols.list[[columns]]
+        print(paste("starting",columns,lncGroup))
+        outdir = paste(basedir,columns,"-",lncGroup,"logRegressionTest",sep="")
+        
+        if(!file.exists(outdir)){dir.create(outdir)}
+        outdir = paste(outdir,"/",sep="")
+        
+        
+        local.df = df[which(df$gene_id_short %in% as.vector(expr.rows)),]
+        local.df = local.df[which(!apply(local.df[expr.cols],1,function(x)sum(x)) == 0),]
+        
+        
+        plotMsg = paste("lncRNA group =",lncGroup,"::: data cols =",columns,"\n(",sum(local.df$label), "/", 
+                        dim(local.df)[1], ") = (func/total lncRNA) ::: biotype =",biotype, sep=" ")      
+        #    plotLncRNAComparisons <- function(lncDf=local.df,outdir=outdir,
+        #                                      filename=paste(columns,biotype,sep="-"),cols=expr.cols ,titleMsg="",
+        #                                      foundColword="",filebase=""){
+     
+  print("logistic regression")
+  
+  bestCols.df <- data.frame(
+    cols = exprCols,
+    score = sapply(expr.cols,function(x){mean(local.df[which(local.df$label == 1),x]) /mean(local.df[which(local.df$label == 0),x])}))
+  topNCols = length(expr.cols)
+  exprColsBestIndex = bestCols.df[order(bestCols.df$score,decreasing=TRUE)[1:topNCols],"cols"]
+  exprLogReg = expr.cols[which(exprCols %in% exprColsBestIndex)] 
+  
+  
+  # logisticRegPcaExprData.R
+#  runLogReg(lncDf=local.df,outdir=paste(outdir,"logReg",sep=""),
+#            cols=exprLogReg,iter=5,debug= FALSE,
+#            filebase=paste(columns,lncGroup,sep="-"),
+#            titleMsg=plotMsg)
+  
+  
+        #ratio value exper
+        ratio.df <- expand.grid(mainEffects = c(TRUE),reg = c(FALSE),ratio=seq(0.5,1,0.1),run=1:10)
+        ratio.df$predict <- NA
+        for(i in 1:dim(lambda.df)){
+          line <- ratio.df[i,]
+          ratio.df$predict[i] <- trainAndTestLogReg(lncDf=local.df,cols=exprLogReg, ratio = line$ratio, mainEffects=line$mainEffects,reg=line$reg)
+          
+          
+        }
+       exportAsTable(ratio.df, paste(outdir,"ratioExpr.tab",sep="/"))
+        #lambda exper
+  lambda.df <- expand.grid(mainEffects = c(TRUE),reg = c(TRUE),lambda=c(0,10 ^ (seq(-2,8))),run=1:10)
+  lambda.df$predict <- NA
+  for(i in 1:dim(lambda.df)){
+    line <- lambda.df[i,]
+    lambda.df$predict[i] <- trainAndTestLogReg(lncDf=local.df,cols=exprLogReg, ratio = line$ratio, mainEffects=line$mainEffects,reg=line$reg)
+    
+    
+  }
+  exportAsTable(lambda.df, paste(outdir,"lambdaExpr.tab",sep="/"))
+    
+}
 
 
 
