@@ -9,7 +9,8 @@ source(paste(home,"/work/research/researchProjects/encode/encode-manager/analysi
 source(paste(home,"/work/research/researchProjects/encode/encode-manager/analysis/rnaSeq/rnaSeq_qc.R",sep=""))
 source(paste(home,"/work/research/researchProjects/encode/encode-manager/analysis/rnaSeq/logisticRegPcaExprData.R",sep=""))
 #source(paste(home,"/work/research/researchProjects/encode/encode-manager/analysis/getENSGfromBiomartByRefseq.R",sep=""))
-
+library(class)
+library(MASS)
 #LOG Reg 
 
 editStatsForLncDf <- function(expr.df, cols){
@@ -549,24 +550,215 @@ runLogRegTest <-function(outdir =  getFullPath("plots/fullAnalysisExperiment/"))
   #ratio value exper
   ratio.df <- expand.grid(mainEffects = c(TRUE),reg = c(FALSE),ratio=seq(0.5,1,0.1),run=1:10)
   ratio.df$predict <- NA
-  for(i in 1:dim(lambda.df)[1]){
+  for(i in 1:dim(ratio.df)[1]){
     line <- ratio.df[i,]
-    ratio.df$predict[i] <- trainAndTestLogReg(lncDf=local.df,cols=exprLogReg, ratio = line$ratio, mainEffects=line$mainEffects,reg=line$reg)
+    output <- trainAndTestLogReg(lncDf=local.df,cols=exprLogReg, ratio = line$ratio, mainEffects=line$mainEffects,reg=line$reg)
     
+    ratio.df$predict[i] <- output$R
+    ratio.df$TPR[i] <- output$TPR
+    ratio.df$TP[i] <- output$TP
+    ratio.df$FP[i] <- output$FP
+    ratio.df$FN[i] <- output$FN
+    ratio.df$TN[i] <- output$TN
   }
   exportAsTable(ratio.df, paste(outdir,"ratioExpr.tab",sep="/"))
+  exportAsTable(local.df, paste(outdir,"fullExpr.tab",sep="/"))
   #lambda exper
-  lambda.df <- expand.grid(mainEffects = c(TRUE),reg = c(TRUE),lambda=c(0,10 ^ (seq(-2,8))),run=1:10)
+  lambda.df <- as.data.frame(expand.grid(mainEffects = c(TRUE),ratio=0.7,reg = c(TRUE),lambda=c(0,10 ^ (seq(-2,8))),run=1:10))
   lambda.df$predict <- NA
   for(i in 1:dim(lambda.df)[1]){
     line <- lambda.df[i,]
-    lambda.df$predict[i] <- trainAndTestLogReg(lncDf=local.df,cols=exprLogReg, ratio = line$ratio, mainEffects=line$mainEffects,reg=line$reg)
+    output <- trainAndTestLogReg(lncDf=local.df,cols=exprLogReg, ratio = line$ratio, mainEffects=line$mainEffects,reg=line$reg, lambda = line$lambda)
+    lambda.df$predict[i] <- output$R
+    lambda.df$TPR[i] <- output$TPR
+    
+    lambda.df$TP[i] <- output$TP
+    lambda.df$FP[i] <- output$FP
+    lambda.df$FN[i] <- output$FN
+    lambda.df$TN[i] <- output$TN
+    
     
   }
   exportAsTable(lambda.df, paste(outdir,"lambdaExpr.tab",sep="/"))
   
 }
+analyzeLogRegTest <- function(outdir = "/home/wespisea/work/research/researchProjects/encode/encode-manager/plots/fullAnalysisExperiment/test/logReg/paramTests/"){
+  if (!file.exists(outdir)){
+    dir.create(outdir)
+  }
+  indir = "/home/wespisea/work/research/researchProjects/encode/encode-manager/plots/fullAnalysisExperiment//remove_antisense/lpa-IDRlessthan0_1logRegressionTest/"
+  msg <- "lncRNA group = IDRlessthan0_1 ::: data cols = lpa \n( 46 / 1954 ) = (func/total lncRNA) ::: biotype = remove_antisense"
+  ratio.df <- readInTable(paste(indir,"ratioExpr.tab",sep="/"))
+  ratio.df <- ratio.df[which(ratio.df$ratio < 1),]
+  ratio.df <- within(ratio.df,{
+    sens = TP / (TP + FN)
+    prec = TP / (TP + FP)})
+  ratddply.df <- ddply(ratio.df ,.(ratio), summarise, stdDev = sd(predict),mean=mean(predict), sensMean = mean(sens), sensSd = sd(sens), precMean=mean(prec), precSd = sd(prec))
+  
+  ggplot(ratio.df, aes(x=as.factor(ratio),y=sens)) + geom_boxplot() +
+    ylab("Sensitivity") +xlab("ratio(test/total)") +
+    ggtitle(paste("logistic Regression: 10 trials w/ ratio = train/total",msg, sep="\n"))
+  ggsave(paste(outdir,"ratioSensitivity.pdf",sep=""))
+  
+  ggplot(ratio.df, aes(x=as.factor(ratio),y=prec)) + geom_boxplot()+
+    ylab("Precision") +xlab("ratio(test/total)") +
+    ggtitle(paste("logistic Regression: 10 trials w/ ratio = train/total",msg, sep="\n"))
+  ggsave(paste(outdir,"ratioPrecision.pdf",sep=""))
+  
+  ggplot(ratio.df, aes(x=as.factor(ratio),y=predict)) + geom_boxplot()+
+    ylab("(TP + TN )/ total") +xlab("ratio(test/total)") +
+    ggtitle(paste("logistic Regression: 10 trials w/ ratio = train/total",msg, sep="\n"))
+ ggsave(paste(outdir,"ratioExpr.pdf",sep=""))
+ 
+  ggplot(ratio.df, aes(x=as.factor(ratio),y=TPR)) + geom_boxplot()+
+    ylab("TP / P") + xlab("ratio(test/total)") +
+    ggtitle(paste("logistic Regression: 10 trials w/ ratio = train/total",msg, sep="\n"))
+  ggsave(paste(outdir,"ratioExpr-TPoverP.pdf",sep=""))  
+  
+  
+ lambda.df <- readInTable(paste(indir,"lambdaExpr.tab",sep="/"))
+  lambda.df <- within(lambda.df,{
+  sens = TP / (TP + FN)
+  prec = TP / (TP + FP)})
+  
+ lambdaddply.df <- ddply(lambda.df ,.(lambda), summarise,stdDev = sd(predict),mean=mean(predict), sensMean = mean(sens), sensSd = sd(sens), precMean=mean(prec), precSd = sd(prec))
+ 
+  ggplot(lambda.df, aes(x=as.factor(lambda),y=sens)) + geom_boxplot()+
+    ylab("Sensitivity") +xlab("lambda value") +
+    ggtitle(paste("logistic Regression: 10 trials w/  regularize lambda",msg, sep="\n"))
+  ggsave(paste(outdir,"lambdaSensitivity.pdf",sep=""))
+  
+  ggplot(lambda.df, aes(x=as.factor(lambda),y=prec)) + geom_boxplot()+
+    ylab("Precision") +xlab("lambda value") +
+    ggtitle(paste("logistic Regression: 10 trials w/  regularize lambda",msg, sep="\n"))
+  ggsave(paste(outdir,"lambdaPrecision.pdf",sep=""))
+  
+  ggplot(lambda.df, aes(x=as.factor(lambda),y=predict)) + geom_boxplot()+
+    ylab("(TP + TN )/ total") + xlab("lambda value") +
+   ggtitle(paste("logistic Regression: 10 trials w/ regularize lambda",msg, sep="\n"))
+ ggsave(paste(outdir,"lambdaExpr.pdf",sep=""))
+ 
+  ggplot(lambda.df, aes(x=as.factor(lambda),y=TPR)) + geom_boxplot()+
+    ylab("TP / P") + xlab("lambda value") +
+    ggtitle(paste("logistic Regression: 10 trials w/ regularize lambda",msg, sep="\n"))
+  ggsave(paste(outdir,"lambdaExpr-TPR.pdf",sep=""))
+  
+  
+ 
+}
 
+
+
+
+testGLMforLogRegression <- function(){
+  local.df <- readInTable(getFullPath("plots/fullAnalysisExperiment/test/logReg/paramTests/fullExpr.tab"))
+  
+  doubleCols = colnames(local.df)[as.vector(sapply(colnames(local.df),function(x)(typeof(local.df[1,x]) == "double")))]
+  exprCols.lnpa = doubleCols[grep("longNonPolyA$",doubleCols)]
+  exprCols.lpa  = doubleCols[grep("longPolyA$",doubleCols)]
+  cols.list = list(lpa=exprCols.lpa,lnpa=exprCols.lnpa,bothPullDowns=c(exprCols.lpa,exprCols.lnpa))
+  
+y = local.df$label
+train = sample(seq_along(y), 0.6 * length(y))
+y.train <- y[train]
+y.test  <- y[-train]
+y.freq0 <- length(which(y.train == 0))/length(y.train)
+y.freq1 <- length(which(y.train == 1))/length(y.train)
+weight.train <- ifelse(y.train== 1, 1/y.freq1, 1/y.freq0)  
+  
+  # log Reg with polynomial of degree two
+glm.poly2.weight <- glm(label ~ poly(HSMM.longPolyA, BJ.longPolyA, NHEK.longPolyA, HUVEC.longPolyA, MCF.7.longPolyA, K562.longPolyA, 
+                 AG04450.longPolyA, HMEC.longPolyA, HEPG2.longPolyA, SK.N.SH_RA.longPolyA, A549.longPolyA, H1.HESC.longPolyA, 
+                 NHLF.longPolyA, HELA.S3.longPolyA, GM12878.longPolyA, degree=2, raw=TRUE), data=local.df[train,], family = binomial, weights=weight.train)
+#glm.poly2.probs = predict(glm.poly2,local.df[-train,], type="response") ## P(Y = 1 | X)
+glm.poly2.weight.stats = getStatsFromGlmModel(predict(glm.poly2,local.df[-train,], type="response"),      y.test)
+ 
+  glm.poly2 <- glm(label ~ poly(HSMM.longPolyA, BJ.longPolyA, NHEK.longPolyA, HUVEC.longPolyA, MCF.7.longPolyA, K562.longPolyA, 
+                                       AG04450.longPolyA, HMEC.longPolyA, HEPG2.longPolyA, SK.N.SH_RA.longPolyA, A549.longPolyA, H1.HESC.longPolyA, 
+                                       NHLF.longPolyA, HELA.S3.longPolyA, GM12878.longPolyA, degree=2, raw=TRUE), data=local.df, family = binomial,subset=train)
+  #glm.poly2.probs = predict(glm.poly2,local.df[-train,], type="response") ## P(Y = 1 | X)
+  glm.poly2.stats = getStatsFromGlmModel(predict(glm.poly2,local.df[-train,], type="response"),      y.test)
+  
+  
+  glm.main.weight <- glm(label ~ HSMM.longPolyA + BJ.longPolyA + NHEK.longPolyA+ HUVEC.longPolyA+ MCF.7.longPolyA+ K562.longPolyA+ 
+                    AG04450.longPolyA+ HMEC.longPolyA+ HEPG2.longPolyA+ SK.N.SH_RA.longPolyA+ A549.longPolyA+ H1.HESC.longPolyA+ 
+                    NHLF.longPolyA+ HELA.S3.longPolyA+GM12878.longPolyA, data=local.df[train,], family = binomial, weights=weight.train)
+  glm.main.weight.stats = getStatsFromGlmModel(predict(glm.main.weight,local.df[-train,], type="response"), y.test) 
+  
+  glm.main <- glm(label ~ HSMM.longPolyA + BJ.longPolyA + NHEK.longPolyA+ HUVEC.longPolyA+ MCF.7.longPolyA+ K562.longPolyA+ 
+                                AG04450.longPolyA+ HMEC.longPolyA+ HEPG2.longPolyA+ SK.N.SH_RA.longPolyA+ A549.longPolyA+ H1.HESC.longPolyA+ 
+                                NHLF.longPolyA+ HELA.S3.longPolyA+GM12878.longPolyA, data=local.df, family = binomial,subset=train)
+  glm.main.probs = predict(glm.main,local.df[-train,], type="response") ## P(Y = 1 | X)
+  glm.main.stats = getStatsFromGlmModel(glm.main.probs, y.test) 
+  
+  form.cross <- paste("label ~", do.call(paste, c(as.list(do.call(paste, c(expand.grid(exprCols.lpa, exprCols.lpa), sep=":"))), sep=" + ")))
+  # use this formula
+  
+  glm.cross.weights <- glm(form.cross, data = local.df[train,], family=binomial,weights = weight.train) 
+  glm.cross.weights.stats <- getStatsFromGlmModel(predict(glm.cross.weights,local.df[-train,], type="response"), y.test) 
+  
+  
+  glm.cross <- glm(form.cross, data = local.df, family=binomial,subset = train) 
+  glm.cross.probs = predict(glm.cross,local.df[-train,], type="response") ## P(Y = 1 | X)
+  glm.cross.stats <- getStatsFromGlmModel(glm.cross.probs, y.test) 
+  
+  
+  lda.main <- lda(label ~ HSMM.longPolyA + BJ.longPolyA + NHEK.longPolyA+ HUVEC.longPolyA+ MCF.7.longPolyA+ K562.longPolyA+ 
+                    AG04450.longPolyA+ HMEC.longPolyA+ HEPG2.longPolyA+ SK.N.SH_RA.longPolyA+ A549.longPolyA+ H1.HESC.longPolyA+ 
+                    NHLF.longPolyA+ HELA.S3.longPolyA+GM12878.longPolyA, data=local.df, subset=train)
+  lda.main.probs = predict(lda.main,local.df[-train,]) ## P(Y = 1 | X)
+  lda.main.stats = getStatsFromGlmModel(lda.main.probs$x, y.test) 
+  
+  qda.main <- qda(label ~ HSMM.longPolyA + BJ.longPolyA + NHEK.longPolyA+ HUVEC.longPolyA+ MCF.7.longPolyA+ K562.longPolyA+ 
+                    AG04450.longPolyA+ HMEC.longPolyA+ HEPG2.longPolyA+ SK.N.SH_RA.longPolyA+ A549.longPolyA+ H1.HESC.longPolyA+ 
+                    NHLF.longPolyA+ HELA.S3.longPolyA+GM12878.longPolyA, data=local.df, subset=train)
+  qda.main.probs = predict(qda.main,local.df[-train,], type="response") ## P(Y = 1 | X)
+  qda.main.stats = getStatsFromGlmModel(qda.main.probs$posterior[,2], y.test) 
+  
+  #KNN
+  train.X <- as.matrix(local.df[train,exprCols.lpa])
+  test.X <- as.matrix(local.df[-train,exprCols.lpa])
+  direction <- local.df$label
+  train.Direction <- direction[train]
+  
+  knn.1.stats <- getStatsFromGlmModel(knn(train.X, test.X, train.Direction, k = 1), y.test, knn=TRUE)
+  
+  knn.3.stats <- getStatsFromGlmModel( knn(train.X, test.X, train.Direction, k = 3), y.test, knn=TRUE)
+  
+  
+  knn.5.stats <- getStatsFromGlmModel(knn(train.X, test.X, train.Direction, k = 5), y.test, knn=TRUE)
+  
+  df.out <- as.data.frame( rbind(glm.poly2.weight.stats,glm.poly2.stats,glm.main.weight.stats,glm.main.stats,
+                    glm.cross.weights.stats,glm.cross.stats,lda.main.stats,qda.main.stats,
+                    knn.1.stats,knn.3.stats,knn.5.stats))
+  df.out$expr <- rownames(df.out)
+  rownames(df.out) <- NULL
+  df.out
+  
+}
+
+
+getStatsFromGlmModel <- function(probs, y,knn=FALSE){
+
+
+if (TRUE == knn){
+  pred <- as.numeric(probs) - 1 
+} else {
+  pred <- rep(0,length(probs))
+  pred[which(probs > 0.5)] <- 1
+  
+}
+correct <- (pred == y)
+poly2 <- list()
+poly2$TP <- length(which(correct & y ==1))
+poly2$TN <- length(which(correct & y ==0))  
+poly2$FP <- length(which(!correct & y ==0))  
+poly2$FN <- length(which(!correct & y ==1))  
+poly2$prec <- with(poly2, TP / (TP + FP))
+poly2$sens <- with(poly2, TP / (TP + FN))
+poly2$errorRate <-  1 - sum(correct)/length(correct)
+poly2
+}
 
 
 plotTissSpecVaverageExpr <- function(outdir = getFullPath("plots/lncCompare/globalAnalysisExpr/")){

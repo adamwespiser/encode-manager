@@ -303,8 +303,6 @@ main <- function(){
   X.full = cbind(rep(1,dim(X.full)[1]),X.full)
   y.full = as.matrix(lnc.pca.df[,33])
   
-  
-  
   thetaGuess = runif(k*k)
   zeroGuess  = rep(0,k*k)
   
@@ -483,7 +481,24 @@ testTheta <- function(X,k,y,cols, theta){
   predictLabel <- ifelse(apply(X,1,function(x){t(x) %*% theta %*% x} ) < 0, 0, 1)
   predictY <- ifelse(predictLabel == y, 1, 0)
   sum(predictY)/ length(predictY)
+}
+
+testThetaTPR <- function(X,k,y,cols, theta){
   
+  predictLabel <- ifelse(apply(X,1,function(x){t(x) %*% theta %*% x} ) < 0, 0, 1)
+  predictY <- ifelse(predictLabel == y, 1, 0)
+  sum(predictY[which(y == 1)])/ length(predictY[which(y == 1)])
+}
+
+testThetaStats <- function(X,k,y,cols, theta){
+  
+  predictLabel <- ifelse(apply(X,1,function(x){t(x) %*% theta %*% x} ) < 0, 0, 1)
+  predictY <- ifelse(predictLabel == y, 1, 0)
+  TP <- length(which(predictY == 1 & y == 1))
+  TN <- length(which(predictY == 1 & y == 0))
+  FN <- length(which(predictY == 0 & y == 1))
+  FP <- length(which(predictY == 0 & y == 0))
+  list(TP=TP,TN=TN,FN=FN,FP=FP)
   
 }
 
@@ -514,7 +529,8 @@ trainAndTestLogReg <- function(lncDf, ratio, cols, mainEffects=TRUE,reg=FALSE,la
   train = sample(1:totalCount, totalCount * ratio)
   #theta = runLogRegTheta(X[train,],k,y,cols,iter=iter,reg=reg,lambda=lambda)
   theta = matrix(runNLM(X[train,],y[train],k,reg,lambda)$estimate,k)
-  testTheta(X[-train,],k,y[-train],cols,theta)
+  four <- testThetaStats(X,k,y,cols, theta) # TP=four$TP,TN=four$TN,FP=four$FP,FN=four$FN
+  list(R=testTheta(X[-train,],k,y[-train],cols,theta),TPR =testThetaTPR(X[-train,],k,y[-train],cols,theta),TP=four$TP,TN=four$TN,FP=four$FP,FN=four$FN)
   
 }
 
@@ -532,7 +548,10 @@ mainTest <- function(){
 }
 
 
-test1 = function(){
+test1 = function(outdir = "/home/wespisea/work/research/researchProjects/encode/encode-manager/plots/fullAnalysisExperiment/test/logReg/sampleData/"){
+  if (!file.exists(outdir)){
+    dir.create(outdir)
+  }
   
   nn = 1000
   lower.df= data.frame(x0 = rep(1,nn),
@@ -550,34 +569,158 @@ test1 = function(){
   upper.df <- upper.df[which(upper.df$dist < 1.5 & upper.df$dist > 1),]
   upperMax =  ifelse(dim(upper.df)[1] > 100, 100, dim(upper.df)[1])
   
-  
   X.df = rbind(lower.df[1:lowerMax,],upper.df[1:upperMax,])
   X.test = as.matrix(X.df[,1:3])
   y.test = X.df$y
-  
   k.test = 3
   
-  ggplot(as.data.frame(X),aes(x1,x2,color=factor(y))) + geom_point() + theme_bw()
-  ggsave("~/Desktop/tt3.pdf")
+  train = sample(seq_along(X.df$y),0.7 *length(X.df$y))
   
-  t1 = data.frame(x=(1:1000-500)/10)
-  t1$y = apply(t1,1,function(c)test1(diag(k.test),X.test,k.test,c))
+  ggplot(X.df,aes(x1,x2,color=factor(y))) + geom_point() + theme_bw()+ggtitle("data")
+  ggsave(paste(outdir,"dataPlot.pdf"))
   
-  ggplot(t1,aes(x,y))+geom_point()+theme_bw()
-  ggsave("~/Desktop/test.pdf")
+  ggplot(X.df[train,],aes(x1,x2,color=factor(y))) + geom_point() + 
+    theme_bw()+ggtitle("Training data")
+  ggsave(paste(outdir,"dataPlot-train.pdf"))
   
-  ggplot(t1,aes(x,y)) + geom_point() + theme_bw() + 
-    geom_vline(x=t1[which(t1$y == min(t1$y)),"x"]) +
-    xlim(-5,5)
+  ggplot(X.df[-train,],aes(x1,x2,color=factor(y))) + geom_point() + 
+    theme_bw()+ggtitle("Testing data")
+  ggsave(paste(outdir,"dataPlot-test.pdf"))
   
-  ggsave("~/Desktop/test.pdf")
+  theta = matrix(runNLM(X[train,],y.test[train],k=3,reg=TRUE,0)$estimate,3)
+  X.df$predict <- ifelse(apply(X,1,function(x)t(x) %*% matrix(theta,3) %*% x) < 0, 0,1)
+  X.df$correct <- ifelse(X.df$predict == X.df$y, 1, 0)       
+  #t1 = data.frame(x=(1:1000-500)/10)
+  #t1$y = apply(t1,1,function(c)test1(diag(k.test),X.test,k.test,c))
   
+  trainR = sum(X.df[train,"correct"])/dim(X.df[train,])[1]
+  ggplot(X.df[train,],aes(x1,x2,color=factor(y),size=1-correct)) +
+    geom_point() + theme_bw()+ ggtitle(paste("test performance -- wrong points are large\nR=",trainR,sep="")) 
+  ggsave(paste(outdir,"dataPlot-test-Incorrect.pdf"))
   
+  testR = sum(X.df[-train,"correct"])/dim(X.df[-train,])[1]
+  ggplot(X.df[-train,],aes(x1,x2,color=factor(y),size=1-correct)) +
+    geom_point() + theme_bw()+ ggtitle(paste("test performance -- wrong points are large\nR=",testR,sep="")) 
+  ggsave(paste(outdir,"dataPlot-test-Incorrect.pdf"))
+  
+  analysis.df <- data.frame(expand.grid(x1=seq(-2,2,by=0.1),x2=seq(-2,2,by=0.1)))
+  analysis.df$x0 <- 1
+  theta <- matrix(runNLM(X[train,],y.test[train],k=3,reg=TRUE,0)$estimate,3)
+  analysis.df$predict <- ifelse(apply(as.matrix(analysis.df[c("x0","x1","x2")],),1,function(x)t(x) %*% matrix(theta,3) %*% x) < 0, 0,1)
+  ggplot(analysis.df, aes(x1,x2,fill=factor(predict)))+geom_tile() + theme_bw()+
+    ggtitle("Decision boundary for training\nLambda = 0")
+  ggsave(paste(outdir,"dataPlot-decisionBoundary-lambda=0.pdf"))
+  
+  analysis.df <- data.frame(expand.grid(x1=seq(-2,2,by=0.1),x2=seq(-2,2,by=0.1)))
+  analysis.df$x0 <- 1
+  theta <- matrix(runNLM(X[train,],y.test[train],k=3,reg=TRUE,10)$estimate,3)
+  analysis.df$predict <- ifelse(apply(as.matrix(analysis.df[c("x0","x1","x2")],),1,function(x)t(x) %*% matrix(theta,3) %*% x) < 0, 0,1)
+  ggplot(analysis.df, aes(x1,x2,fill=factor(predict)))+geom_tile() + theme_bw()+
+    ggtitle("Decision boundary for training\nLambda = 10")
+  ggsave(paste(outdir,"dataPlot-decisionBoundary-lambda=10.pdf"))
+  
+  analysis.df <- data.frame(expand.grid(x1=seq(-2,2,by=0.1),x2=seq(-2,2,by=0.1)))
+  analysis.df$x0 <- 1
+  theta <- matrix(runNLM(X[train,],y.test[train],k=3,reg=TRUE,50)$estimate,3)
+  analysis.df$predict <- ifelse(apply(as.matrix(analysis.df[c("x0","x1","x2")],),1,function(x)t(x) %*% matrix(theta,3) %*% x) < 0, 0,1)
+  ggplot(analysis.df, aes(x1,x2,fill=factor(predict)))+geom_tile() + theme_bw()+
+    ggtitle("Decision boundary for training\nLambda = 50")
+  ggsave(paste(outdir,"dataPlot-decisionBoundary-lambda=50.pdf"))
   
 }
 
-runNLM <- function(X,y,k,reg,lambda){
+test2 = function(outdir = "/home/wespisea/work/research/researchProjects/encode/encode-manager/plots/fullAnalysisExperiment/test/logReg/sampleData2/"){
+  if (!file.exists(outdir)){
+    dir.create(outdir)
+  }
+  xval = 1
+  nn = 1000
+  lower.df= data.frame(x0 = rep(xval,nn),
+                       x1 = runif(nn)*0.5 -0.25 ,
+                       x2 = runif(nn)*0.5 - 0.25,
+                       y = rep(0,nn))
+  lower.df$dist <- apply(lower.df, 1, function(x)sqrt(x[["x2"]]^2  + x[["x1"]]^2))
+  lower.df <- lower.df[which(lower.df$dist < 1),]
+  lowerMax =  ifelse(dim(lower.df)[1] > 200, 200, dim(lower.df)[1])
+  ones = 200
+  upper.df= data.frame(x0 = rep(xval,ones),
+                       x1 = runif(ones)*0.5,
+                       x2 = runif(ones)*0.5,
+                       y = rep(1,ones))
+  upper.df[1:50, "x2"] <- upper.df[1:50, "x2"] + 1
+  upper.df[1:50, "x1"] <- upper.df[1:50, "x1"] - 0.25
+  upper.df[51:100, "x2"] <- upper.df[51:100, "x2"] - 1.5
+  upper.df[51:100, "x1"] <- upper.df[51:100, "x1"] - 0.25
+  upper.df[101:150, "x1"] <- upper.df[101:150, "x1"] + 1
+  upper.df[101:150, "x2"] <- upper.df[101:150, "x2"] - 0.25
+  upper.df[151:200, "x1"] <- upper.df[151:200, "x1"] - 1.5
+  upper.df[151:200, "x2"] <- upper.df[151:200, "x2"] - 0.25
+  upper.df$dist = 0 
   
+  X.df = rbind(lower.df[1:200,], upper.df)
+  X.test = as.matrix(X.df[,c("x0","x1","x2")])
+  y.test = X.df$y
+  k.test = 3
+  
+  train = 1:300
+  
+  ggplot(X.df,aes(x1,x2,color=factor(y))) + geom_point() + theme_bw()+ggtitle("data")+ xlim(-2,2)+ ylim(-2,2)
+  ggsave(paste(outdir,"dataPlot.pdf"))
+  
+  ggplot(X.df[train,],aes(x1,x2,color=factor(y))) + geom_point() + 
+    theme_bw()+ggtitle("Training data") + xlim(-2,2)+ ylim(-2,2)
+  ggsave(paste(outdir,"dataPlot-train.pdf"))
+  
+  ggplot(X.df[-train,],aes(x1,x2,color=factor(y))) + geom_point() + 
+    theme_bw()+ggtitle("Testing data")+ xlim(-2,2)+ ylim(-2,2)
+  ggsave(paste(outdir,"dataPlot-test.pdf"))
+  
+  theta = matrix(runNLM(X.test[train,],y.test[train],k=3,reg=TRUE,0)$estimate,3)
+  X.df$predict <- ifelse(apply(X.test,1,function(x)t(x) %*% matrix(theta,3) %*% x) < 0, 0,1)
+  X.df$correct <- ifelse(X.df$predict == X.df$y, 1, 0)       
+  #t1 = data.frame(x=(1:1000-500)/10)
+  #t1$y = apply(t1,1,function(c)test1(diag(k.test),X.test,k.test,c))
+  
+  trainR = sum(X.df[train,"correct"])/dim(X.df[train,])[1]
+  ggplot(X.df[train,],aes(x1,x2,color=factor(y),size=1-correct)) +
+    geom_point() + theme_bw()+ ggtitle(paste("test performance -- wrong points are large\nR=",trainR,sep="")) + xlim(-2,2)+ ylim(-2,2)
+  ggsave(paste(outdir,"dataPlot-test-Incorrect.pdf"))
+  
+  testR = sum(X.df[-train,"correct"])/dim(X.df[-train,])[1]
+  ggplot(X.df[-train,],aes(x1,x2,color=factor(y),size=1-correct)) +
+    geom_point() + theme_bw()+ ggtitle(paste("test performance -- wrong points are large\nR=",testR,sep="")) + xlim(-2,2)+ ylim(-2,2)
+  ggsave(paste(outdir,"dataPlot-test-Incorrect.pdf"))
+  
+  analysis.df <- data.frame(expand.grid(x1=seq(-2,2,by=0.1),x2=seq(-2,2,by=0.05)))
+  analysis.df$x0 <- xval
+  theta <- matrix(runNLM(X.test[train,],y.test[train],k=3,reg=TRUE,0)$estimate,3)
+  analysis.df$predict <- ifelse(apply(as.matrix(analysis.df[c("x0","x1","x2")],),1,function(x)t(x) %*% matrix(theta,3) %*% x) < 0, 0,1)
+  ggplot(analysis.df, aes(x1,x2,fill=factor(predict)))+geom_tile() + theme_bw()+
+    ggtitle("Decision boundary for training\nLambda = 0")+ xlim(-2,2)+ ylim(-2,2)
+  ggsave(paste(outdir,"dataPlot-decisionBoundary-lambda=0.pdf"))
+  
+  analysis.df <- data.frame(expand.grid(x1=seq(-2,2,by=0.1),x2=seq(-2,2,by=0.05)))
+  analysis.df$x0 <- xval
+  analysis.df$dist <-  apply(analysis.df, 1, function(x)sqrt(x[["x2"]]^2  + x[["x1"]]^2))
+  theta <- matrix(runNLM(X.test[train,],y.test[train],k=3,reg=TRUE,10)$estimate,3)
+  analysis.df$predict <- ifelse(apply(as.matrix(analysis.df[c("x0","x1","x2")],),1,function(x)t(x) %*% matrix(theta,3) %*% x) < 0, 0,1)
+  analysis.df$val <- apply(as.matrix(analysis.df[c("x0","x1","x2")],),1,function(x)t(x) %*% matrix(theta,3) %*% x)
+  ggplot(analysis.df, aes(x1,x2,fill=factor(predict)))+geom_tile() + theme_bw()+
+    ggtitle("Decision boundary for training\nLambda = 10")+ xlim(-2,2)+ ylim(-2,2)
+  ggsave(paste(outdir,"dataPlot-decisionBoundary-lambda=10.pdf"))
+  
+  analysis.df <- data.frame(expand.grid(x1=seq(-10,10,by=0.1),x2=seq(-10,10,by=0.05)))
+  analysis.df$x0 <- xval
+  theta <- matrix(runNLM(X.test[train,],y.test[train],k=3,reg=TRUE,50)$estimate,3)
+  analysis.df$predict <- ifelse(apply(analysis.df[c("x0","x1","x2")],1,function(x)t(x) %*% matrix(theta,3) %*% x) < 0, 0,1)
+  ggplot(analysis.df, aes(x1,x2,fill=factor(predict)))+geom_tile() + theme_bw()+
+    ggtitle("Decision boundary for training\nLambda = 50")+ xlim(-2,2)+ ylim(-2,2)
+  ggsave(paste(outdir,"dataPlot-decisionBoundary-lambda=50.pdf"))
+  
+}
+
+
+runNLM <- function(X,y,k,reg,lambda){  
   if (TRUE == reg){
     a <- cfLambdaReg(X,y,k,lambda)
     b <- gfLambdaReg(X,y,k,lambda)
