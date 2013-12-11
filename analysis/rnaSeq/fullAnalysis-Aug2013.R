@@ -650,8 +650,8 @@ analyzeLogRegTest <- function(outdir = "/home/wespisea/work/research/researchPro
 
 
 
-testGLMforLogRegression <- function(){
-  local.df <- readInTable(getFullPath("plots/fullAnalysisExperiment/test/logReg/paramTests/fullExpr.tab"))
+testGLMforLogRegression <- function(local){
+  local.df <- local
   
   doubleCols = colnames(local.df)[as.vector(sapply(colnames(local.df),function(x)(typeof(local.df[1,x]) == "double")))]
   exprCols.lnpa = doubleCols[grep("longNonPolyA$",doubleCols)]
@@ -659,7 +659,8 @@ testGLMforLogRegression <- function(){
   cols.list = list(lpa=exprCols.lpa,lnpa=exprCols.lnpa,bothPullDowns=c(exprCols.lpa,exprCols.lnpa))
   
 y = local.df$label
-train = sample(seq_along(y), 0.6 * length(y))
+train = sample(seq_along(y), 0.7 * length(y))
+testFuncs <- sum(y[-train])
 y.train <- y[train]
 y.test  <- y[-train]
 y.freq0 <- length(which(y.train == 0))/length(y.train)
@@ -728,14 +729,71 @@ glm.poly2.weight.stats = getStatsFromGlmModel(predict(glm.poly2,local.df[-train,
   
   knn.5.stats <- getStatsFromGlmModel(knn(train.X, test.X, train.Direction, k = 5), y.test, knn=TRUE)
   
-  df.out <- as.data.frame( rbind(glm.poly2.weight.stats,glm.poly2.stats,glm.main.weight.stats,glm.main.stats,
+  
+  df.out <-  rbind(glm.poly2.weight.stats,glm.poly2.stats,glm.main.weight.stats,glm.main.stats,
                     glm.cross.weights.stats,glm.cross.stats,lda.main.stats,qda.main.stats,
-                    knn.1.stats,knn.3.stats,knn.5.stats))
-  df.out$expr <- rownames(df.out)
+                    knn.1.stats,knn.3.stats,knn.5.stats)
+  
+  df.out$expr <- c("glm.poly2.weight.stats","glm.poly2.stats","glm.main.weight.stats","glm.main.stats",
+                  "glm.cross.weights.stats","glm.cross.stats","lda.main.stats","qda.main.stats",
+                  "knn.1.stats","knn.3.stats","knn.5.stats")
   rownames(df.out) <- NULL
+  df.out$testFunctionalLncs <- testFuncs 
+  df.out$testSetSize <- length(train)
   df.out
   
 }
+
+testGLMModel <- function(outdir = "/home/wespisea/work/research/researchProjects/encode/encode-manager/plots/fullAnalysisExperiment/test/logReg/glmTest/"){
+  if (!file.exists(outdir)){
+    dir.create(outdir)}
+  msg <- "lncRNA group = IDRlessthan0_1 ::: data cols = lpa \n( 46 / 1954 ) = (func/total lncRNA) ::: biotype = remove_antisense"
+  
+  df <- readInTable(getFullPath("plots/fullAnalysisExperiment/test/logReg/paramTests/fullExpr.tab"))
+  exprFile <- paste(outdir,"glmExpr500.tab",sep="")
+  test = TRUE
+  if (!file.exists(exprFile) || test == TRUE){
+    
+    df.accum <- testGLMforLogRegression(df)
+    df.accum$trial <- 1
+    for(i in 2:500){
+      df.out <- testGLMforLogRegression(df)
+      df.out$trial <- i
+      df.accum <- rbind(df.out, df.accum)
+    }
+    exportAsTable(df.accum, exprFile)
+  local.df <- df.accum
+    } else{
+    local.df <- readInTable(exprFile)  
+  }
+
+  summary.df <- ddply(local.df, .(expr), summarize, precMean= mean(prec,na.rm=T),sensMean= mean(sens,na.rm=T),)
+  sensPrec.df<-melt(local.df, id.var="expr",measure.var=c("sens", "prec"))
+  msg1 <- paste("traning set Size = ", local.df$testSetSize[1],"test set {y=1} count =", local.df$testFunctionalLncs[1],",trials=", max(local.df$trial),sep=" " )
+  ggplot(sensPrec.df, aes(x=factor(expr), y = value, fill=variable))+geom_boxplot() + 
+    coord_flip() + theme_bw()+ xlab("learning algorithm") + ylab("paramater value from trials")+
+    ggtitle(paste("test set error for classification algorithm",msg,msg1,sep="\n")) + 
+    theme(panel.grid.major.x= element_line(colour = "grey"))+
+    theme(panel.grid.major.y= element_line(colour = "black")) 
+  ggsave(file=paste(outdir,"glmModelComparison-PrecSens.pdf",sep=""),height=7,width=9)
+  
+  
+  ggplot(local.df,  aes(expr,1-errorRate))+geom_boxplot() + 
+    coord_flip() + theme_bw()+ xlab("learning algorithm") + ylab("1 - test set error")+
+  ggtitle(paste("test set error for classification algorithm",msg,msg1,sep="\n")) + 
+    theme(panel.grid.major.x= element_line(colour = "grey"))+
+    theme(panel.grid.major.y= element_line(colour = "black")) 
+  ggsave(file=paste(outdir,"glmModelComparison-1-errorRate.pdf",sep=""),height=7,width=9)
+  
+  ggplot(local.df,  aes(expr,2*(prec*sens)/(prec+sens)))+geom_boxplot() + 
+    coord_flip() + theme_bw()+ xlab("learning algorithm") + ylab("F1 = 2*(prec*sens)/(prec + sens) where range={0,1}")+
+    ggtitle(paste("test set error for classification algorithm",msg,msg1,sep="\n")) + 
+    theme(panel.grid.major.x= element_line(colour = "grey"))+
+    theme(panel.grid.major.y= element_line(colour = "black")) 
+  ggsave(file=paste(outdir,"glmModelComparison-TP/y=1.pdf",sep=""),height=7,width=9)
+  
+}
+
 
 
 getStatsFromGlmModel <- function(probs, y,knn=FALSE){
@@ -749,7 +807,7 @@ if (TRUE == knn){
   
 }
 correct <- (pred == y)
-poly2 <- list()
+poly2 <- data.frame(trial=-1)
 poly2$TP <- length(which(correct & y ==1))
 poly2$TN <- length(which(correct & y ==0))  
 poly2$FP <- length(which(!correct & y ==0))  
