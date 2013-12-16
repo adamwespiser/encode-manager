@@ -11,6 +11,8 @@ source(paste(home,"/work/research/researchProjects/encode/encode-manager/analysi
 #source(paste(home,"/work/research/researchProjects/encode/encode-manager/analysis/getENSGfromBiomartByRefseq.R",sep=""))
 library(class)
 library(MASS)
+library(LiblineaR)
+library(ROCR)
 #LOG Reg 
 
 editStatsForLncDf <- function(expr.df, cols){
@@ -470,8 +472,6 @@ runLogRegTest <-function(outdir =  getFullPath("plots/fullAnalysisExperiment/"))
   #biotype.df = readInTable(getFullPath("data/lnc_biotype.tab"))
   #df = merge(df,biotype.df[c("gene_id_short","bm_biotype")],by.x="gene_id_short",by.y="gene_id_short")  
   
-  
-  
   qc.df <- preProcessData()
   if (1 == 1){
     rows.list <- list()
@@ -484,8 +484,6 @@ runLogRegTest <-function(outdir =  getFullPath("plots/fullAnalysisExperiment/"))
     rows.list = lapply(rows.list, unique)
   }
   
-  
-  
   analysisPref = list(
     pca = TRUE,
     page = TRUE,
@@ -493,11 +491,7 @@ runLogRegTest <-function(outdir =  getFullPath("plots/fullAnalysisExperiment/"))
     compare = TRUE)
   analysisPref$pca = FALSE;analysisPref$page = FALSE; analysisPref$logreg = FALSE;
   
-  
-  
   print("starting run ... all libs are loaded...")
-  
-  #for(columns in c("lpa","lnpa","bothPullDowns")){
   
   biotype <- "remove_antisense"
   lncRNA.biotype <- biotypes.list[[biotype]]
@@ -505,8 +499,6 @@ runLogRegTest <-function(outdir =  getFullPath("plots/fullAnalysisExperiment/"))
   columns = "lpa" 
   expr.cols <- cols.list[[columns]]
   lncGroup <- "IDRlessthan0_1"
-  
-  
   
   ## EigenRank
   expr.rows.group <- rows.list[[lncGroup]]
@@ -519,16 +511,11 @@ runLogRegTest <-function(outdir =  getFullPath("plots/fullAnalysisExperiment/"))
   if(!file.exists(outdir)){dir.create(outdir)}
   outdir = paste(outdir,"/",sep="")
   
-  
   local.df = df[which(df$gene_id_short %in% as.vector(expr.rows)),]
   local.df = local.df[which(!apply(local.df[expr.cols],1,function(x)sum(x)) == 0),]
   
-  
   plotMsg = paste("lncRNA group =",lncGroup,"::: data cols =",columns,"\n(",sum(local.df$label), "/", 
                   dim(local.df)[1], ") = (func/total lncRNA) ::: biotype =",biotype, sep=" ")      
-  #    plotLncRNAComparisons <- function(lncDf=local.df,outdir=outdir,
-  #                                      filename=paste(columns,biotype,sep="-"),cols=expr.cols ,titleMsg="",
-  #                                      foundColword="",filebase=""){
   
   print("logistic regression")
   
@@ -538,13 +525,6 @@ runLogRegTest <-function(outdir =  getFullPath("plots/fullAnalysisExperiment/"))
   topNCols = length(expr.cols)
   exprColsBestIndex = bestCols.df[order(bestCols.df$score,decreasing=TRUE)[1:topNCols],"cols"]
   exprLogReg = expr.cols[which(exprCols %in% exprColsBestIndex)] 
-  
-  
-  # logisticRegPcaExprData.R
-  #  runLogReg(lncDf=local.df,outdir=paste(outdir,"logReg",sep=""),
-  #            cols=exprLogReg,iter=5,debug= FALSE,
-  #            filebase=paste(columns,lncGroup,sep="-"),
-  #            titleMsg=plotMsg)
   
   
   #ratio value exper
@@ -576,17 +556,17 @@ runLogRegTest <-function(outdir =  getFullPath("plots/fullAnalysisExperiment/"))
     lambda.df$FP[i] <- output$FP
     lambda.df$FN[i] <- output$FN
     lambda.df$TN[i] <- output$TN
-    
-    
   }
   exportAsTable(lambda.df, paste(outdir,"lambdaExpr.tab",sep="/"))
   
 }
-analyzeLogRegTest <- function(outdir = "/home/wespisea/work/research/researchProjects/encode/encode-manager/plots/fullAnalysisExperiment/test/logReg/paramTests/"){
+
+
+analyzeLogRegTest <- function(outdir = getFullPath("plots/fullAnalysisExperiment/test/logReg/paramTests/")){
   if (!file.exists(outdir)){
     dir.create(outdir)
   }
-  indir = "/home/wespisea/work/research/researchProjects/encode/encode-manager/plots/fullAnalysisExperiment//remove_antisense/lpa-IDRlessthan0_1logRegressionTest/"
+  indir = getFullPath("plots/fullAnalysisExperiment//remove_antisense/lpa-IDRlessthan0_1logRegressionTest/")
   msg <- "lncRNA group = IDRlessthan0_1 ::: data cols = lpa \n( 46 / 1954 ) = (func/total lncRNA) ::: biotype = remove_antisense"
   ratio.df <- readInTable(paste(indir,"ratioExpr.tab",sep="/"))
   ratio.df <- ratio.df[which(ratio.df$ratio < 1),]
@@ -608,21 +588,58 @@ analyzeLogRegTest <- function(outdir = "/home/wespisea/work/research/researchPro
   ggplot(ratio.df, aes(x=as.factor(ratio),y=predict)) + geom_boxplot()+
     ylab("(TP + TN )/ total") +xlab("ratio(test/total)") +
     ggtitle(paste("logistic Regression: 10 trials w/ ratio = train/total",msg, sep="\n"))
- ggsave(paste(outdir,"ratioExpr.pdf",sep=""))
- 
+  ggsave(paste(outdir,"ratioExpr.pdf",sep=""))
+  
   ggplot(ratio.df, aes(x=as.factor(ratio),y=TPR)) + geom_boxplot()+
     ylab("TP / P") + xlab("ratio(test/total)") +
     ggtitle(paste("logistic Regression: 10 trials w/ ratio = train/total",msg, sep="\n"))
   ggsave(paste(outdir,"ratioExpr-TPoverP.pdf",sep=""))  
   
+  sensPrec.df<-melt(ratio.df, id.var="ratio",measure.var=c("sens", "prec"))
+  ggplot(sensPrec.df, aes(x=factor(ratio), y = value, fill=variable))+geom_boxplot() + 
+    coord_flip() + theme_bw()+ xlab("ratio(test/total)") + ylab("paramater value from trials")+
+    ggtitle(paste("logistic Regression: 10 trials w/ regularize lambda",msg, sep="\n")) + 
+    theme(panel.grid.major.x= element_line(colour = "grey"))+
+    theme(panel.grid.major.y= element_line(colour = "black")) 
+  ggsave(file=paste(outdir,"ratioExpr-PrecSens.pdf",sep=""),height=7,width=9)
   
- lambda.df <- readInTable(paste(indir,"lambdaExpr.tab",sep="/"))
+  ggplot(ratio.df,  aes(factor(ratio),predict))+geom_boxplot() + 
+    coord_flip() + theme_bw()+ xlab("ratio(test/total)") + ylab("1 - test set error")+
+    ggtitle(paste("logistic Regression: 10 trials w/ regularize lambda",msg, sep="\n")) + 
+    theme(panel.grid.major.x= element_line(colour = "grey"))+
+    theme(panel.grid.major.y= element_line(colour = "black")) 
+  ggsave(file=paste(outdir,"ratioExpr-1-errorRate.pdf",sep=""),height=7,width=9)
+  
+  ggplot(ratio.df,  aes(factor(ratio),2*(prec*sens)/(prec+sens)))+geom_boxplot() + 
+    coord_flip() + theme_bw()+ xlab("ratio(test/total)") + ylab("F1 = 2*(prec*sens)/(prec + sens) where range={0,1}")+
+    ggtitle(paste("logistic Regression: 10 trials w/ regularize lambda",msg, sep="\n"))+ 
+    theme(panel.grid.major.x= element_line(colour = "grey"))+
+    theme(panel.grid.major.y= element_line(colour = "black")) 
+  ggsave(file=paste(outdir,"ratioExpr-F1.pdf",sep=""),height=7,width=9)
+  
+  ggplot(ratio.df,  aes(factor(ratio),(TP + TN)/( TP + TN + FP + FN  )))+geom_boxplot() + 
+    coord_flip() + theme_bw()+ xlab("ratio(test/total)") + ylab("accuracy = (TP + TN)/( TP + TN + FP + FN  )")+
+    ggtitle(paste("logistic Regression: 10 trials w/ regularize lambda",msg, sep="\n")) + 
+    theme(panel.grid.major.x= element_line(colour = "grey"))+
+    theme(panel.grid.major.y= element_line(colour = "black")) 
+  ggsave(file=paste(outdir,"ratioExpr-accuracy.pdf",sep=""),height=7,width=9)
+  
+  ggplot(ratio.df,  aes(factor(ratio),(TN)/(TN + FP)))+geom_boxplot() + 
+    coord_flip() + theme_bw()+ xlab("ratio(test/total)") + ylab("true negative rate = (TN)/(TN + FP)")+
+    ggtitle(paste("logistic Regression: 10 trials w/ regularize lambda",msg, sep="\n")) + 
+    theme(panel.grid.major.x= element_line(colour = "grey"))+
+    theme(panel.grid.major.y= element_line(colour = "black")) 
+  ggsave(file=paste(outdir,"ratioExpr-TNR.pdf",sep=""),height=7,width=9)
+  
+  
+  
+  lambda.df <- readInTable(paste(indir,"lambdaExpr.tab",sep="/"))
   lambda.df <- within(lambda.df,{
-  sens = TP / (TP + FN)
-  prec = TP / (TP + FP)})
+    sens = TP / (TP + FN)
+    prec = TP / (TP + FP)})
   
- lambdaddply.df <- ddply(lambda.df ,.(lambda), summarise,stdDev = sd(predict),mean=mean(predict), sensMean = mean(sens), sensSd = sd(sens), precMean=mean(prec), precSd = sd(prec))
- 
+  lambdaddply.df <- ddply(lambda.df ,.(lambda), summarise,stdDev = sd(predict),mean=mean(predict), sensMean = mean(sens), sensSd = sd(sens), precMean=mean(prec), precSd = sd(prec))
+  
   ggplot(lambda.df, aes(x=as.factor(lambda),y=sens)) + geom_boxplot()+
     ylab("Sensitivity") +xlab("lambda value") +
     ggtitle(paste("logistic Regression: 10 trials w/  regularize lambda",msg, sep="\n"))
@@ -635,22 +652,55 @@ analyzeLogRegTest <- function(outdir = "/home/wespisea/work/research/researchPro
   
   ggplot(lambda.df, aes(x=as.factor(lambda),y=predict)) + geom_boxplot()+
     ylab("(TP + TN )/ total") + xlab("lambda value") +
-   ggtitle(paste("logistic Regression: 10 trials w/ regularize lambda",msg, sep="\n"))
- ggsave(paste(outdir,"lambdaExpr.pdf",sep=""))
- 
+    ggtitle(paste("logistic Regression: 10 trials w/ regularize lambda",msg, sep="\n"))
+  ggsave(paste(outdir,"lambdaExpr.pdf",sep=""))
+  
   ggplot(lambda.df, aes(x=as.factor(lambda),y=TPR)) + geom_boxplot()+
     ylab("TP / P") + xlab("lambda value") +
     ggtitle(paste("logistic Regression: 10 trials w/ regularize lambda",msg, sep="\n"))
   ggsave(paste(outdir,"lambdaExpr-TPR.pdf",sep=""))
   
+  sensPrec.df<-melt(lambda.df, id.var="lambda",measure.var=c("sens", "prec"))
+  ggplot(sensPrec.df, aes(x=factor(lambda), y = value, fill=variable))+geom_boxplot() + 
+    coord_flip() + theme_bw()+ xlab("lambda value") + ylab("paramater value from trials")+
+    ggtitle(paste("logistic Regression: 10 trials w/ regularize lambda",msg, sep="\n")) + 
+    theme(panel.grid.major.x= element_line(colour = "grey"))+
+    theme(panel.grid.major.y= element_line(colour = "black")) 
+  ggsave(file=paste(outdir,"lambdaExpr-PrecSens.pdf",sep=""),height=7,width=9)
   
- 
+  #####
+  ggplot(lambda.df,  aes(factor(lambda),predict))+geom_boxplot() + 
+    coord_flip() + theme_bw()+ xlab("lambda value") + ylab("1 - test set error")+
+    ggtitle(paste("logistic Regression: 10 trials w/ regularize lambda",msg, sep="\n")) + 
+    theme(panel.grid.major.x= element_line(colour = "grey"))+
+    theme(panel.grid.major.y= element_line(colour = "black")) 
+  ggsave(file=paste(outdir,"lambdaExpr-1-errorRate.pdf",sep=""),height=7,width=9)
+  
+  ggplot(lambda.df,  aes(factor(lambda),2*(prec*sens)/(prec+sens)))+geom_boxplot() + 
+    coord_flip() + theme_bw()+ xlab("lambda value") + ylab("F1 = 2*(prec*sens)/(prec + sens) where range={0,1}")+
+    ggtitle(paste("logistic Regression: 10 trials w/ regularize lambda",msg, sep="\n"))+ 
+    theme(panel.grid.major.x= element_line(colour = "grey"))+
+    theme(panel.grid.major.y= element_line(colour = "black")) 
+  ggsave(file=paste(outdir,"lambdaExpr-F1.pdf",sep=""),height=7,width=9)
+  
+  ggplot(lambda.df,  aes(factor(lambda),(TP + TN)/( TP + TN + FP + FN  )))+geom_boxplot() + 
+    coord_flip() + theme_bw()+ xlab("lambda value") + ylab("accuracy = (TP + TN)/( TP + TN + FP + FN  )")+
+    ggtitle(paste("logistic Regression: 10 trials w/ regularize lambda",msg, sep="\n")) + 
+    theme(panel.grid.major.x= element_line(colour = "grey"))+
+    theme(panel.grid.major.y= element_line(colour = "black")) 
+  ggsave(file=paste(outdir,"lambdaExpr-accuracy.pdf",sep=""),height=7,width=9)
+  
+  ggplot(lambda.df,  aes(factor(lambda),(TN)/(TN + FP)))+geom_boxplot() + 
+    coord_flip() + theme_bw()+ xlab("lambda value") + ylab("true negative rate = (TN)/(TN + FP)")+
+    ggtitle(paste("logistic Regression: 10 trials w/ regularize lambda",msg, sep="\n")) + 
+    theme(panel.grid.major.x= element_line(colour = "grey"))+
+    theme(panel.grid.major.y= element_line(colour = "black")) 
+  ggsave(file=paste(outdir,"lambdaExpr-TNR.pdf",sep=""),height=7,width=9)
+  
 }
 
 
-
-
-testGLMforLogRegression <- function(local){
+testGLMforLogRegression <- function(local,ratio,scaleDistro=TRUE){
   local.df <- local
   
   doubleCols = colnames(local.df)[as.vector(sapply(colnames(local.df),function(x)(typeof(local.df[1,x]) == "double")))]
@@ -658,63 +708,82 @@ testGLMforLogRegression <- function(local){
   exprCols.lpa  = doubleCols[grep("longPolyA$",doubleCols)]
   cols.list = list(lpa=exprCols.lpa,lnpa=exprCols.lnpa,bothPullDowns=c(exprCols.lpa,exprCols.lnpa))
   
-y = local.df$label
-train = sample(seq_along(y), 0.7 * length(y))
-testFuncs <- sum(y[-train])
-y.train <- y[train]
-y.test  <- y[-train]
-y.freq0 <- length(which(y.train == 0))/length(y.train)
-y.freq1 <- length(which(y.train == 1))/length(y.train)
-weight.train <- ifelse(y.train== 1, 1/y.freq1, 1/y.freq0)  
-  
-  # log Reg with polynomial of degree two
-glm.poly2.weight <- glm(label ~ poly(HSMM.longPolyA, BJ.longPolyA, NHEK.longPolyA, HUVEC.longPolyA, MCF.7.longPolyA, K562.longPolyA, 
-                 AG04450.longPolyA, HMEC.longPolyA, HEPG2.longPolyA, SK.N.SH_RA.longPolyA, A549.longPolyA, H1.HESC.longPolyA, 
-                 NHLF.longPolyA, HELA.S3.longPolyA, GM12878.longPolyA, degree=2, raw=TRUE), data=local.df[train,], family = binomial, weights=weight.train)
-#glm.poly2.probs = predict(glm.poly2,local.df[-train,], type="response") ## P(Y = 1 | X)
-glm.poly2.weight.stats = getStatsFromGlmModel(predict(glm.poly2,local.df[-train,], type="response"),      y.test)
- 
-  glm.poly2 <- glm(label ~ poly(HSMM.longPolyA, BJ.longPolyA, NHEK.longPolyA, HUVEC.longPolyA, MCF.7.longPolyA, K562.longPolyA, 
-                                       AG04450.longPolyA, HMEC.longPolyA, HEPG2.longPolyA, SK.N.SH_RA.longPolyA, A549.longPolyA, H1.HESC.longPolyA, 
-                                       NHLF.longPolyA, HELA.S3.longPolyA, GM12878.longPolyA, degree=2, raw=TRUE), data=local.df, family = binomial,subset=train)
-  #glm.poly2.probs = predict(glm.poly2,local.df[-train,], type="response") ## P(Y = 1 | X)
-  glm.poly2.stats = getStatsFromGlmModel(predict(glm.poly2,local.df[-train,], type="response"),      y.test)
-  
-  
-  glm.main.weight <- glm(label ~ HSMM.longPolyA + BJ.longPolyA + NHEK.longPolyA+ HUVEC.longPolyA+ MCF.7.longPolyA+ K562.longPolyA+ 
-                    AG04450.longPolyA+ HMEC.longPolyA+ HEPG2.longPolyA+ SK.N.SH_RA.longPolyA+ A549.longPolyA+ H1.HESC.longPolyA+ 
-                    NHLF.longPolyA+ HELA.S3.longPolyA+GM12878.longPolyA, data=local.df[train,], family = binomial, weights=weight.train)
-  glm.main.weight.stats = getStatsFromGlmModel(predict(glm.main.weight,local.df[-train,], type="response"), y.test) 
-  
-  glm.main <- glm(label ~ HSMM.longPolyA + BJ.longPolyA + NHEK.longPolyA+ HUVEC.longPolyA+ MCF.7.longPolyA+ K562.longPolyA+ 
-                                AG04450.longPolyA+ HMEC.longPolyA+ HEPG2.longPolyA+ SK.N.SH_RA.longPolyA+ A549.longPolyA+ H1.HESC.longPolyA+ 
-                                NHLF.longPolyA+ HELA.S3.longPolyA+GM12878.longPolyA, data=local.df, family = binomial,subset=train)
-  glm.main.probs = predict(glm.main,local.df[-train,], type="response") ## P(Y = 1 | X)
-  glm.main.stats = getStatsFromGlmModel(glm.main.probs, y.test) 
+  y = local.df$label
+  train = sample(seq_along(y), ratio * length(y))
+  testFuncs <- sum(y[-train])
+  y.train <- y[train]
+  y.test  <- y[-train]
+  y.freq0 <- length(which(y.train == 0))/length(y.train)
+  y.freq1 <- length(which(y.train == 1))/length(y.train)
+  weight.train <- ifelse(y.train== 1, 1/y.freq1, 1/y.freq0)  
+  ## scale training and test set seperately
+  if( TRUE == scaleDistro ){
+    local.df[train,exprCols.lpa] <- scale(local.df[train,exprCols.lpa], center=TRUE, scale = TRUE)
+    local.df[-train,exprCols.lpa] <- scale(local.df[-train,exprCols.lpa], center=TRUE, scale = TRUE)
+  }
   
   form.cross <- paste("label ~", do.call(paste, c(as.list(do.call(paste, c(expand.grid(exprCols.lpa, exprCols.lpa), sep=":"))), sep=" + ")))
   # use this formula
-  
-  glm.cross.weights <- glm(form.cross, data = local.df[train,], family=binomial,weights = weight.train) 
+  print(paste(length(y), length(weight.train), dim(local.df[train,])[1]))
+  glm.cross.weights <- glm(form.cross, data = local.df[train,], family=binomial, weights = weight.train) 
   glm.cross.weights.stats <- getStatsFromGlmModel(predict(glm.cross.weights,local.df[-train,], type="response"), y.test) 
   
-  
+  print("regular")
   glm.cross <- glm(form.cross, data = local.df, family=binomial,subset = train) 
-  glm.cross.probs = predict(glm.cross,local.df[-train,], type="response") ## P(Y = 1 | X)
-  glm.cross.stats <- getStatsFromGlmModel(glm.cross.probs, y.test) 
+  glm.cross.stats <- getStatsFromGlmModel(predict(glm.cross,local.df[-train,], type="response"), y.test) 
+  print("     cross")  
+  
+  # log Reg with polynomial of degree two
+  
+  glm.poly2.weight <- glm(label ~ poly(HSMM.longPolyA, BJ.longPolyA, NHEK.longPolyA, HUVEC.longPolyA, MCF.7.longPolyA, K562.longPolyA, 
+                                       AG04450.longPolyA, HMEC.longPolyA, HEPG2.longPolyA, SK.N.SH_RA.longPolyA, A549.longPolyA, H1.HESC.longPolyA, 
+                                       NHLF.longPolyA, HELA.S3.longPolyA, GM12878.longPolyA, degree=2, raw=TRUE), data=local.df[train,], family = binomial, weights=weight.train)
+  glm.poly2.weight.stats = getStatsFromGlmModel(predict(glm.poly2.weight,local.df[-train,], type="response"),      y.test)
+  
+  glm.poly2 <- glm(label ~ poly(HSMM.longPolyA, BJ.longPolyA, NHEK.longPolyA, HUVEC.longPolyA, MCF.7.longPolyA, K562.longPolyA, 
+                                AG04450.longPolyA, HMEC.longPolyA, HEPG2.longPolyA, SK.N.SH_RA.longPolyA, A549.longPolyA, H1.HESC.longPolyA, 
+                                NHLF.longPolyA, HELA.S3.longPolyA, GM12878.longPolyA, degree=2, raw=TRUE), data=local.df, family = binomial,subset=train)
+  glm.poly2.stats = getStatsFromGlmModel(predict(glm.poly2,local.df[-train,], type="response"),      y.test)
+  
+  
+  
+  print("     poly")  
+  glm.main.weight <- glm(label ~ HSMM.longPolyA + BJ.longPolyA + NHEK.longPolyA+ HUVEC.longPolyA+ MCF.7.longPolyA+ K562.longPolyA+ 
+                           AG04450.longPolyA+ HMEC.longPolyA+ HEPG2.longPolyA+ SK.N.SH_RA.longPolyA+ A549.longPolyA+ H1.HESC.longPolyA+ 
+                           NHLF.longPolyA+ HELA.S3.longPolyA+GM12878.longPolyA, data=local.df[train,], family = binomial, weights=weight.train)
+  glm.main.weight.stats = getStatsFromGlmModel(predict(glm.main.weight,local.df[-train,], type="response"), y.test) 
+  
+  glm.main <- glm(label ~ HSMM.longPolyA + BJ.longPolyA + NHEK.longPolyA+ HUVEC.longPolyA+ MCF.7.longPolyA+ K562.longPolyA+ 
+                    AG04450.longPolyA+ HMEC.longPolyA+ HEPG2.longPolyA+ SK.N.SH_RA.longPolyA+ A549.longPolyA+ H1.HESC.longPolyA+ 
+                    NHLF.longPolyA+ HELA.S3.longPolyA+GM12878.longPolyA, data=local.df, family = binomial,subset=train)
+  glm.main.stats = getStatsFromGlmModel(predict(glm.main,local.df[-train,], type="response"), y.test) 
+  print("     main")  
+  
+  
+  
+  form.circ <-paste("label ~ ",paste("I(", do.call(paste,c(as.list(paste0(exprCols.lpa,paste0("*",exprCols.lpa))),sep=") + I("  )), ")"))
+  
+  glm.circ.weights <- glm(form.circ, data = local.df[train,], family=binomial,weights = weight.train) 
+  glm.circ.weights.stats <- getStatsFromGlmModel(predict(glm.circ.weights,local.df[-train,], type="response"), y.test) 
+  
+  
+  glm.circ <- glm(form.circ, data = local.df, family=binomial,subset = train) 
+  glm.circ.stats <- getStatsFromGlmModel(predict(glm.circ,local.df[-train,], type="response"), y.test) 
+  print("     circ")  
+  
   
   
   lda.main <- lda(label ~ HSMM.longPolyA + BJ.longPolyA + NHEK.longPolyA+ HUVEC.longPolyA+ MCF.7.longPolyA+ K562.longPolyA+ 
                     AG04450.longPolyA+ HMEC.longPolyA+ HEPG2.longPolyA+ SK.N.SH_RA.longPolyA+ A549.longPolyA+ H1.HESC.longPolyA+ 
                     NHLF.longPolyA+ HELA.S3.longPolyA+GM12878.longPolyA, data=local.df, subset=train)
-  lda.main.probs = predict(lda.main,local.df[-train,]) ## P(Y = 1 | X)
-  lda.main.stats = getStatsFromGlmModel(lda.main.probs$x, y.test) 
+  lda.main.stats = getStatsFromGlmModel(predict(lda.main,local.df[-train,])$x, y.test) 
+  print("     lda")  
   
   qda.main <- qda(label ~ HSMM.longPolyA + BJ.longPolyA + NHEK.longPolyA+ HUVEC.longPolyA+ MCF.7.longPolyA+ K562.longPolyA+ 
                     AG04450.longPolyA+ HMEC.longPolyA+ HEPG2.longPolyA+ SK.N.SH_RA.longPolyA+ A549.longPolyA+ H1.HESC.longPolyA+ 
                     NHLF.longPolyA+ HELA.S3.longPolyA+GM12878.longPolyA, data=local.df, subset=train)
-  qda.main.probs = predict(qda.main,local.df[-train,], type="response") ## P(Y = 1 | X)
-  qda.main.stats = getStatsFromGlmModel(qda.main.probs$posterior[,2], y.test) 
+  qda.main.stats = getStatsFromGlmModel(predict(qda.main,local.df[-train,], type="response")$posterior[,2], y.test) 
+  print("     qda")  
   
   #KNN
   train.X <- as.matrix(local.df[train,exprCols.lpa])
@@ -728,15 +797,47 @@ glm.poly2.weight.stats = getStatsFromGlmModel(predict(glm.poly2,local.df[-train,
   
   
   knn.5.stats <- getStatsFromGlmModel(knn(train.X, test.X, train.Direction, k = 5), y.test, knn=TRUE)
+  print("     knn")  
+  
+  grid = 10 ^ seq(10, -2, length = 100)
+  ridge.weight.stats <- getStatsFromGlmModel( predict(glmnet(train.X,y.train,family="binomial", alpha=0, lambda=grid, weights = weight.train,standardize=scaleDistro),
+                                                      s=cv.glmnet(train.X,y.train,family="binomial",type.measure="auc", alpha=0, weights=weight.train,standardize=scaleDistro)$lambda.min,
+                                                      newx=test.X, type="response")  , 
+                                              y.test)
+  print("     ridge.weight.stats") 
+  
+  lasso.weight.stats <- getStatsFromGlmModel(  predict( glmnet(train.X,y.train,family="binomial", alpha=1, lambda=grid, weights = weight.train,standardize=scaleDistro),
+                                                        s=cv.glmnet(train.X,y.train,family="binomial",type.measure="auc", alpha=1, weights=weight.train,standardize=scaleDistro)$lambda.min,
+                                                        newx=test.X, type="response"), 
+                                               y.test)
+  print("     lasso.weight.stats") 
+  lasso.stats <- getStatsFromGlmModel( predict(glmnet(train.X,y.train,family="binomial", alpha=1, lambda=grid, weights = rep(1,length(y.train)),standardize=scaleDistro),
+                                               s=cv.glmnet(train.X,y.train,family="binomial",type.measure="auc", alpha=1, weights=rep(1,length(y.train)),standardize=scaleDistro)$lambda.min,
+                                               newx=test.X, type="response"),
+                                                y.test)
+  print("     lasso.stats") 
+  
+  ridge.stats <- getStatsFromGlmModel( predict( object = glmnet(train.X,y.train,family="binomial", alpha=0, lambda=grid, weights = rep(1,length(y.train)),standardize=scaleDistro),
+                                                s = cv.glmnet(train.X,y.train,family="binomial",type.measure="auc", alpha=0, weights=rep(1,length(y.train)),standardize=scaleDistro)$lambda.min,
+                                                newx = test.X, type="response"), 
+                                        y.test)
+  print("     ridge/ridge.stats")  
+  
+  
+  
+  
+  
   
   
   df.out <-  rbind(glm.poly2.weight.stats,glm.poly2.stats,glm.main.weight.stats,glm.main.stats,
-                    glm.cross.weights.stats,glm.cross.stats,lda.main.stats,qda.main.stats,
-                    knn.1.stats,knn.3.stats,knn.5.stats)
+                   glm.cross.weights.stats,glm.cross.stats,lda.main.stats,qda.main.stats,
+                   knn.1.stats,knn.3.stats,knn.5.stats,glm.circ.weights.stats,glm.circ.stats,
+                   ridge.weight.stats,ridge.stats,lasso.weight.stats,lasso.stats)
   
   df.out$expr <- c("glm.poly2.weight.stats","glm.poly2.stats","glm.main.weight.stats","glm.main.stats",
-                  "glm.cross.weights.stats","glm.cross.stats","lda.main.stats","qda.main.stats",
-                  "knn.1.stats","knn.3.stats","knn.5.stats")
+                   "glm.cross.weights.stats","glm.cross.stats","lda.main.stats","qda.main.stats",
+                   "knn.1.stats","knn.3.stats","knn.5.stats","glm.circ.weights.stats","glm.circ.stats",
+                   "ridge.weight.stats","ridge.stats","lasso.weight.stats","lasso.stats")
   rownames(df.out) <- NULL
   df.out$testFunctionalLncs <- testFuncs 
   df.out$testSetSize <- length(train)
@@ -744,32 +845,50 @@ glm.poly2.weight.stats = getStatsFromGlmModel(predict(glm.poly2,local.df[-train,
   
 }
 
-testGLMModel <- function(outdir = "/home/wespisea/work/research/researchProjects/encode/encode-manager/plots/fullAnalysisExperiment/test/logReg/glmTest/"){
+
+
+testGLMModelForRatios <- function(){
+  odir <- getFullPath("plots/fullAnalysisExperiment/test/logReg/glmTest")
+  
+  testGLMModel(outdir=ratio1.odr, ratio=ratio1,scaleDistro=FALSE)
+  ratio1.odr <- paste(odir,"-0_7/", sep="")
+  testGLMModel(outdir=ratio1.odr, ratio=0.7)
+  
+  ratio1.odr <- paste(odir,"-0_7-scale/", sep="")
+  testGLMModel(outdir=ratio1.odr, ratio=0.7,scaleDistro=TRUE)
+}
+
+
+testGLMModel <- function(outdir = getFullPath("plots/fullAnalysisExperiment/test/logReg/glmTest/"),ratio=0.7,scaleDistro=FALSE,trials=30){
   if (!file.exists(outdir)){
     dir.create(outdir)}
   msg <- "lncRNA group = IDRlessthan0_1 ::: data cols = lpa \n( 46 / 1954 ) = (func/total lncRNA) ::: biotype = remove_antisense"
   
   df <- readInTable(getFullPath("plots/fullAnalysisExperiment/test/logReg/paramTests/fullExpr.tab"))
-  exprFile <- paste(outdir,"glmExpr500.tab",sep="")
+  exprFile <- paste(outdir,"glmExpr",trials,"-",ratio,".tab",sep="")
   test = TRUE
   if (!file.exists(exprFile) || test == TRUE){
-    
-    df.accum <- testGLMforLogRegression(df)
+    print(paste("ratio = ", ratio, "trial =  1"))
+    df.accum <- testGLMforLogRegression(df,ratio,scaleDistro)
     df.accum$trial <- 1
-    for(i in 2:500){
-      df.out <- testGLMforLogRegression(df)
+    for(i in 2:trials){
+      print(paste("trial = " ,i,sep=""))
+     
+      tryCatch({df.out <- testGLMforLogRegression(df,ratio,scaleDistro)
       df.out$trial <- i
-      df.accum <- rbind(df.out, df.accum)
+      df.accum <- rbind(df.out, df.accum)},
+      error = function(e) print("error in Log Reg routine"), finally=print(""))
     }
     exportAsTable(df.accum, exprFile)
-  local.df <- df.accum
-    } else{
+    local.df <- df.accum
+  } else{
     local.df <- readInTable(exprFile)  
   }
-
-  summary.df <- ddply(local.df, .(expr), summarize, precMean= mean(prec,na.rm=T),sensMean= mean(sens,na.rm=T),)
+  
+  summary.df <- ddply(local.df, .(expr), summarize, precMean= mean(prec,na.rm=T),sensMean= mean(sens,na.rm=T))
   sensPrec.df<-melt(local.df, id.var="expr",measure.var=c("sens", "prec"))
-  msg1 <- paste("traning set Size = ", local.df$testSetSize[1],"test set {y=1} count =", local.df$testFunctionalLncs[1],",trials=", max(local.df$trial),sep=" " )
+  msg1 <- paste("traning set Size = ", local.df$testSetSize[1], ",trials=", max(local.df$trial),"ratio = ", ratio, "scale = ", scaleDistro,sep=" " )
+  
   ggplot(sensPrec.df, aes(x=factor(expr), y = value, fill=variable))+geom_boxplot() + 
     coord_flip() + theme_bw()+ xlab("learning algorithm") + ylab("paramater value from trials")+
     ggtitle(paste("test set error for classification algorithm",msg,msg1,sep="\n")) + 
@@ -780,42 +899,70 @@ testGLMModel <- function(outdir = "/home/wespisea/work/research/researchProjects
   
   ggplot(local.df,  aes(expr,1-errorRate))+geom_boxplot() + 
     coord_flip() + theme_bw()+ xlab("learning algorithm") + ylab("1 - test set error")+
-  ggtitle(paste("test set error for classification algorithm",msg,msg1,sep="\n")) + 
+    ggtitle(paste("test set error for classification algorithm",msg,msg1,sep="\n")) + 
     theme(panel.grid.major.x= element_line(colour = "grey"))+
     theme(panel.grid.major.y= element_line(colour = "black")) 
   ggsave(file=paste(outdir,"glmModelComparison-1-errorRate.pdf",sep=""),height=7,width=9)
+  
+  ggplot(local.df,  aes(expr,AUC))+geom_boxplot() + 
+    coord_flip() + theme_bw()+ xlab("learning algorithm") + ylab("AUC")+
+    ggtitle(paste("test set error for classification algorithm",msg,msg1,sep="\n")) + 
+    theme(panel.grid.major.x= element_line(colour = "grey"))+
+    theme(panel.grid.major.y= element_line(colour = "black")) 
+  ggsave(file=paste(outdir,"glmModelComparison-AUC.pdf",sep=""),height=7,width=9)
+  
   
   ggplot(local.df,  aes(expr,2*(prec*sens)/(prec+sens)))+geom_boxplot() + 
     coord_flip() + theme_bw()+ xlab("learning algorithm") + ylab("F1 = 2*(prec*sens)/(prec + sens) where range={0,1}")+
     ggtitle(paste("test set error for classification algorithm",msg,msg1,sep="\n")) + 
     theme(panel.grid.major.x= element_line(colour = "grey"))+
     theme(panel.grid.major.y= element_line(colour = "black")) 
-  ggsave(file=paste(outdir,"glmModelComparison-TP/y=1.pdf",sep=""),height=7,width=9)
+  ggsave(file=paste(outdir,"glmModelComparison-F1.pdf",sep=""),height=7,width=9)
+  
+  ggplot(local.df,  aes(expr,(TP + TN)/( TP + TN + FP + FN  )))+geom_boxplot() + 
+    coord_flip() + theme_bw()+ xlab("learning algorithm") + ylab("accuracy = (TP + TN)/( TP + TN + FP + FN  )")+
+    ggtitle(paste("test set error for classification algorithm",msg,msg1,sep="\n")) + 
+    theme(panel.grid.major.x= element_line(colour = "grey"))+
+    theme(panel.grid.major.y= element_line(colour = "black")) 
+  ggsave(file=paste(outdir,"glmModelComparison-accuracy.pdf",sep=""),height=7,width=9)
+  
+  ggplot(local.df,  aes(expr,(TN)/(TN + FP)))+geom_boxplot() + 
+    coord_flip() + theme_bw()+ xlab("learning algorithm") + ylab("true negative rate = (TN)/(TN + FP)")+
+    ggtitle(paste("test set error for classification algorithm",msg,msg1,sep="\n")) + 
+    theme(panel.grid.major.x= element_line(colour = "grey"))+
+    theme(panel.grid.major.y= element_line(colour = "black")) 
+  ggsave(file=paste(outdir,"glmModelComparison-TNR.pdf",sep=""),height=7,width=9)
   
 }
 
 
 
 getStatsFromGlmModel <- function(probs, y,knn=FALSE){
-
-
-if (TRUE == knn){
-  pred <- as.numeric(probs) - 1 
-} else {
-  pred <- rep(0,length(probs))
-  pred[which(probs > 0.5)] <- 1
   
-}
-correct <- (pred == y)
-poly2 <- data.frame(trial=-1)
-poly2$TP <- length(which(correct & y ==1))
-poly2$TN <- length(which(correct & y ==0))  
-poly2$FP <- length(which(!correct & y ==0))  
-poly2$FN <- length(which(!correct & y ==1))  
-poly2$prec <- with(poly2, TP / (TP + FP))
-poly2$sens <- with(poly2, TP / (TP + FN))
-poly2$errorRate <-  1 - sum(correct)/length(correct)
-poly2
+  
+  if (TRUE == knn){ 
+    pred <- as.numeric(probs) - 1 
+  } else {
+    pred <- rep(0,length(probs))
+    pred[which(probs > 0.5)] <- 1
+    
+  }
+  
+  correct <- (pred == y)
+  poly2 <- data.frame(trial=-1)
+  poly2$TP <- length(which(correct & y ==1))
+  poly2$TN <- length(which(correct & y ==0))  
+  poly2$FP <- length(which(!correct & y ==0))  
+  poly2$FN <- length(which(!correct & y ==1))  
+  poly2$prec <- with(poly2, TP / (TP + FP))
+  poly2$sens <- with(poly2, TP / (TP + FN))
+  poly2$errorRate <-  1 - sum(correct)/length(correct)
+  if (TRUE == knn){ 
+    poly2$AUC <- 0
+  } else {
+    poly2$AUC <- calcAUC(prob=probs, label=y)
+  }
+  poly2
 }
 
 
@@ -890,7 +1037,172 @@ plotTissSpecVaverageExpr <- function(outdir = getFullPath("plots/lncCompare/glob
 
 
 
+testRegByPackage <- function(outdir = getFullPath("plots/fullAnalysisExperiment/test/logReg/LiblineaR/")){
+  trials <- 10
+  
+  if (!file.exists(outdir)){
+    dir.create(outdir)}
+  msg <- "lncRNA group = IDRlessthan0_1 ::: data cols = lpa \n( 46 / 1954 ) = (func/total lncRNA) ::: biotype = remove_antisense"
+  msg <- paste(msg, "\n trial = ", trials)
+  
+  df <- readInTable(getFullPath("plots/fullAnalysisExperiment/test/logReg/paramTests/fullExpr.tab"))
+  doubleCols = colnames(df)[as.vector(sapply(colnames(df),function(x)(typeof(df[1,x]) == "double")))]
+  exprCols.lnpa = doubleCols[grep("longNonPolyA$",doubleCols)]
+  exprCols.lpa  = doubleCols[grep("longPolyA$",doubleCols)]
+  
+  x=df[,exprCols.lpa]
+  y=factor(df$label)
+  ratio <- 0.7
+  
+  t = 0 
+  tryTypes = c(0,6,7)
+  tryCosts = c(1000, 100, 10, 1, 0.1, 0.01, 0.001)
+  
+  s = scale(xTrain,center=TRUE,scale=TRUE)
+  
+  for(trial in 1:trials){
+    train = sample(seq_along(y),length(y) * ratio )
+    xTrain=x[train,]
+    xTest=x[-train,]
+    yTrain=y[train]
+    yTrain.freq1 = sum(yTrain == "1")/length(yTrain)
+    yTrain.freq0 = 1 - yTrain.freq1
+    yTest = y[-train]
+    
+    
+    weight <- TRUE;ttype <-trial
+    for (co in tryCosts){
+      # acc = LiblineaR(data=s, labels=yTrain, type = ty, cost = co, bias=TRUE, cross=10, verbose=FALSE, wi=list("0"=1/yTrain.freq0, "1"=1/yTrain.freq0))
+      
+      if (TRUE == weight){
+        acc = LiblineaR(data=s, labels=yTrain, type = ttype, cost = co, bias=TRUE,  verbose=FALSE, wi=list("0"=1/yTrain.freq0, "1"=1/yTrain.freq0))
+      } else {
+        acc = LiblineaR(data=s, labels=yTrain, type = ttype, cost = co, bias=TRUE,  verbose=FALSE)
+      }
+      
+      cat("Results for C=", co, " : ", trial, " type \n", sep="")
+      
+      inLineTest <- TRUE
+      if(TRUE == inLineTest){
+        s2 = scale(xTest, attr(s, "scaled:center"), attr(s, "scaled:scale"))
+        pr = FALSE
+        if (ttype == 0 || ttype == 7) pr =TRUE
+        p=predict(acc,s2,proba=pr, decisionValues=TRUE)
+        res = table(p$predictions, yTest)
+        if(dim(res)[1] > 1) print(res)
+        df.out <- getStatsFromGlmModel(as.numeric(p$predictions) , yTest)
+        df.out$cost <- co
+        df.out$trial <- trial
+        if (trial == 1 && co == max(tryCosts) ){
+          df.accum <- df.out
+        } else {
+          df.accum <- rbind(df.accum, df.out)
+          
+        }
+      }
+    }
+  }
+  ggplot(melt(df.accum, id.var = "cost", measure.var = c("sens", "prec","errorRate")), aes(x=factor(cost),y=value,fill=variable))+ 
+    geom_boxplot() + theme_bw() + 
+    ggtitle(paste("L2 regularized L1-loss support vector classification\n",msg,sep=""))
+  ggsave(paste(outdir, "L2-regularized-L1-loss-SVC_outputOverC.pdf", sep=""))
+  
+  exportAsTable(df=df.accum, file = paste(outdir, "L2-regularized-L1-loss-SVC.tab", sep=""))
+  
+  
+  #BCR = mean(c(res[1,1]/sum(res[,1]), res[2,2]/sum(res[,2]), res[3,3]/sum(res[,3])  ))
+  
+}
 
+calcAUC <- function(prob, label){
+  pre = prediction(predictions=prob, labels=label)
+  per = performance(pre, "tpr", "fpr")
+  AUC = (performance(pre, "auc"))@y.values[[1]] 
+}
+
+createROCcurve <- function(prob, label,outfile,title=""){
+  pre = prediction(predictions=prob, labels=label)
+  per = performance(pre, "tpr", "fpr")
+  AUC = (performance(pre, "auc"))@y.values[[1]] 
+  subtitle=paste("AUC:", AUC)
+  pdf(outfile)
+  plot(per,main=paste("ROC Curve",title,sep="\n"), xlab="True Positive Rate",ylab="False Positive Rate")
+  dev.off()
+}
+
+
+testRegByGLMNET <- function(outdir = getFullPath("plots/fullAnalysisExperiment/test/logReg/glmnetCV/"), weight=TRUE){
+  library(glmnets)
+  trials <- 10
+  
+  if (!file.exists(outdir)){
+    dir.create(outdir)}
+  msg <- "lncRNA group = IDRlessthan0_1 ::: data cols = lpa \n( 46 / 1954 ) = (func/total lncRNA) ::: biotype = remove_antisense"
+  msg <- paste(msg, "\n trial = ", trials)
+  
+  df <- readInTable(getFullPath("plots/fullAnalysisExperiment/test/logReg/paramTests/fullExpr.tab"))
+  doubleCols = colnames(df)[as.vector(sapply(colnames(df),function(x)(typeof(df[1,x]) == "double")))]
+  exprCols.lnpa = doubleCols[grep("longNonPolyA$",doubleCols)]
+  exprCols.lpa  = doubleCols[grep("longPolyA$",doubleCols)]
+  
+  x=df[,exprCols.lpa]
+  y=factor(df$label)
+  ratio <- 0.7
+  
+  for(trial in 1:trials){
+    
+    train = sample(seq_along(y),length(y) * ratio )
+    xTrain=x[train,]
+    xTest=x[-train,]
+    yTrain=y[train]
+    yTrain.freq1 = sum(yTrain == "1")/length(yTrain)
+    yTrain.freq0 = 1 - yTrain.freq1
+    yTest = y[-train]
+    if(TRUE == weight){
+      weight.train <- ifelse(yTrain == 1, 1/yTrain.freq1, 1/yTrain.freq0)
+    } else {
+      weight.train <- rep(1,length(yTrain))
+    }
+    grid = 10 ^ seq(10, -2, length = 100)
+    
+    ridge.mod <-   glmnet(as.matrix(xTrain),as.numeric(yTrain)-1,family="binomial", alpha=0, lambda=grid, weights = rep(1,length(yTrain)))
+    ridge <- cv.glmnet(as.matrix(xTrain),as.numeric(yTrain)-1,family="binomial",type.measure="auc", alpha=0, weights=rep(1,length(yTrain)))
+    ridge.predict <- predict(ridge.mod,s=ridge$lambda.min,newx=as.matrix(xTest), type="response")  
+    ridge.stats <- getStatsFromGlmModel( ridge.predict, yTest)
+    ridge.stats$type <- "ridge"
+    
+    lasso.mod <-   glmnet(as.matrix(xTrain),as.numeric(yTrain)-1,family="binomial", alpha=1, lambda=grid, weights = rep(1,length(yTrain)))
+    lasso <- cv.glmnet(as.matrix(xTrain),as.numeric(yTrain)-1,family="binomial",type.measure="auc", alpha=1, weights=rep(1,length(yTrain)))
+    lasso.predict <- predict(lasso.mod,s=lasso$lambda.min,newx=as.matrix(xTest), type="response")  
+    lasso.stats <- getStatsFromGlmModel( lasso.predict, yTest)
+    lasso.stats$type <- "lasso"
+    
+    ridge.weight.mod <-   glmnet(as.matrix(xTrain),as.numeric(yTrain)-1,family="binomial", alpha=0, lambda=grid, weights = weight.train)
+    ridge.weight <- cv.glmnet(as.matrix(xTrain),as.numeric(yTrain)-1,family="binomial",type.measure="auc", alpha=0, weights=weight.train)
+    ridge.weight.predict <- predict(ridge.weight.mod,s=ridge.weight$lambda.min,newx=as.matrix(xTest), type="response")  
+    ridge.weight.stats <- getStatsFromGlmModel( ridge.weight.predict, yTest)
+    ridge.weight.stats$type <- "ridge.weight"
+    
+    lasso.weight.mod <-   glmnet(as.matrix(xTrain),as.numeric(yTrain)-1,family="binomial", alpha=1, lambda=grid, weights = weight.train)
+    lasso.weight <- cv.glmnet(as.matrix(xTrain),as.numeric(yTrain)-1,family="binomial",type.measure="auc", alpha=1, weights=weight.train)
+    lasso.weight.predict <- predict(lasso.weight.mod,s=lasso.weight$lambda.min,newx=as.matrix(xTest), type="response")  
+    lasso.weight.stats <- getStatsFromGlmModel( lasso.weight.predict, yTest)
+    lasso.weight.stats$type <- "lasso.weight"
+    
+    
+    df.out <- rbind(lasso.stats,lasso.weight.stats,ridge.stats,ridge.weight.stats)
+    df.out$trial = trial
+    if (trial == 1){
+      df.accum <- df.out
+    } else {
+      df.accum <- rbind(df.out, df.accum)
+    }
+    
+  } # end iteration over trials
+  ggplot(melt(df.accum, id.var = "type", measure.var=c("prec", "sens", "errorRate")), aes(type, value, fill=variable))  + 
+    geom_boxplot() +
+    ggtitle(paste("ridge and lasso regularized linear Regression\nLambda calculated by CV, final values from indepenet set(0.3 total)", msg, sep="\n"))
+}    
 
 
 

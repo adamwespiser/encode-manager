@@ -684,7 +684,7 @@ test2 = function(outdir = "/home/wespisea/work/research/researchProjects/encode/
   trainR = sum(X.df[train,"correct"])/dim(X.df[train,])[1]
   ggplot(X.df[train,],aes(x1,x2,color=factor(y),size=1-correct)) +
     geom_point() + theme_bw()+ ggtitle(paste("test performance -- wrong points are large\nR=",trainR,sep="")) + xlim(-2,2)+ ylim(-2,2)
-  ggsave(paste(outdir,"dataPlot-test-Incorrect.pdf"))
+  ggsave(paste(outdir,"dataPlot-train-Incorrect.pdf"))
   
   testR = sum(X.df[-train,"correct"])/dim(X.df[-train,])[1]
   ggplot(X.df[-train,],aes(x1,x2,color=factor(y),size=1-correct)) +
