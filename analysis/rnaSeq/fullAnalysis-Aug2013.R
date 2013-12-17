@@ -1038,7 +1038,7 @@ plotTissSpecVaverageExpr <- function(outdir = getFullPath("plots/lncCompare/glob
 
 
 testRegByPackage <- function(outdir = getFullPath("plots/fullAnalysisExperiment/test/logReg/LiblineaR/")){
-  trials <- 10
+  trials <- 20
   
   if (!file.exists(outdir)){
     dir.create(outdir)}
@@ -1056,7 +1056,7 @@ testRegByPackage <- function(outdir = getFullPath("plots/fullAnalysisExperiment/
   
   t = 0 
   tryTypes = c(0,6,7)
-  tryCosts = c(1000, 100, 10, 1, 0.1, 0.01, 0.001)
+  tryCosts = rev(c(10^seq(-5,10)))
   
   s = scale(xTrain,center=TRUE,scale=TRUE)
   
@@ -1070,7 +1070,7 @@ testRegByPackage <- function(outdir = getFullPath("plots/fullAnalysisExperiment/
     yTest = y[-train]
     
     
-    weight <- TRUE;ttype <-trial
+    weight <- TRUE;ttype <-3
     for (co in tryCosts){
       # acc = LiblineaR(data=s, labels=yTrain, type = ty, cost = co, bias=TRUE, cross=10, verbose=FALSE, wi=list("0"=1/yTrain.freq0, "1"=1/yTrain.freq0))
       
@@ -1102,14 +1102,22 @@ testRegByPackage <- function(outdir = getFullPath("plots/fullAnalysisExperiment/
       }
     }
   }
-  ggplot(melt(df.accum, id.var = "cost", measure.var = c("sens", "prec","errorRate")), aes(x=factor(cost),y=value,fill=variable))+ 
+  ggplot(melt(df.accum, id.var = "cost", measure.var = c("sens", "prec")), aes(x=factor(cost),y=value,fill=variable))+ 
     geom_boxplot() + theme_bw() + 
     ggtitle(paste("L2 regularized L1-loss support vector classification\n",msg,sep=""))
   ggsave(paste(outdir, "L2-regularized-L1-loss-SVC_outputOverC.pdf", sep=""))
   
+  ggplot(melt(df.accum, id.var = "cost", measure.var = c("AUC")), aes(x=factor(cost),y=value,fill=variable))+ 
+    geom_boxplot() + theme_bw() + 
+    ggtitle(paste("L2 regularized L1-loss support vector classification\n",msg,sep=""))
+  ggsave(paste(outdir, "L2-regularized-L1-loss-SVC_outputOverC-AUC.pdf", sep=""))
+  
+  ggplot(melt(df.accum, id.var = "cost", measure.var = c("errorRate")), aes(x=factor(cost),y=value,fill=variable))+ 
+    geom_boxplot() + theme_bw() + 
+    ggtitle(paste("L2 regularized L1-loss support vector classification\n",msg,sep=""))
+  ggsave(paste(outdir, "L2-regularized-L1-loss-SVC_outputOverC-errorRate.pdf", sep=""))
+    
   exportAsTable(df=df.accum, file = paste(outdir, "L2-regularized-L1-loss-SVC.tab", sep=""))
-  
-  
   #BCR = mean(c(res[1,1]/sum(res[,1]), res[2,2]/sum(res[,2]), res[3,3]/sum(res[,3])  ))
   
 }
@@ -1118,6 +1126,7 @@ calcAUC <- function(prob, label){
   pre = prediction(predictions=prob, labels=label)
   per = performance(pre, "tpr", "fpr")
   AUC = (performance(pre, "auc"))@y.values[[1]] 
+  AUC
 }
 
 createROCcurve <- function(prob, label,outfile,title=""){
