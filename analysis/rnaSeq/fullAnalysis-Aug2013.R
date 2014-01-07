@@ -540,6 +540,7 @@ runLogRegTest <-function(outdir =  getFullPath("plots/fullAnalysisExperiment/"))
     ratio.df$FP[i] <- output$FP
     ratio.df$FN[i] <- output$FN
     ratio.df$TN[i] <- output$TN
+    ratio.df$AUC[i] <- output$AUC
   }
   exportAsTable(ratio.df, paste(outdir,"ratioExpr.tab",sep="/"))
   exportAsTable(local.df, paste(outdir,"fullExpr.tab",sep="/"))
@@ -556,11 +557,13 @@ runLogRegTest <-function(outdir =  getFullPath("plots/fullAnalysisExperiment/"))
     lambda.df$FP[i] <- output$FP
     lambda.df$FN[i] <- output$FN
     lambda.df$TN[i] <- output$TN
+    lambda.df$AUC[i] <- output$AUC
+    
   }
   exportAsTable(lambda.df, paste(outdir,"lambdaExpr.tab",sep="/"))
   
 }
-
+#  runLogRegTest();analyzeLogRegTest()
 
 analyzeLogRegTest <- function(outdir = getFullPath("plots/fullAnalysisExperiment/test/logReg/paramTests/")){
   if (!file.exists(outdir)){
@@ -572,13 +575,26 @@ analyzeLogRegTest <- function(outdir = getFullPath("plots/fullAnalysisExperiment
   ratio.df <- ratio.df[which(ratio.df$ratio < 1),]
   ratio.df <- within(ratio.df,{
     sens = TP / (TP + FN)
-    prec = TP / (TP + FP)})
+    prec = TP / (TP + FP)
+    F1 = 2*(prec*sens)/(prec+sens)})
   ratddply.df <- ddply(ratio.df ,.(ratio), summarise, stdDev = sd(predict),mean=mean(predict), sensMean = mean(sens), sensSd = sd(sens), precMean=mean(prec), precSd = sd(prec))
+  
+  
+  ggplot(ratio.df, aes(x=as.factor(ratio),y=AUC)) + geom_boxplot() +
+    ylab("AUC = area under curve") +xlab("ratio(test/total)") +
+    ggtitle(paste("logistic Regression: 10 trials w/ ratio = train/total",msg, sep="\n"))
+  ggsave(paste(outdir,"ratioAUC.pdf",sep=""))
   
   ggplot(ratio.df, aes(x=as.factor(ratio),y=sens)) + geom_boxplot() +
     ylab("Sensitivity") +xlab("ratio(test/total)") +
     ggtitle(paste("logistic Regression: 10 trials w/ ratio = train/total",msg, sep="\n"))
   ggsave(paste(outdir,"ratioSensitivity.pdf",sep=""))
+  
+  ggplot(ratio.df, aes(x=as.factor(ratio),y=F1)) + geom_boxplot() +
+    ylab("F1 = 2*(prec*sens)/(prec+sens) ") +xlab("ratio(test/total)") +
+    ggtitle(paste("logistic Regression: 10 trials w/ ratio = train/total",msg, sep="\n"))
+  ggsave(paste(outdir,"ratioF1.pdf",sep=""))
+  
   
   ggplot(ratio.df, aes(x=as.factor(ratio),y=prec)) + geom_boxplot()+
     ylab("Precision") +xlab("ratio(test/total)") +
@@ -636,14 +652,27 @@ analyzeLogRegTest <- function(outdir = getFullPath("plots/fullAnalysisExperiment
   lambda.df <- readInTable(paste(indir,"lambdaExpr.tab",sep="/"))
   lambda.df <- within(lambda.df,{
     sens = TP / (TP + FN)
-    prec = TP / (TP + FP)})
+    prec = TP / (TP + FP)
+    F1 =  2*(prec*sens)/(prec+sens)})
   
   lambdaddply.df <- ddply(lambda.df ,.(lambda), summarise,stdDev = sd(predict),mean=mean(predict), sensMean = mean(sens), sensSd = sd(sens), precMean=mean(prec), precSd = sd(prec))
+  
+  ggplot(lambda.df, aes(x=as.factor(lambda),y=AUC)) + geom_boxplot()+
+    ylab("AUC = area under curve") +xlab("lambda value") +
+    ggtitle(paste("logistic Regression: 10 trials w/  regularize lambda",msg, sep="\n"))
+  ggsave(paste(outdir,"lambdaAUC.pdf",sep=""))
+  
   
   ggplot(lambda.df, aes(x=as.factor(lambda),y=sens)) + geom_boxplot()+
     ylab("Sensitivity") +xlab("lambda value") +
     ggtitle(paste("logistic Regression: 10 trials w/  regularize lambda",msg, sep="\n"))
   ggsave(paste(outdir,"lambdaSensitivity.pdf",sep=""))
+  
+  ggplot(lambda.df, aes(x=as.factor(lambda),y=F1)) + geom_boxplot() +
+    ylab("F1 = 2*(prec*sens)/(prec+sens) ") +xlab("ratio(test/total)") +
+    ggtitle(paste("logistic Regression: 10 trials w/ regularize lambda",msg, sep="\n"))
+  ggsave(paste(outdir,"lambdaF1.pdf",sep=""))
+  
   
   ggplot(lambda.df, aes(x=as.factor(lambda),y=prec)) + geom_boxplot()+
     ylab("Precision") +xlab("lambda value") +

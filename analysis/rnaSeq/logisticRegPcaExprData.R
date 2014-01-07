@@ -491,14 +491,15 @@ testThetaTPR <- function(X,k,y,cols, theta){
 }
 
 testThetaStats <- function(X,k,y,cols, theta){
-  
+  probs <- sigmoid(apply(X,1,function(x){t(x) %*% theta %*% x} ))
+  AUC <- calcAUC(probs, y)
   predictLabel <- ifelse(apply(X,1,function(x){t(x) %*% theta %*% x} ) < 0, 0, 1)
   predictY <- ifelse(predictLabel == y, 1, 0)
   TP <- length(which(predictY == 1 & y == 1))
   TN <- length(which(predictY == 1 & y == 0))
   FN <- length(which(predictY == 0 & y == 1))
   FP <- length(which(predictY == 0 & y == 0))
-  list(TP=TP,TN=TN,FN=FN,FP=FP)
+  list(TP=TP,TN=TN,FN=FN,FP=FP,AUC=AUC)
   
 }
 
