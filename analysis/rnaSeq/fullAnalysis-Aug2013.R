@@ -5,6 +5,12 @@
 #
 home <- Sys.getenv("HOME")
 
+getFullPath <- function(projectPath){ paste(projectDir,projectPath,sep="/") }
+exportAsTable <- function(df, file){ write.table(df,file=file,quote=FALSE, row.names=FALSE,sep="\t") }
+clear <- function(save.vec=c()){ ls.vec <- ls(globalenv());del.vec <-setdiff(ls.vec,c(save.vec,"clear")); rm(list=del.vec,pos=globalenv())}
+readInTable <- function(file) read.table(file=file,stringsAsFactors=FALSE,header=TRUE)
+
+
 source(paste(home,"/work/research/researchProjects/encode/encode-manager/analysis/rnaSeq/eigenRank_08272013.R",sep=""))
 source(paste(home,"/work/research/researchProjects/encode/encode-manager/analysis/rnaSeq/rnaSeq_qc.R",sep=""))
 source(paste(home,"/work/research/researchProjects/encode/encode-manager/analysis/rnaSeq/logisticRegPcaExprData.R",sep=""))
@@ -12,7 +18,9 @@ source(paste(home,"/work/research/researchProjects/encode/encode-manager/analysi
 library(class)
 library(MASS)
 library(LiblineaR)
-library(ROCR)
+library(ROCR) # http://cran.r-project.org/web/packages/ROCR/index.html
+library(glmnet) # http://cran.r-project.org/web/packages/glmnet/glmnet.pdf
+
 #LOG Reg 
 
 editStatsForLncDf <- function(expr.df, cols){
@@ -968,13 +976,11 @@ testGLMModel <- function(outdir = getFullPath("plots/fullAnalysisExperiment/test
 
 getStatsFromGlmModel <- function(probs, y,knn=FALSE){
   
-  
   if (TRUE == knn){ 
     pred <- as.numeric(probs) - 1 
   } else {
     pred <- rep(0,length(probs))
     pred[which(probs > 0.5)] <- 1
-    
   }
   
   correct <- (pred == y)
@@ -1170,7 +1176,6 @@ createROCcurve <- function(prob, label,outfile,title=""){
 
 
 testRegByGLMNET <- function(outdir = getFullPath("plots/fullAnalysisExperiment/test/logReg/glmnetCV/"), weight=TRUE){
-  library(glmnets)
   trials <- 10
   
   if (!file.exists(outdir)){
@@ -1241,6 +1246,113 @@ testRegByGLMNET <- function(outdir = getFullPath("plots/fullAnalysisExperiment/t
     geom_boxplot() +
     ggtitle(paste("ridge and lasso regularized linear Regression\nLambda calculated by CV, final values from indepenet set(0.3 total)", msg, sep="\n"))
 }    
+
+plotAUC <- function(prob, label){
+  pre = prediction(predictions=prob, labels=label)
+  per = performance(pre, "tpr", "fpr")
+  plot(perf,colorize=TRUE)
+  
+}
+
+processPredicitonForROC <- function(df, label,exprCols){
+  df$dist <- df[[label]]
+  dfo = df[order(max(df$dist) - df$dist),] # order from highest to lowest
+  dfo[["TP"]] = cumsum(dfo$withinSubset)
+  dfo[["predict"]] = seq_along(dfo$withinSubset)
+  dfo[["P"]] = sum(dfo$withinSubset)
+  dfo[["totalMembers"]] = length(dfo$withinSubset)
+  dfo[["N"]] = dfo[["totalMembers"]] - dfo[["P"]]
+  dfo.stats =within(dfo,{
+    FP = predict - TP
+    TN = (totalMembers - predict) - (P - TP)
+    FN = P - TP
+    sens = TP / (TP + FN)
+    prec = TP / (TP + FP)
+    TPR = TP / P
+    FPR = FP / N
+    FNR = FN / P
+    TNR = TN / N
+    Fscore = ( 2 * prec * sens ) / ( prec + sens )
+    accuracy = (TP + TN) / (P + N)
+    errorRate = (FP + FN) / (P + N)
+    label = withinSubset
+  })
+  dfo.stats[c("predict","totalMembers","P","N","TP","FP","TN","FN","sens","prec","TPR","FPR","FNR","TNR","Fscore","accuracy","errorRate","dist","label")]
+}
+
+
+#rm(list=unlist(ls()));source('~/work/research/researchProjects/encode/encode-manager/analysis/rnaSeq/fullAnalysis-Aug2013.R');runRidgeRegression()
+runRidgeRegression <- function(outdir = getFullPath("plots/fullAnalysisExperiment/test/logReg/ridgeRegression/"), weight=TRUE){
+  trials <- 200
+  
+  if (!file.exists(outdir)){dir.create(outdir)}
+  
+  msg <- "lncRNA group = IDRlessthan0_1 ::: data cols = lpa \n( 46 / 1954 ) = (func/total lncRNA) ::: biotype = remove_antisense"
+  msg <- paste(msg, "\n trial = ", trials)
+  
+  df <- read.table(getFullPath("plots/fullAnalysisExperiment/test/logReg/paramTests/fullExpr.tab"),stringsAsFactors=FALSE,header=TRUE)
+  doubleCols = colnames(df)[as.vector(sapply(colnames(df),function(x)(typeof(df[1,x]) == "double")))]
+  exprCols.lnpa = doubleCols[grep("longNonPolyA$",doubleCols)]
+  exprCols.lpa  = doubleCols[grep("longPolyA$",doubleCols)]
+  gene_id_predict.df <- as.data.frame(df[c("gene_id")])
+  gene_id_predict.df$count <- 0
+  x=df[,exprCols.lpa]
+  y=factor(df$label)
+  ratio <- 0.7
+  
+  for(trial in 1:trials){
+    
+    train = sample(seq_along(y),length(y) * ratio )
+    xTrain=x[train,]
+    xTest=x[-train,]
+    xTest.index = seq_along(df$gene_id_short)[-1 * train]
+    xTest.lncRnaName <- df$gene_id[-train]
+    yTrain=y[train]
+    yTrain.freq1 = sum(yTrain == "1")/length(yTrain)
+    yTrain.freq0 = 1 - yTrain.freq1
+    yTest = y[-train]
+    
+      weight.train <- ifelse(yTrain == 1, 1/yTrain.freq1, 1/yTrain.freq0)
+
+    grid = 10 ^ seq(10, -2, length = 100)
+    
+       
+    ridge.weight.mod <-   glmnet(as.matrix(xTrain),as.numeric(yTrain)-1,family="binomial", alpha=0, lambda=grid, weights = weight.train)
+    ridge.weight <- cv.glmnet(as.matrix(xTrain),as.numeric(yTrain)-1,family="binomial",type.measure="auc", alpha=0, weights=weight.train)
+    ridge.weight.predict <- predict(ridge.weight.mod,s=ridge.weight$lambda.min,newx=as.matrix(xTest), type="response")  
+    ridge.weight.stats <- getStatsFromGlmModel( ridge.weight.predict, yTest)
+    ridge.weight.stats$type <- "ridge.weight"
+   
+    df.test <- data.frame(ridge.weight.predict)
+    colnames(df.test) <- "probs"
+    df.test$withinSubset <- as.numeric(yTest) - 1
+    df.tpr <- processPredicitonForROC(df.test, label="probs")
+    #ggplot(df.tpr, aes(FPR,TPR))+geom_abline(slope=1)+geom_smooth()+theme_bw()+xlim(0,1)+ylim(0,1)+geom_point()
+    
+    df.tpr$trial <- trial
+    ridge.weight.stats$trial <- trial
+    if (trial == 1){
+      df.accum <- ridge.weight.stats
+      df.accum.tpr <- df.tpr
+    } else {
+      df.accum <- rbind(df.accum, ridge.weight.stats)
+      df.accum.tpr <- rbind(df.accum.tpr, df.tpr)
+    }
+    
+    #count the predicted correct lncRNA:
+    gene_id_predict.df$count = gene_id_predict.df$count + ifelse(gene_id_predict.df$gene_id %in% xTest.lncRnaName[which(df.test$probs > 0.5)],1,0)
+    
+  } # end iteration over trials
+  
+  exportAsTable(df=df.accum, file=paste(outdir,"ridgeWeightStats-summary.tab",sep=""))
+  exportAsTable(df=df.accum.tpr, file=paste(outdir,"ridgeWeightStats-ROC.tab",sep=""))
+  exportAsTable(df=gene_id_predict.df, file=paste(outdir,"genePredictionCounts.tab",sep=""))
+  
+  ggplot(melt(df.accum, id.var = "type", measure.var=c("prec", "sens", "errorRate")), aes(type, value, fill=variable))  + 
+    geom_boxplot() +
+    ggtitle(paste("ridge and lasso regularized linear Regression\nLambda calculated by CV, final values from indepenet set(0.3 total)", msg, sep="\n"))
+}    
+
 
 
 

@@ -3,6 +3,8 @@ source(paste(home,"/work/research/researchProjects/encode/encode-manager/analysi
 
 ########### function to use is: plotPredictionML() 
 
+############### to run analysis in github:
+## rm(list=unlist(ls()));source('~/work/research/researchProjects/encode/encode-manager/analysis/rnaSeq/logisticReg_ml-classTest.R');runTests()
 
 projectDir <- paste(home,"/work/research/researchProjects/encode/encode-manager",sep="")
 setwd(projectDir)
