@@ -15,6 +15,12 @@ source(paste(home, "/work/research/researchProjects/encode/encode-manager/analys
 source(paste(home, "/work/research/researchProjects/encode/encode-manager/analysis/getENSGfromBiomartByRefseq.R",sep=""))
 source(paste(home, "/work/research/researchProjects/encode/encode-manager/analysis/rnaSeq/pcaAnalysisWOoutlier.R",sep=""))
 
+calcAUC <- function(prob, label){
+  pre = prediction(predictions=prob, labels=label)
+  per = performance(pre, "tpr", "fpr")
+  AUC = (performance(pre, "auc"))@y.values[[1]] 
+  AUC
+}
 
 getPcaData = function(exprCols=2:33){
   combined.in.file = getFullPath("data/combinedExprWithStats_transEachSample.tab")
@@ -721,19 +727,28 @@ test2 = function(outdir = "/home/wespisea/work/research/researchProjects/encode/
 }
 
 
-runNLM <- function(X,y,k,reg,lambda){  
+runNLM <- function(X,y,k,reg,lambda,useGradient=TRUE){  
   if (TRUE == reg){
+    dim(X)
     a <- cfLambdaReg(X,y,k,lambda)
     b <- gfLambdaReg(X,y,k,lambda)
   } else {
     a <- cfLambdaT(X,y,k)
     b <- gfLambdaT(X,y,k)
   }
-  
+  if(useGradient){
   fgh <- function(x){
     res <- a(x)
     attr(res, "gradient") <- b(x)
     return(res)
+  }} else {
+    fgh <- function(x){
+      res <- a(x)
+      #attr(res, "gradient") <- b(x)
+      return(res)
+    }
+    
+    
   }
   nlm(f= fgh, p = runif(k*k),check.analyticals=TRUE)
   
