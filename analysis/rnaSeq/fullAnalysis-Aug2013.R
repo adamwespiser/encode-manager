@@ -1507,7 +1507,7 @@ ridgeRegCompareEigenVals <- function(datadir= getFullPath("plots/fullAnalysisExp
   ggplot(comb.df, aes(rank,weight=weightedCount,fill=factor(label))) + 
     geom_density(alpha=I(0.4)) + 
     theme_bw() + ggtitle("(nonAS, IDR<0.1)ridge reg vs. eigen val\nrank weighted by count(pseudo count of one added)")
-  ggsave(paste(outdir,"ridgeEigenCompare-rank-count.pdf",sep=""))
+  ggsave(paste(outdir,"ridgeEigenCompare-rank-spectrumWeighted.pdf",sep=""))
   
   ridgeTPR.df <- readInTable(file=paste(datadir,"ridgeWeightStats-ROC.tab",sep=""))
   ridgeTPR.df$lncRnaName <- as.vector(sapply(ridgeTPR.df$lncRnaName,
@@ -1522,6 +1522,7 @@ ridgeRegCompareEigenVals <- function(datadir= getFullPath("plots/fullAnalysisExp
           geom="point") +
     xlab("average probability(ridge reg)") + ylab("eigenRank") +
     ggtitle("(nonAS, IDR<0.1)ridge reg probs vs. eigen val\nrank weighted by count\n(pseudo count of one added)")
+  ggsave(paste(outdir,"ridgeEigenCompare-probsVeigenRank.pdf",sep=""))
   
 }
 
