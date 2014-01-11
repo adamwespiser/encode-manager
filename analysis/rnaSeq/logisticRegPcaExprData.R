@@ -120,6 +120,8 @@ cfLambdaReg <- function(X,y,k,lambda){
     sig = sigmoid(xTx)
     z1 = ifelse(y ==1, log(sig),-log(exp(xTx) + 1))
     -1/length(y) * sum(ifelse(z1 == -Inf, 0, z1)) + (lambda/(2 * length(y))) * sum(thetaVec ^2 )
+    -1/length(y) * sum(ifelse(z1 == -Inf, 0, z1)) + (lambda/(2 * length(y))) * sum(c(0,thetaVec[-1]) ^2 )
+    
   }
 }
 
@@ -179,12 +181,14 @@ gfLambdaReg <- function(X,y,k,lambda){
   function(thetaVec){
     theta = matrix(thetaVec,k)
     regTheta = theta * (lambda / length(y))
+   regTheta[1,1] = 0
     xTx = apply(X,1,function(row)t(row) %*% theta %*% row)
     sig = sigmoid(xTx)
     # print(length(y),length(sig))
     s1 = sum(sig-y)
     # as.vector(unlist(numcolwise(mean)(as.data.frame(t(apply(X,1,function(x){x %*% t(x)})))) * dim(X)[1])) * s1
-    (1/length(y)) * matrix(apply(X,1,function(x){as.vector(tcrossprod(x))}) %*% (sig-y),k) + regTheta
+     (1/length(y)) * matrix(apply(X,1,function(x){as.vector(tcrossprod(x))}) %*% (sig-y),k) + regTheta
+    
   }
   
 }

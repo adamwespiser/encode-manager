@@ -265,6 +265,7 @@ mapFeature <- function(X,degree=6){
 }
 
 testThetaStats <- function(X, y, thetaVec){
+  print("testThetaStats")
   k <- dim(X)[2]
   probs <- sigmoid(apply(X,1,function(row)t(row)%*% thetaVec))
   AUC <- calcAUC(probs, y)
@@ -337,6 +338,7 @@ plotPredictionMLEllipseTransform <- function(inputFile=getFullPath("data/logRegT
   X <- colsTransformEllipse(X,k=3)
   dim(X)
   #X <- mldata[,1:2]
+  print(1)
   
   y <- mldata[,3]
   if(!useReg){
@@ -344,6 +346,7 @@ plotPredictionMLEllipseTransform <- function(inputFile=getFullPath("data/logRegT
   } else {
     print(paste("use reg lambda=",lambda,"\n",sep=""))
     nlm.out <- runNlmTestRegML(X,y,grad=useGradient,lambda=lambda)
+    print(nlm.out)
   }  
   df <- data.frame(cbind(X,y))
   thetaVec <- nlm.out$estimate
@@ -351,10 +354,11 @@ plotPredictionMLEllipseTransform <- function(inputFile=getFullPath("data/logRegT
   
   col.names <-paste0("X",seq_along(names(X))-1)
   colnames(df) <- c(col.names,"y")
-
+print(2)
   df$logLik <- apply(X,1,function(row)t(row) %*% thetaVec)
     
   stats.list <- testThetaStats(df[col.names], y, thetaVec)
+  print(4)
   df$predict <- ifelse(df$logLik < 0, 0, 1 )
   # create grid for the prediction
   grid.df <- data.frame(expand.grid(X1=seq(min(df$X1),max(df$X1),by=stepSize),X2=seq(min(df$X2),max(df$X2),by=stepSize)))
@@ -364,6 +368,7 @@ plotPredictionMLEllipseTransform <- function(inputFile=getFullPath("data/logRegT
   colnames(grid.df) <- col.names
   grid.df$logLik <- apply(grid.df,1,function(row)t(row) %*% thetaVec)
   grid.df$predict <- ifelse(grid.df$logLik < 0, 0, 1 )
+  print(3)
   
   # figure out the title, with stats, dataset info, and lambda info(if regularized)
   stats.title <- with(stats.list,paste("\nAUC=",round(AUC,digits=2)," F1=",round(F1,digits=2),
@@ -539,7 +544,7 @@ runTests <- function(){
     plotPredictionMLEllipseTransform(inputFile=dataset.file,
                      outputFile=output.file,
                      degree=2,
-                     exprName = paste("ex2data",i,sep=""),useGradient=TRUE,
+                     exprName = paste("ex2data",2,sep=""),useGradient=TRUE,
                      useReg = TRUE, lambda = l, ySwap=FALSE, scaleData=FALSE,useEllipse=FALSE,
                      #ellipseTransform=TRUE,
                      msg="ml-algo w/ elliptical trans")
