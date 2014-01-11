@@ -98,7 +98,8 @@ cfLambdaRegStraightVec <- function(X,y,lambda){
     h <- sigmoid(X %*% thetaVec)
     m <- length(y)
     
-    p = lambda*(t(thetaVec)%*%thetaVec)/(2*m);
+    #p = lambda*(t(thetaVec)%*%thetaVec)/(2*m);
+    p = lambda*(sum(thetaVec[-1] ^ 2))/(2*m)
   (t(-y)%*%log(h) - t(1-y)%*%log(1-h))/m + p;
 
 
@@ -143,13 +144,13 @@ gfLambdaTStraightVec_old <- function(X,y){
 }
 gfLambdaRegStraightVec <- function(X,y,lambda){
   function(thetaVec){
-  #thetaVec[1] <- 0
+ # thetaVec[1] <- 0
   X <- as.matrix(X)
   y <- as.matrix(y)
   
   thetaVec <- as.matrix(thetaVec)
   h <- sigmoid(X %*% thetaVec)
-  (t(X)%*%(h - y)+lambda*thetaVec)/length(y);
+  (t(X)%*%(h - y)+c(0,lambda*thetaVec[-1]))/length(y);
   } 
 }
 gfLambdaRegStraightVec_old <- function(X,y,lambda){
@@ -505,7 +506,7 @@ runTests <- function(){
     plotPredictionML(inputFile=dataset.file,
                      outputFile=output.file,
                      degree=6,
-                     exprName = paste("ex2data",i,sep=""),useGradient=TRUE,
+                     exprName = paste("ex2data",2,sep=""),useGradient=TRUE,
                      useReg = TRUE, lambda = l, ySwap=FALSE, scaleData=FALSE,useEllipse=FALSE)
   }
   lambda.vals.ellipse <- c(0,1,10,50,100)

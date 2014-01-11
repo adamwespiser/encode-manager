@@ -10,9 +10,9 @@ clear <- function(save.vec=c()){ ls.vec <- ls(globalenv());del.vec <-setdiff(ls.
 readInTable <- function(file) read.table(file=file,stringsAsFactors=FALSE,header=TRUE)
 
 library(plyr)
-library(biomaRt)
+library(biomaRt) # http://www.bioconductor.org/packages/release/bioc/vignettes/biomaRt/inst/doc/biomaRt.pdf
 mart <- useMart(biomart = "ensembl", dataset = "hsapiens_gene_ensembl")
-
+# http://www.bioconductor.org/packages/release/bioc/vignettes/biomaRt/inst/doc/biomaRt.pdf
 # results <- getBM(attributes = c("ensembl_gene_id", "ensembl_transcript_id", "ensembl_peptide_id"),
 #                  filters = "refseq_ncrna", values = "NR_001463.4",
 #                  mart = mart)
@@ -37,6 +37,12 @@ getEnsGFromRef <- function(value,filter="refseq_ncrna",mart=mart){
   getBM(attributes = c("ensembl_gene_id"),
         filters = filter, values = value,
         mart = mart)[1]
+}
+getExternalGeneIdFromEnsGene <- function(gene_id,filter="ensembl_gene_id",attr=c("ensembl_gene_id","external_gene_id")){
+  getBM(attributes = attr,
+               filters = filter, values = gene_id,
+               mart = mart)
+  
 }
 
 getLncRNADiseasdbVec <- function(file=getFullPath("data/lncRnaAndDisease_refSeq.txt")){

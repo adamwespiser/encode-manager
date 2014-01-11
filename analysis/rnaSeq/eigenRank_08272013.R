@@ -199,6 +199,22 @@ plotEigenVectorsPvals = function(nolab,lab,outdir,filename,cols,titleMsg=""){
 }
 
 
+
+getEigenVectorsDensity <- function(lab,nolab,cols){
+mat.df = rbind(nolab[,cols],lab[,cols])
+mat = (as.matrix(mat.df)) + 1
+initialGuess = rep(1,dim(mat)[1])
+e.out = CalcEigenCppD(Xs = (mat + 1), y = runif(dim(mat.df)[1]))
+#e.out = CalcEigenCppD(Xs = (mat ), y = runif(dim(mat.df)[1]))
+#mat.df$rank = e.out$y_norm
+mat.df$rank = e.out$yn
+mat.df$label = c(nolab$label,lab$label)
+mat.df$lncRnaName = c(nolab$lncRnaName,lab$lncRnaName)
+mat.df$rank = (mat.df$rank / sum(mat.df$rank))*length(mat.df$rank)
+mat.df$averageExpr = c(nolab$averageExpr, lab$averageExpr)
+mat.df
+}
+
 plotEigenVectorsDensity = function(lab,nolab,outdir,filename,cols,titleMsg=""){
   
   countNoLabel = dim(nolab)[1]

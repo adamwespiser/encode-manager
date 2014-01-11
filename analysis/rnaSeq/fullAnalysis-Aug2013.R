@@ -1280,7 +1280,7 @@ processPredicitonForROC <- function(df, label,exprCols){
   dfo.stats[c("predict","totalMembers","P","N","TP","FP","TN","FN","sens","prec","TPR","FPR","FNR","TNR","Fscore","accuracy","errorRate","dist","label")]
 }
 
-
+#Jan 8, 2013
 #rm(list=unlist(ls()));source('~/work/research/researchProjects/encode/encode-manager/analysis/rnaSeq/fullAnalysis-Aug2013.R');runRidgeRegression()
 runRidgeRegression <- function(outdir = getFullPath("plots/fullAnalysisExperiment/test/logReg/ridgeRegression/"), weight=TRUE){
   trials <- 200
@@ -1301,7 +1301,6 @@ runRidgeRegression <- function(outdir = getFullPath("plots/fullAnalysisExperimen
   ratio <- 0.7
   
   for(trial in 1:trials){
-    
     train = sample(seq_along(y),length(y) * ratio )
     xTrain=x[train,]
     xTest=x[-train,]
@@ -1322,14 +1321,22 @@ runRidgeRegression <- function(outdir = getFullPath("plots/fullAnalysisExperimen
     ridge.weight.predict <- predict(ridge.weight.mod,s=ridge.weight$lambda.min,newx=as.matrix(xTest), type="response")  
     ridge.weight.stats <- getStatsFromGlmModel( ridge.weight.predict, yTest)
     ridge.weight.stats$type <- "ridge.weight"
-   
+    print(paste(trial, "-----"))
+    
     df.test <- data.frame(ridge.weight.predict)
     colnames(df.test) <- "probs"
     df.test$withinSubset <- as.numeric(yTest) - 1
-    df.tpr <- processPredicitonForROC(df.test, label="probs")
+    df.tpr <- processPredicitonForROC(df.test, label="probs") # "probs" -> "dist" in df colnames
+   # print(paste(trial, "-----"))
+    
     #ggplot(df.tpr, aes(FPR,TPR))+geom_abline(slope=1)+geom_smooth()+theme_bw()+xlim(0,1)+ylim(0,1)+geom_point()
     
     df.tpr$trial <- trial
+    df.tpr$probs <- df.tpr$dist
+    
+    #print(dim(df.tpr))
+    #print(length(xTest.lncRnaName))
+    df.tpr$lncRnaName <- xTest.lncRnaName
     ridge.weight.stats$trial <- trial
     if (trial == 1){
       df.accum <- ridge.weight.stats
@@ -1338,6 +1345,7 @@ runRidgeRegression <- function(outdir = getFullPath("plots/fullAnalysisExperimen
       df.accum <- rbind(df.accum, ridge.weight.stats)
       df.accum.tpr <- rbind(df.accum.tpr, df.tpr)
     }
+  #  print(paste(trial, "-----"))
     
     #count the predicted correct lncRNA:
     gene_id_predict.df$count = gene_id_predict.df$count + ifelse(gene_id_predict.df$gene_id %in% xTest.lncRnaName[which(df.test$probs > 0.5)],1,0)
@@ -1354,7 +1362,177 @@ runRidgeRegression <- function(outdir = getFullPath("plots/fullAnalysisExperimen
 }    
 
 
+#Jan 9, 2013 
+analyzeRidgeReg <- function(outdir = getFullPath("plots/fullAnalysisExperiment/test/logReg/ridgeRegression/") ){
+  sourceFile = getFullPath("data/lncExprWithStats_transEachSample.tab")
+  lncGene.df = readInTable(sourceFile)
+  
+  
+  ridgeStats.df <- readInTable(file=paste(outdir,"ridgeWeightStats-summary.tab",sep=""))
+  ridgeTPR.df <- readInTable(file=paste(outdir,"ridgeWeightStats-ROC.tab",sep=""))
+# ridgeTPR.df "probs" ~~ "dist" in df colnames
+  ridgeGenePred.df <- readInTable(file=paste(outdir,"genePredictionCounts.tab",sep=""))
+  lncFound.df = getEnslist()
+  
+  #find a list of lncRNA identified by ridge regression
+  lncRidge.gene_id <- as.vector(sapply(ridgeGenePred.df[which(ridgeGenePred.df$count > 0), "gene_id"],
+                                   function(x)unlist(strsplit(x, "\\."))[1]))
+  recoveredFunc.df <- unique(lncFound.df[which(lncFound.df$ensembl_gene_id %in% lncRidge.gene_id),c("ensembl_gene_id","external_gene_id")])
+  allFound.df <- getExternalGeneIdFromEnsGene(lncRidge.gene_id,attr=c("ensembl_gene_id","hgnc_symbol","gene_biotype"))
+  allFound.df$handle <- ifelse(allFound.df$hgnc_symbol == "",allFound.df$ensembl_gene_id,allFound.df$hgnc_symbol)
+  exportAsTable(df=allFound.df, file=paste(outdir,"foundGeneByRidgeRegression.tab",sep=""))
+ 
+  ## explore biotypes further
+  # "protein coding" biotype? 
+  lncRidge.pc <- allFound.df[which(allFound.df$gene_biotype == "protein_coding"),"ensembl_gene_id"]
+  lncGene.df[which(lncGene.df$lncRnaName %in% lncRidge.pc),]
+  
+  ## analyze the stats from each of the 200 trials
+  # dim(ridgeTPR.df) => "[1] 117400     20"
+  ggplot(ridgeStats.df, aes(AUC))+geom_density(alpha=I(0.4))+theme_bw()+xlim(0,1) + 
+    ggtitle("(nonAS, IDR<0.1)Ridge Regression(weighted); AUC")
+  ggsave(paste(outdir,"ridgeReg_AUC.pdf",sep=""))
+  
+  ggplot(ridgeStats.df, aes(errorRate))+geom_density(alpha=I(0.4))+theme_bw()+xlim(0,1) + 
+    ggtitle("(nonAS, IDR<0.1)Ridge Regression(weighted); AUC")
+  ggsave(paste(outdir,"ridgeReg_errorRate.pdf",sep=""))
+  
+  ## get the best(AUC) trial...
+  # for median trial, we need an odd number, let's just add one(max AUC) 
 
+  # plot ROC curves for median and max trial...
+  best.trial <- ridgeStats.df[which(ridgeStats.df$AUC == max(ridgeStats.df$AUC)),"trial"]
+  df.tpr.best <- ridgeTPR.df[which(ridgeTPR.df$trial == best.trial),]
+  ggplot(df.tpr.best, aes(FPR,TPR))+geom_abline(slope=1)+ geom_smooth() + 
+    theme_bw()+xlim(0,1)+ylim(0,1) + geom_point() +
+    ggtitle("(nonAS, IDR<0.1)Ridge Reg(weighted) : best trial PR curve")
+  ggsave(paste(outdir,"ridgeReg_ROC_best.pdf",sep=""))
+  
+  median.trial <- ridgeStats.df[which(ridgeStats.df$AUC == median(c(ridgeStats.df$AUC,1))),"trial"]
+  df.tpr.median <- ridgeTPR.df[which(ridgeTPR.df$trial == median.trial),]
+  ggplot(df.tpr.median, aes(FPR,TPR))+geom_abline(slope=1) + geom_smooth() + 
+    theme_bw()+xlim(0,1)+ylim(0,1)+geom_point()+
+    ggtitle("(nonAS, IDR<0.1)Ridge Reg(weighted) : median trial PR curve")
+  ggsave(paste(outdir,"ridgeReg_ROC_median.pdf",sep=""))
+  
+  worst.trial <- ridgeStats.df[which(ridgeStats.df$AUC == min(ridgeStats.df$AUC)),"trial"]
+  df.tpr.worst <- ridgeTPR.df[which(ridgeTPR.df$trial == worst.trial),]
+  ggplot(df.tpr.worst, aes(FPR,TPR))+geom_abline(slope=1) + geom_smooth() + 
+    theme_bw()+xlim(0,1)+ylim(0,1)+geom_point()+
+    ggtitle("(nonAS, IDR<0.1)Ridge Reg(weighted) : worst trial PR curve")
+  ggsave(paste(outdir,"ridgeReg_ROC_worst.pdf",sep=""))
+   
+}
+
+# ridgeTPR.df[which(ridgeTPR.df$trial == 1),] -> df
+getElkansC <- function(probs,label){
+  n <- length(probs)
+  e1 <- (1/n) * sum(probs[which(label == 1)])
+  e2 <- sum(probs[which(label == 1)])/sum(probs)
+  e3 <- max(probs)
+  data.frame(e1,e2,e3)
+}
+
+#Jan 10, 2013 
+analyzeRidgeRegressionPU <- function(datadir= getFullPath("plots/fullAnalysisExperiment/test/logReg/ridgeRegression/"),
+                                     outdir  = getFullPath("plots/fullAnalysisExperiment/test/logReg/ridgeRegression/PULearning/")){
+ 
+  ridgeTPR.df <- readInTable(file=paste(datadir,"ridgeWeightStats-ROC.tab",sep=""))
+  ridgeTPR.df$probs <- ridgeTPR.df$dist
+  if (!file.exists(outdir)){dir.create(outdir)}
+  
+  cEstimates.df <- ddply(ridgeTPR.df,.(trial),summarise, 
+                      e1 = (1/n) * sum(probs[which(label == 1)]), 
+                      e2 = sum(probs[which(label == 1)])/sum(probs), 
+                      e3 = max(probs),
+                      trial=mean(trial))
+  exportAsTable(df=cEstimates.df, file=paste(outdir,"cEstimatesAllTrials.tab",sep=""))
+  
+  cEstimates.melt <- melt(cEstimates.df,id.var="trial")
+  
+  ggplot(cEstimates.melt[which(cEstimates.melt$variable != "e3"),], aes(x=value,fill=variable,alpha=0.4)) + geom_density() +
+    theme_bw() + xlim(0,max(c(cEstimates.df$e1,cEstimates.df$e2 ))) + 
+    geom_vline(xintercept=mean(cEstimates.df$e1),color="red") +
+    geom_vline(xintercept=mean(cEstimates.df$e2),color="green") +
+    ggtitle("(nonAS, IDR<0.1)Ridge Regression(weighted): 200 trials, \nElkan's c estimate(e1 & e2)")
+  ggsave(paste(outdir,"elkansCestimate-Density.pdf",sep=""))
+  
+  ggplot(ridgeTPR.df,aes(probs))+geom_density() +
+    ggtitle("(nonAS, IDR<0.1)Ridge Regression(weighted): 200 trials") +xlim(0,1) +theme_bw()
+  ggsave(paste(outdir,"ridgeReg-prob-spectrum.pdf",sep=""))
+  
+  ddply(ridgeTPR.df, .(trial), transform, 
+        probsE1 = probs / ((1/n) * sum(probs[which(label == 1)])),
+        probsE1 = probs / (sum(probs[which(label == 1)])/sum(probs))
+        )
+  
+}
+
+#Jan 10, 2013 
+ridgeRegCompareEigenVals <- function(datadir= getFullPath("plots/fullAnalysisExperiment/test/logReg/ridgeRegression/"),
+         outdir =  getFullPath("plots/fullAnalysisExperiment/test/logReg/ridgeRegression/eigenRankCompare/")){
+  if (!file.exists(outdir)){dir.create(outdir)}
+  
+  ## get all the eigen stufff..
+  
+  df = read.table(getFullPath("plots/fullAnalysisExperiment/test/logReg/paramTests/fullExpr.tab"),stringsAsFactors=FALSE,header=TRUE)
+  doubleCols = colnames(df)[as.vector(sapply(colnames(df),function(x)(typeof(df[1,x]) == "double")))]
+  exprCols.lnpa = doubleCols[grep("longNonPolyA$",doubleCols)]
+  exprCols.lpa  = doubleCols[grep("longPolyA$",doubleCols)]
+  
+  nolab <- df[which(df$label == 0),]
+  lab <- df[which(df$label == 1),]
+ eigen.df <-  getEigenVectorsDensity(lab=lab,nolab,cols=exprCols.lpa)
+  
+  ## get the Ridge Regression data...
+  
+  ridgeGenePred.df <- readInTable(file=paste(datadir,"genePredictionCounts.tab",sep=""))
+  ridgeGenePred.df$lncRnaName <- as.vector(sapply(ridgeGenePred.df[, "gene_id"],
+                   function(x)unlist(strsplit(x, "\\."))[1]))
+  
+  comb.df <- merge(ridgeGenePred.df, eigen.df, by="lncRnaName")
+  
+  ggplot(comb.df, aes(rank,count)) + geom_point() + 
+    theme_bw() + ggtitle("(nonAS, IDR<0.1)ridge reg vs. eigen val\ncount predicted 1 vs. eigenRank")
+  ggsave(paste(outdir,"ridgeEigenCompare-rank-count.pdf",sep=""))
+  
+  ggplot(comb.df, aes(rank,fill=factor(label))) + geom_density(alpha=I(0.4)) +
+    theme_bw() + ggtitle("(nonAS, IDR<0.1)ridge reg vs. eigen val\neigenRank")
+  ggsave(paste(outdir,"ridgeEigenCompare-rank-spectrum.pdf",sep=""))
+  
+  comb.df$weightedCount = ifelse(comb.df$label == 1,
+                                 (comb.df$count +1)/sum(comb.df[which(comb.df$label == 1),"count"] +1),
+                                 (comb.df$count +1)/sum(comb.df[which(comb.df$label == 0),"count"] +1) )
+  
+  ggplot(comb.df, aes(rank,weight=weightedCount,fill=factor(label))) + 
+    geom_density(alpha=I(0.4)) + 
+    theme_bw() + ggtitle("(nonAS, IDR<0.1)ridge reg vs. eigen val\nrank weighted by count(pseudo count of one added)")
+  ggsave(paste(outdir,"ridgeEigenCompare-rank-count.pdf",sep=""))
+  
+  ridgeTPR.df <- readInTable(file=paste(datadir,"ridgeWeightStats-ROC.tab",sep=""))
+  ridgeTPR.df$lncRnaName <- as.vector(sapply(ridgeTPR.df$lncRnaName,
+                                                      function(x)unlist(strsplit(x, "\\."))[1]))
+  ridgeProbs.df <- ddply(ridgeTPR.df, .(lncRnaName),summarise, aveProbs = mean(probs))
+  combProbs.df <- merge(ridgeProbs.df, eigen.df, by="lncRnaName")
+  
+  ggplot(combProbs.df, aes(x=aveProbs, y = rank,size=label,color=factor(label))) + geom_point() +
+    scale_size(range = c(3,5)) + theme_bw() + 
+    layer(data=combProbs.df[which(combProbs.df$label == 1),], 
+          mapping=aes(x=aveProbs, y = rank, size=4), 
+          geom="point") +
+    xlab("average probability(ridge reg)") + ylab("eigenRank") +
+    ggtitle("(nonAS, IDR<0.1)ridge reg probs vs. eigen val\nrank weighted by count\n(pseudo count of one added)")
+  
+}
+
+doit <- function(){
+  rm(list=unlist(ls()));
+  source('~/work/research/researchProjects/encode/encode-manager/analysis/rnaSeq/fullAnalysis-Aug2013.R');
+  analyzeRidgeReg();
+  analyzeRidgeRegressionPU();
+  ridgeRegCompareEigenVals();
+  ridgeRegCompareEigenVals();
+}
 
 
 
