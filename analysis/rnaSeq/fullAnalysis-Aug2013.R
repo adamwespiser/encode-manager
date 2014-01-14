@@ -862,8 +862,8 @@ testGLMforLogRegression <- function(local,ratio,scaleDistro=TRUE){
   
   
   
-  
-  
+  ellipse.stats <- trainAndTestLogReg(lncDf=local.df,cols=exprCols.lpa, ratio = ratio, mainEffects=TRUE,reg=TRUE, lambda = 0,glmTypeOutput=TRUE )
+  print("      ellipse algo stats")
   
   
   df.out <-  rbind(glm.poly2.weight.stats,glm.poly2.stats,glm.main.weight.stats,glm.main.stats,
@@ -895,7 +895,7 @@ testGLMModelForRatios <- function(){
   testGLMModel(outdir=ratio1.odr, ratio=0.7,scaleDistro=TRUE)
 }
 
-
+# rm(list=unlist(ls())); source('~/work/research/researchProjects/encode/encode-manager/analysis/rnaSeq/fullAnalysis-Aug2013.R"); testGLMModel()
 testGLMModel <- function(outdir = getFullPath("plots/fullAnalysisExperiment/test/logReg/glmTest/"),ratio=0.7,scaleDistro=FALSE,trials=30){
   if (!file.exists(outdir)){
     dir.create(outdir)}
@@ -1491,6 +1491,7 @@ ridgeRegCompareEigenVals <- function(datadir= getFullPath("plots/fullAnalysisExp
                    function(x)unlist(strsplit(x, "\\."))[1]))
   
   comb.df <- merge(ridgeGenePred.df, eigen.df, by="lncRnaName")
+  exportAsTable(df=comb.df, file=paste(outdir,"eigenRankWridgeRegCounts.tab",sep=""))
   
   ggplot(comb.df, aes(rank,count)) + geom_point() + 
     theme_bw() + ggtitle("(nonAS, IDR<0.1)ridge reg vs. eigen val\ncount predicted 1 vs. eigenRank")
@@ -1524,6 +1525,7 @@ ridgeRegCompareEigenVals <- function(datadir= getFullPath("plots/fullAnalysisExp
     ggtitle("(nonAS, IDR<0.1)ridge reg probs vs. eigen val\nrank weighted by count\n(pseudo count of one added)")
   ggsave(paste(outdir,"ridgeEigenCompare-probsVeigenRank.pdf",sep=""))
   
+  exportAsTable(df=combProbs.df, file=paste(outdir,"eigenRankWridgeRegProbs.tab",sep=""))
 }
 
 doit <- function(){

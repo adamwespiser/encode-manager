@@ -513,7 +513,7 @@ testThetaStats <- function(X,k,y,cols, theta){
   
 }
 
-trainAndTestLogReg <- function(lncDf, ratio, cols, mainEffects=TRUE,reg=FALSE,lambda=1,iter=1){
+trainAndTestLogReg <- function(lncDf, ratio, cols, mainEffects=TRUE,reg=FALSE,lambda=1,iter=1,glmTypeOutput=FALSE){
   
   totalCount = dim(lncDf)[1]
   
@@ -535,14 +535,26 @@ trainAndTestLogReg <- function(lncDf, ratio, cols, mainEffects=TRUE,reg=FALSE,la
     k <- k - 1
   }
   
+  #scale X
   X <- X / max(X)
   
   train = sample(1:totalCount, totalCount * ratio)
   #theta = runLogRegTheta(X[train,],k,y,cols,iter=iter,reg=reg,lambda=lambda)
   theta = matrix(runNLM(X[train,],y[train],k,reg,lambda)$estimate,k)
+  
+  if(glmTypeOutput){
+    probs <- sigmoid(apply(X[-train,],1,function(x){t(x) %*% theta %*% x} ))
+    getStatsFromGlmModel(probs, y[-train], knn=FALSE)
+    
+  } else {
+  
+
+  
+  #testThetaStatsEllipse(X,k,y,cols, theta)
+  
   four <- testThetaStats(X,k,y,cols, theta) # TP=four$TP,TN=four$TN,FP=four$FP,FN=four$FN
   list(R=testTheta(X[-train,],k,y[-train],cols,theta),TPR =testThetaTPR(X[-train,],k,y[-train],cols,theta),TP=four$TP,TN=four$TN,FP=four$FP,FN=four$FN)
-  
+  }
 }
 
 

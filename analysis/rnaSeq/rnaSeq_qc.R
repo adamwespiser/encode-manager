@@ -213,6 +213,9 @@ plotData <- function(outdir = getFullPath("plots/rnaSeq-QC/allCells/")){
     
   }
   
+  ddply(df, .(celltype), summarize, exprBoth=sum(exprBoth),exprOne=sum(exprOne), exprNone=sum(exprNone))
+  
+  
   #v as.data.frame(table(df[df$IDR < 0.4, "celltype"]))[["Freq"]]
   
   ggplot(df,aes(x=IDR,fill=factor(label)))+geom_density(alpha=I(0.4)) + theme_bw() +
@@ -314,7 +317,16 @@ plotData <- function(outdir = getFullPath("plots/rnaSeq-QC/allCells/")){
   
   
   
-  
+  c.df <- as.data.frame(table(df[which(df$COMB > 0), "celltype"]))
+  c.df$src = "combinedRPKM"
+  l.df <- as.data.frame(table(df[which(df$IDR <  0.1), "celltype"]))
+  l.df$src = "IDR"
+  cl.df <- rbind(c.df,l.df)
+  colnames(cl.df) <- c("celltype","foundLncRNA", "measure")
+  ggplot(cl.df, aes(x=celltype, y= foundLncRNA,fill=measure)) + 
+    geom_histogram(position="dodge",stat="identity") +
+    ggtitle("Number of lncRNA in celltype w/\n RPKM COMB > 0 & IDR < 0.1") + theme_bw() + coord_flip()
+  ggsave(paste(outdir,"lncRNAFoundByCutoff-0_1.pdf",sep=""))
 }
 
 
