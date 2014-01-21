@@ -42,7 +42,6 @@ getExternalGeneIdFromEnsGene <- function(gene_id,filter="ensembl_gene_id",attr=c
   getBM(attributes = attr,
                filters = filter, values = gene_id,
                mart = mart)
-  
 }
 
 getLncRNADiseasdbVec <- function(file=getFullPath("data/lncRnaAndDisease_refSeq.txt")){
@@ -310,21 +309,14 @@ evalEnsList <- function(){
   cd.out.file = getFullPath("data/cdExprWithStats_transEachSample.tab")
   lnc.out.file = getFullPath("data/lncExprWithStats_transEachSample.tab")
   
-  
   # create a list of all transcripts 
   #cd.out.file = getFullPath("data/cdExprWithStats_allTrans.tab")
   #lnc.out.file = getFullPath("data/lncExprWithStats_allTrans.tab")
-  
-  
   #combined.out.file = getFullPath("data/combinedExprWithStats_transEachSample.tab")
   #create output for all 
   combined.out.file = getFullPath("data/combinedExprWithStats_transEachSample.tab")
-  
-  
-  
   #gencode.v7.HAVANA.pc_transcripts.annotation.gtf
   #gencode.file <- "/Users/adam/work/research/researchProjects/encode/encode-manager/data/g"
-  
   lnc.expr.df <- data.frame()
   cd.expr.df <- data.frame()
   expr.df <- data.frame()
@@ -348,7 +340,45 @@ evalEnsList <- function(){
   within(expr.in.df,{trans_short = sapply(transcript_id,function(x)unlist(strsplit(x,"\\."))[[1]])})  -> expr.in.df  #unlist(strsplit(nd_code,"chr"))[2]
 }
   
+
+getEnsemblBiotypeDerrienList <- function(){
+  derrien.df <- read.csv(file=getFullPath("data/Gencode_lncRNAsv7_summaryTable_05_02_2012.csv"), stringsAsFactors=FALSE)
+  derrien.df$ensembl_gene_id <- as.vector(sapply(derrien.df$LncRNA_GeneId,
+                                                 function(x)unlist(strsplit(x, "\\."))[1]))
+  #listMarts(archive=TRUE)
+  ensembl73=useMart(host='sep2013.archive.ensembl.org', 
+                    biomart='ENSEMBL_MART_ENSEMBL', dataset='hsapiens_gene_ensembl')
+  #listAttributes(ensembl)
   
   
+  filter <- "ensembl_gene_id"
+  attr <- c("ensembl_gene_id","gene_biotype")
+  genes <- derrien.df$ensembl_gene_id
+  ensBiotypes.df <- getBM(attributes =  c("ensembl_gene_id","gene_biotype"),
+                          filters = "ensembl_gene_id", values = genes,
+                          mart = ensembl73,
+                          verbose=TRUE)
+  ensBiotypes.df
+  
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
   
 

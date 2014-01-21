@@ -737,22 +737,22 @@ analyzeLogRegTest <- function(outdir = getFullPath("plots/fullAnalysisExperiment
 }
 
 
-testGLMforLogRegression <- function(local,ratio,scaleDistro=TRUE){
-  local.df <- local
+testGLMforLogRegression <- function(df,ratio,scaleDistro=TRUE){
+  local.df <- df
   
   doubleCols = colnames(local.df)[as.vector(sapply(colnames(local.df),function(x)(typeof(local.df[1,x]) == "double")))]
   exprCols.lnpa = doubleCols[grep("longNonPolyA$",doubleCols)]
   exprCols.lpa  = doubleCols[grep("longPolyA$",doubleCols)]
   cols.list = list(lpa=exprCols.lpa,lnpa=exprCols.lnpa,bothPullDowns=c(exprCols.lpa,exprCols.lnpa))
   
-  y = local.df$label
-  train = sample(seq_along(y), ratio * length(y))
+  y <- local.df$label
+  train <<- sample(seq_along(y), ratio * length(y))
   testFuncs <- sum(y[-train])
   y.train <- y[train]
   y.test  <- y[-train]
   y.freq0 <- length(which(y.train == 0))/length(y.train)
   y.freq1 <- length(which(y.train == 1))/length(y.train)
-  weight.train <- ifelse(y.train== 1, 1/y.freq1, 1/y.freq0)  
+  weight.train <<- ifelse(y.train== 1, 1/y.freq1, 1/y.freq0)  
   ## scale training and test set seperately
   if( TRUE == scaleDistro ){
     local.df[train,exprCols.lpa] <- scale(local.df[train,exprCols.lpa], center=TRUE, scale = TRUE)
@@ -761,7 +761,7 @@ testGLMforLogRegression <- function(local,ratio,scaleDistro=TRUE){
   
   form.cross <- paste("label ~", do.call(paste, c(as.list(do.call(paste, c(expand.grid(exprCols.lpa, exprCols.lpa), sep=":"))), sep=" + ")))
   # use this formula
-  print(paste(length(y), length(weight.train), dim(local.df[train,])[1]))
+  print(paste(length(train),length(y), length(weight.train), dim(local.df[train,])[1]))
   glm.cross.weights <- glm(form.cross, data = local.df[train,], family=binomial, weights = weight.train) 
   glm.cross.weights.stats <- getStatsFromGlmModel(predict(glm.cross.weights,local.df[-train,], type="response"), y.test) 
   
@@ -808,7 +808,7 @@ testGLMforLogRegression <- function(local,ratio,scaleDistro=TRUE){
   glm.circ.stats <- getStatsFromGlmModel(predict(glm.circ,local.df[-train,], type="response"), y.test) 
   print("     circ")  
   
-  
+  ds
   
   lda.main <- lda(label ~ HSMM.longPolyA + BJ.longPolyA + NHEK.longPolyA+ HUVEC.longPolyA+ MCF.7.longPolyA+ K562.longPolyA+ 
                     AG04450.longPolyA+ HMEC.longPolyA+ HEPG2.longPolyA+ SK.N.SH_RA.longPolyA+ A549.longPolyA+ H1.HESC.longPolyA+ 
@@ -883,20 +883,20 @@ testGLMforLogRegression <- function(local,ratio,scaleDistro=TRUE){
 }
 
 
+# rm(list=unlist(ls())); source("~/work/research/researchProjects/encode/encode-manager/analysis/rnaSeq/fullAnalysis-Aug2013.R"); testGLMModelForRatios()
 
 testGLMModelForRatios <- function(){
-  odir <- getFullPath("plots/fullAnalysisExperiment/test/logReg/glmTest")
+  odir <- getFullPath("plots/fullAnalysisExperiment/test/logReg/glmTest-wEllipseAlgo")
   
-  testGLMModel(outdir=ratio1.odr, ratio=ratio1,scaleDistro=FALSE)
-  ratio1.odr <- paste(odir,"-0_7/", sep="")
+  ratio1.odr <- paste(odir,"/", sep="")
   testGLMModel(outdir=ratio1.odr, ratio=0.7)
   
-  ratio1.odr <- paste(odir,"-0_7-scale/", sep="")
+  ratio1.odr <- paste(odir,"scale/", sep="")
   testGLMModel(outdir=ratio1.odr, ratio=0.7,scaleDistro=TRUE)
 }
 
 # rm(list=unlist(ls())); source('~/work/research/researchProjects/encode/encode-manager/analysis/rnaSeq/fullAnalysis-Aug2013.R"); testGLMModel()
-testGLMModel <- function(outdir = getFullPath("plots/fullAnalysisExperiment/test/logReg/glmTest/"),ratio=0.7,scaleDistro=FALSE,trials=30){
+testGLMModel <- function(outdir = getFullPath("plots/fullAnalysisExperiment/test/logReg/glmTest-wEllipseAlgo/"),ratio=0.7,scaleDistro=FALSE,trials=30){
   if (!file.exists(outdir)){
     dir.create(outdir)}
   msg <- "lncRNA group = IDRlessthan0_1 ::: data cols = lpa \n( 46 / 1954 ) = (func/total lncRNA) ::: biotype = remove_antisense"
