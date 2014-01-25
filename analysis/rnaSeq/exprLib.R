@@ -522,5 +522,15 @@ makeDir <- function(dir,recursiveCreate=FALSE){
   
 }
 
+getLpaColnames <- function(df,colnamesDf=colnames(df)){
+  doubleCols = colnamesDf[as.vector(sapply(colnamesDf,function(x)(typeof(df[1,x]) == "double")))]
+  doubleCols[grep("longPolyA$",doubleCols)]
+  
+}
+
+getLnpaColnames <- function(colnamesDf){
+  doubleCols = colnamesDf[as.vector(sapply(colnamesDf,function(x)(typeof(df[1,x]) == "double")))]
+  doubleCols[grep("longNonPolyA$",doubleCols)]  
+}
 
 

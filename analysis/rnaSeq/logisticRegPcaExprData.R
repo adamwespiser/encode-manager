@@ -16,9 +16,13 @@ source(paste(home, "/work/research/researchProjects/encode/encode-manager/analys
 source(paste(home, "/work/research/researchProjects/encode/encode-manager/analysis/rnaSeq/pcaAnalysisWOoutlier.R",sep=""))
 
 calcAUC <- function(prob, label){
+  AUC <- NA
+  tryCatch({
   pre = prediction(predictions=prob, labels=label)
+  
   per = performance(pre, "tpr", "fpr")
-  AUC = (performance(pre, "auc"))@y.values[[1]] 
+  AUC = (performance(pre, "auc"))@y.values[[1]] })
+  
   AUC
 }
 
@@ -453,8 +457,7 @@ runLogReg = function(lncDf,outdir = "~/Desktop/testPCA",cols,iter=10,debug= FALS
   ggplot(df.comb.roc,aes(x=FPR,y=TPR,color=type))+geom_line()+geom_point()+theme_bw()+geom_abline(slope=1)+
     ggtitle(paste(titleMsg,"ROC Curve of radius based prediction on pca\n", sep="\n"))+xlab("False Positive Rate")+ylab("True Positive Rate")
   ggsave(makeOutFile("elipse-ROC.pdf"),height=4,width=5)
-  
-  
+    
 }
 
 runLogRegTheta = function(X,k,y,cols,iter=10,reg= FALSE,lambda = 1){
@@ -537,23 +540,36 @@ trainAndTestLogReg <- function(lncDf, ratio, cols, mainEffects=TRUE,reg=FALSE,la
   
   #scale X
   X <- X / max(X)
-  
+ # y <- rep(0,totalCount)
+  sumYtrain <- 0
+  sumYtest <- 0
+  ## ensure there is at least one positive in the training example
+  #while(sumYtest == 0){
+  #print("iter")
   train = sample(1:totalCount, totalCount * ratio)
+  #sumYtrain = sum(y[train])
+  #sumYtest = sum(y[-train])
+  #}
+  
   #theta = runLogRegTheta(X[train,],k,y,cols,iter=iter,reg=reg,lambda=lambda)
   theta = matrix(runNLM(X[train,],y[train],k,reg,lambda)$estimate,k)
-  
+  probs <- sigmoid(apply(X[-train,],1,function(x){t(x) %*% theta %*% x} ))
   if(glmTypeOutput){
-    probs <- sigmoid(apply(X[-train,],1,function(x){t(x) %*% theta %*% x} ))
+    
     getStatsFromGlmModel(probs, y[-train], knn=FALSE)
     
   } else {
-  
+    AUC <- NA
+  #print(y[-train])
+    #print(probs)
+  tryCatch(expr= {AUC <-getStatsFromGlmModel(probs, y[-train], knn=FALSE)$AUC})
 
   
   #testThetaStatsEllipse(X,k,y,cols, theta)
   
   four <- testThetaStats(X,k,y,cols, theta) # TP=four$TP,TN=four$TN,FP=four$FP,FN=four$FN
-  list(R=testTheta(X[-train,],k,y[-train],cols,theta),TPR =testThetaTPR(X[-train,],k,y[-train],cols,theta),TP=four$TP,TN=four$TN,FP=four$FP,FN=four$FN)
+  list(R=testTheta(X[-train,],k,y[-train],cols,theta),TPR =testThetaTPR(X[-train,],k,y[-train],cols,theta),
+       TP=four$TP,TN=four$TN,FP=four$FP,FN=four$FN,AUC=AUC)
   }
 }
 

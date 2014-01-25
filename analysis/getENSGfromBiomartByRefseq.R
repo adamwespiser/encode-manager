@@ -8,9 +8,12 @@ getFullPath <- function(projectPath){ paste(projectDir,projectPath,sep="/") }
 exportAsTable <- function(df, file){ write.table(df,file=file,quote=FALSE, row.names=FALSE,sep="\t") }
 clear <- function(save.vec=c()){ ls.vec <- ls(globalenv());del.vec <-setdiff(ls.vec,c(save.vec,"clear")); rm(list=del.vec,pos=globalenv())}
 readInTable <- function(file) read.table(file=file,stringsAsFactors=FALSE,header=TRUE)
-
+library(reshape2)
 library(plyr)
 library(biomaRt) # http://www.bioconductor.org/packages/release/bioc/vignettes/biomaRt/inst/doc/biomaRt.pdf
+library(doParallel)
+library(foreach)
+
 mart <- useMart(biomart = "ensembl", dataset = "hsapiens_gene_ensembl")
 # http://www.bioconductor.org/packages/release/bioc/vignettes/biomaRt/inst/doc/biomaRt.pdf
 # results <- getBM(attributes = c("ensembl_gene_id", "ensembl_transcript_id", "ensembl_peptide_id"),
@@ -87,12 +90,9 @@ getOrthosDf <- function(f="/Users/adam/work/research/researchProjects/encode/enc
 getDerriensAntiSenseDf <- function(f=getFullPath("data/Gencode_lncRNAsv7_summaryTable_05_02_2012.csv")){
   derrien.df <- read.csv(file=f, stringsAsFactors=FALSE)
   df <- derrien.df[derrien.df[["gene_biotype"]] == "antisense",]
-  data.frame(
-            lncRnaName =  df$Hg19_coordinates,
+  data.frame(lncRnaName =  df$Hg19_coordinates,
             gene_id = df$LncRNA_GeneId,
-            foundInDerrien= TRUE
-            )
-  
+            foundInDerrien= TRUE)
 }
 
 getLncRnaDbFromExport <- function(f=getFullPath("data/lncRNAdbNrCodesHuman.list")){
@@ -303,7 +303,6 @@ pcaWithSubset <- function(lnc,annot,exprCols=2:33){
 
 
 
-
 evalEnsList <- function(){
   r.df <- createEnsList()
   cd.out.file = getFullPath("data/cdExprWithStats_transEachSample.tab")
@@ -358,22 +357,97 @@ getEnsemblBiotypeDerrienList <- function(){
                           filters = "ensembl_gene_id", values = genes,
                           mart = ensembl73,
                           verbose=TRUE)
+  
   ensBiotypes.df
   
 }
 
+# library(doParallel);library(foreach)
+# 
+# df <-  expand.grid(c("one","two"),c("a","b","c","d"))
+# one <- foreach(i = dim(df)[1]) %dopar% {Sys.sleep(runif(1));print(i[i,]);print("end") }
+# Reduce(x=seq_along(one), function(x,y){cbind(x,one[[y]])})
+
+rungetVersionsForGeneList <- function(){
+  file <- getFullPath("data/Gencode_lncRNAsv7_summaryTable_05_02_2012.tab")
+  df <- readInTable(file)
+  ens <- unique(as.vector(sapply(df$LncRNA_GeneId,
+                   function(x)unlist(strsplit(x, "\\."))[1])))
+  getVersionsForGeneList(ens.vec=ens,
+                         outdir = getFullPath("data/"))
+}
+
+analyzegetVersionsForGeneList <- function(indir=getFullPath("data/")){
+
+  qc.df <- preProcessData()
+  gene.idr <-  qc.df[which(qc.df$IDR < 0.1),"gene_id_short"]  
+  
+  
+file =paste(indir, "/lncFoundEnsInfo_ensFull.tab",sep="")
+df <- readInTable(file)
+df <- which(df$ensembl_gene_id %in% gene.idr)
+d <- df[1:200,]
+ens.order <- d[order(factor(d$Ensembl73)),"ensembl_gene_id" ]
+melt.df <- melt(d, id.var="ensembl_gene_id")
+colnames(melt.df) <- c("ensembl_gene_id","ensemblRelease","value")
+melt.df$ensemblRelease <- sub(pattern= "Ensembl", replacement = "", melt.df$ensemblRelease)
+
+melt.df$value <- factor(ifelse(melt.df$value %in% c("lincRNA","processed_transcript","protein_coding","antisense","sense_intronic","pseudogene"), melt.df$value,"other"))
+
+ggplot(melt.df, aes(x=factor(ensemblRelease),y=ensembl_gene_id, fill=value,color="black")) + 
+  geom_tile() +   theme_bw() + scale_y_discrete(limits=ens.order) +
+  theme(axis.text.y=element_text(size=5,face="bold"))
+ggsave(paste(outdir, "/lncFoundEnsBiotypes.pdf",sep=""),height=13,width=8)
+
+ggplot(copies.melt[which(copies.melt$ensembl_gene_id %in% ens.pc),], aes(x=factor(ensemblRelease),y=ensembl_gene_id, fill=value,color="black")) + 
+  geom_raster() +   theme_bw() + ggtitle("Ridge Reg id'd w/ protein coding label")
+ggsave(paste(outdir, "/lncFoundEnsBiotypes2.pdf",sep=""),height=13,width=8)
+}
 
 
-
-
-
-
-
-
-
-
-
-
+getVersionsForGeneList <- function(ens.vec,
+                                   outdir = getFullPath("plots/fullAnalysisExperiment/test/logReg/ridgeRegression/"),
+                                   filter = "ensembl_gene_id",
+                                   attr = c("ensembl_gene_id","gene_biotype")){
+  
+  if(missing(ens.vec) || identical(length(ens.vec), 0)){
+    warning("ens.vec is empty")
+  }  
+  
+  if (!file.exists(outdir)){
+    warning(paste("directory not found, creating directory:", outdir))
+    dir.create(outdir,recursive=TRUE)
+  }
+  
+  registerDoParallel(14)
+  
+  #  http://useast.ensembl.org/info/website/archives/index.html
+  ens.website <- llply(list(Ensembl73 = "sep2013", Ensembl72 = "jun2013",
+                            Ensembl71 = "apr2013", Ensembl70 = "jan2013",
+                            Ensembl69 = "oct2012", Ensembl68 = "jul2012",
+                            Ensembl67 = "may2012", Ensembl66 = "feb2012",
+                            Ensembl65 = "dec2011", Ensembl64 = "sep2011",
+                            Ensembl63 = "jun2011", Ensembl62 = "apr2011",
+                            Ensembl61 = "feb2011", Ensembl59 = "aug2010"), 
+                       function(x)paste(x,".archive.ensembl.org",sep=""))
+  
+  
+  found.df <- data.frame(ensembl_gene_id=ens.vec)
+  genes <- foreach(i = 1:length(names(ens.website)),.combine=cbind) %dopar% {
+    ensBiotypes.df <- getBM(attributes =  c("ensembl_gene_id","gene_biotype"),
+                            filters = "ensembl_gene_id", values = ens.vec,
+                            mart = useMart(host=ens.website[[i]], 
+                                           biomart='ENSEMBL_MART_ENSEMBL', dataset='hsapiens_gene_ensembl'),
+                            verbose=FALSE)
+    colnames(ensBiotypes.df) <- c("ensembl_gene_id", names(ens.website)[i])
+    copies.df <- merge(found.df, ensBiotypes.df, by = "ensembl_gene_id",all.x=TRUE)
+  }
+  
+  stopImplicitCluster()
+  
+  genes <- genes[,c(1,grep("Ensembl",colnames(genes)))]
+  exportAsTable(genes, file =paste(outdir, "/lncFoundEnsInfo_ensFull.tab",sep="") )
+}
 
 
 

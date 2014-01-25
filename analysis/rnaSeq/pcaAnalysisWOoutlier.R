@@ -624,12 +624,16 @@ pcaAnalysisRemoveOutliersRobust <- function(lncDf,exprCols,normalFun=FALSE,outDi
 }
 
 findTopOutliersFromPCA <- function(pca,N,exprCols){
+  if ( N == 0){
+    NULL
+  }  else {
   #pca should be normalized...
   pcaCols <- seq_along(exprCols)
   pca.center <- suppressMessages(melt(ddply(pca[pcaCols],.(),numcolwise(mean)))[["value"]])
   pca[["dist"]] <- apply(pca[pcaCols],1,function(x) sqrt(sum((x - pca.center)^2)))
   pca.distOrder <- pca[order(max(pca$dist) - pca$dist),]
   pca.distOrder[1:N,"lncRnaName"]
+  }
 }
 
 
@@ -637,7 +641,9 @@ findTopOutliersFromPCA <- function(pca,N,exprCols){
 pcaAnalysisRemoveOutliersSelectOutliers  <- function(lncDf,exprCols,normalFun=FALSE,
                                                      outDir,filebase,foundColword,COR=FALSE, titleMsg=""){
   printReport <- function(report){ if(verbose == TRUE){print(report)}}
-  makeOutFile <- function(x){outfile<-paste(paste(outDir,filebase,sep="/"),x,sep="");print(paste("making",outfile));outfile} # requires outDir & filebase
+  #makeOutFile <- function(x){outfile<-paste(paste(outDir,filebase,sep="/"),x,sep="");print(paste("making",outfile));outfile} # requires outDir & filebase
+  makeOutFile <- function(x){outfile<-paste(paste(outDir,filebase,sep="/"),x,sep="");outfile} # requires outDir & filebase
+  
   titleWithBanner <<- function(x)paste(titleMsg,x,sep="\n")
   expr.cols <- exprCols
   
@@ -669,7 +675,10 @@ pcaAnalysisRemoveOutliersSelectOutliers  <- function(lncDf,exprCols,normalFun=FA
   
   ### PCA Remove group 1
   ## need to find top N outlier
-  r1.vec =  findTopOutliersFromPCA(lnc.pca.factors,10,expr.cols)
+  removeSize <- 10
+  N.r1 <- nrow(lnc.pca.factors)
+  removeSizeSafe <- ifelse(N.r1 - removeSize < length(exprCols), N.r1 - length(exprCols), removeSize )
+  r1.vec =  findTopOutliersFromPCA(lnc.pca.factors,removeSizeSafe,expr.cols)
   lncDf.reduced.1 <- lncDf[which(!lncDf$lncRnaName %in% r1.vec),]
   write.csv(file=makeOutFile("removeOut1/missingLnc.csv"),x=data.frame(missing=r1.vec))
   lnc.pca.r1             <- princomp(lncDf.reduced.1[exprCols],cor=COR)
@@ -688,7 +697,13 @@ pcaAnalysisRemoveOutliersSelectOutliers  <- function(lncDf,exprCols,normalFun=FA
   
   ### PCA Remove group 2
   ## need to find top N outlier
-  r2.vec =  c(findTopOutliersFromPCA(lnc.pca.factors.r1,10,expr.cols),r1.vec)
+  removeSize <- 10
+  N <- N.r1 - length(r1.vec)
+  len <- length(exprCols)
+  removeSizeSafe <- ifelse(N - removeSize <= len, N - len, removeSize )
+  print(removeSizeSafe)
+  
+  r2.vec =  c(findTopOutliersFromPCA(lnc.pca.factors.r1,removeSizeSafe,expr.cols),r1.vec)
   write.csv(file=makeOutFile("removeOut2/missingLnc.csv"),x=data.frame(missing=r2.vec))
   lncDf.reduced.2 <- lncDf[which(!lncDf$lncRnaName %in% r2.vec),]
   lnc.pca.r2             <- princomp(lncDf.reduced.2[exprCols],cor=COR)
