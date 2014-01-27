@@ -1,0 +1,42 @@
+ 1 id              ... Identifier for the locus in GENCODE v 12
+ 2 set             ... lincs (GENCODE lincRNAs), coding (control set of GENCODE mRNAs), random (control set of random regions)
+ 3 species         ... Species: human (hg19), chimp (panTro3), Rhesus (rheMac2), bosTau6 (cow),  mouse (mm9), rat (rn4)
+ 4 gene_type       ... GENCODE transcript classification
+ 5 gene_status     ... GENCODE annotation status
+ 6 gene_name       ... Gene name
+ 7 lncRNAdb        ... lincRNA name if annoted in lncRNAdb
+ 8 chrom           ... Chromosome identifier of the locus in human (hg19
+ 9 start           ... Start position of the locus in human (hg19)
+10 end             ... End position of the locus in human (hg19)
+11 strand          ... Strand of the locus in human (hg19)
+12 mapped_chrom    ... Chromosome identifier of putatively orthologous locus in the other species
+13 mapped_start    ... Start position of putatively orthologous locus in the other species
+14 mapped_end      ... End position of putatively orthologous locus in the other species
+15 map_diversity   ... Metric measuring ambiguity of mapping between humand and the other species (Methods)
+16 reciprocal      ... Indicates if mapping between human and the other species is reciprocal or not (Methods)
+17 locus_length    ... length of locus (in human)
+18 exon_length     ... length of exonic regions (in human)
+19 mappable_locus  ... positions of the locus that were aligned to the other species
+20 mappable_exon   ... positions of the exonic regions that were aligned to the other species
+21 max_reads_locus ... maximum number of reads at one position in the complete locus (all individuals and tissues)
+22 max_reads_exon  ... maximum number of reads at one position in the exons (all individuals and tissues)
+23 avg_reads_locus ... average number of reads per position averaged over the complete locus (all individuals and tissues)
+24 avg_reads_exon  ... average number of reads per position averaged over the exonic regions (all individuals and tissues)
+25 brain           ... 25-34 Relative expression in the different tissues (see Methods)
+26 cerebellum
+27 colon
+28 heart
+29 kidney
+30 liver
+31 lung
+32 skm
+33 spleen
+34 testes
+35 rnacode_score           ... Raw RNAcode score (see Methods)
+36 rnacode_p               ... RNAcode p-value
+37 tissue_specificity      ... Tissue specificity score (Methods)
+38 fpkm_sum                ... Sum of FPKM of all tissues
+39 fpkm_max                ... Maximum FPKM in tissues
+40 splice_sites_total      ... Annotated splice sites in GENCODE (all isoforms)
+41 splice_sites_confirmed  ... Confirmed splice sites (Methods)
+42 p_avg_reads_exon        ... Empirical p-value of read counts (estimated from background distribution of random regions)

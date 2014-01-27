@@ -362,6 +362,23 @@ getEnsemblBiotypeDerrienList <- function(){
   
 }
 
+fetchEnsembl73 <- function(values,filter= "ensembl_gene_id",
+                           attr=c("ensembl_gene_id", "gene_biotype")){
+  if (missing(values) || !is.vector(values)){
+    stop("values argument must supply a vector of string matching the filter")
+  }
+  if(!identical(typeof(values[1]), "character")){
+    stop("values is not of type character")
+  }
+  ensembl73=useMart(host='sep2013.archive.ensembl.org', 
+                    biomart='ENSEMBL_MART_ENSEMBL', dataset='hsapiens_gene_ensembl')
+  getBM(attributes = attr,
+        filters = filter, values = values,
+        mart = ensembl73,
+        verbose=TRUE)
+}
+
+
 # library(doParallel);library(foreach)
 # 
 # df <-  expand.grid(c("one","two"),c("a","b","c","d"))

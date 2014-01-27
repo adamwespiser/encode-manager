@@ -30,22 +30,35 @@ entropy <- function(...){
   y[is.na(y)]=0
   sum(y) * -1
 }
-entropyVec <- function(x){
+
+entropyVec <- function(x,logFn=log2){
   x = x / sum(x)
-  y = log2(x) * x
+  y = logFn(x) * x
   y[is.na(y)]=0
   sum(y) * -1
 }
-JS = function(x,y){
-  x = x/ sum(x)
+
+JS <- function(x,y,logFn=log2){
+  x = x / sum(x)
   y = y / sum(y)
   a = (x + y)/2
-  entropyVec(a )- ((entropyVec(x)-entropyVec(y))/2) -> z
+  entropyVec(a ,logFn)- ((entropyVec(x,logFn)+entropyVec(y,logFn))/2) -> z
+#  entropyVec(a )- ((entropyVec(x)+entropyVec(y))/2) -> z
   z}
 
-JSsp <- function(e1,e2){
-  1 - sqrt(JS(e1,e2))
+JSsp <- function(e1,e2,logFn=log2){
+  1 - sqrt(JS(e1,e2,logFn))
 }
+
+calcTissSpec <- function(x,cols,logFn=log2){
+  x <- sapply(x,as.numeric)
+  profile <- diag(length(cols))
+  specEn <- sapply(1:length(cols),function(y)JSsp(x,profile[y,],logFn))
+  # cols[which(specEn == max(specEn))]
+  max(specEn)
+  #specEn
+}
+
 
 #this needs to be generalized...
 tissSpec <- function(...){
@@ -55,20 +68,12 @@ tissSpec <- function(...){
   specEn = c()
   for (i in 1:5){
     specEn[i] = JSsp(x,profile[[i]])
-    
   }
   #print(specEn)
   c("HELAS3","GM12878","H1HESC","HEPG2","K562")[which(specEn== max(specEn))]
   max(specEn)
 }
 
-calcTissSpec <- function(x,cols){
-  x <- sapply(x,as.numeric)
-  profile <- diag(length(cols))
-  specEn <- sapply(1:length(cols),function(y)JSsp(x,profile[y,]))
- # cols[which(specEn == max(specEn))]
-  max(specEn)
-}
 
 logNormal <- function(X,c=1){
   normX <- min(X) + 1
@@ -531,6 +536,34 @@ getLpaColnames <- function(df,colnamesDf=colnames(df)){
 getLnpaColnames <- function(colnamesDf){
   doubleCols = colnamesDf[as.vector(sapply(colnamesDf,function(x)(typeof(df[1,x]) == "double")))]
   doubleCols[grep("longNonPolyA$",doubleCols)]  
+}
+
+editStatsForLncDf <- function(expr.df, cols){
+  
+  col.names <- colnames(expr.df)[cols]
+  expr.df <- applyAndAppendFnDf(expr.df,cols,entropy,"entropyExpr")
+  expr.df <- applyAndAppendFnDf(expr.df,cols,sum,"sumExpr")
+  expr.df <- applyAndAppendFnDf(expr.df,cols,var,"varianceExpr")
+  expr.df <- applyAndAppendFnDf(expr.df,cols,mean,"averageExpr")
+  expr.df <- applyAndAppendFnDf(expr.df,cols,min,"minExpr")
+  expr.df <- applyAndAppendFnDf(expr.df,cols,max,"maxExpr")
+  
+  expr.df <- applyAndAppendFnDf(df=expr.df,cols,function(x)maxExpr(x,col.names),"maxExprType")
+  expr.df <- applyAndAppendFnDf(df=expr.df,cols=cols,FUN=function(x)threeTimesRestSpecifity(x,col.names),"threeTimesRest")
+  expr.df <- applyAndAppendFnDf(df=expr.df,cols=cols,FUN=function(x)nTimesRestSpecifity(x,cols),"nTimesRest")
+  expr.df <- applyAndAppendFnDf(df=expr.df,cols=cols,FUN=function(x)calcTissSpec(x,cols),"tissSpec")
+  expr.df
+  
+}
+
+xapplyAndAppendFnDf <-function(df=df,cols=cols,FUN=fn,newCol=newCol){
+  df[newCol] <- apply(df[as.vector(cols)],1,function(...){x<-c(...);FUN(x)})
+  df
+}
+
+xapplyAndAppendFnDfSecondArg <-function(df=df,cols=cols,FUN=fn,newCol=newCol,arg2=arg2){
+  df[newCol] <- apply(df[as.vector(cols)],1,function(...){x<-c(...);FUN(x,arg2)})
+  df
 }
 
 

@@ -15,15 +15,34 @@ source(paste(home, "/work/research/researchProjects/encode/encode-manager/analys
 source(paste(home, "/work/research/researchProjects/encode/encode-manager/analysis/getENSGfromBiomartByRefseq.R",sep=""))
 source(paste(home, "/work/research/researchProjects/encode/encode-manager/analysis/rnaSeq/pcaAnalysisWOoutlier.R",sep=""))
 
+# make sure there is at least one y==1 in both training sets...
+getTrainFromY <- function(y,ratio){
+  totalCount <- length(y)
+  first.second <- c(which(y == 1)[1],which(y == 1)[2])
+  train = sample((1:totalCount)[-first.second], (totalCount - 2) * ratio)
+  c(first.second[1], train)
+  
+}
+
+
+
+getLevels <- function(x){
+  length(levels(factor(x)))
+}
+
 calcAUC <- function(prob, label){
   AUC <- NA
-  tryCatch({
-  pre = prediction(predictions=prob, labels=label)
-  
-  per = performance(pre, "tpr", "fpr")
-  AUC = (performance(pre, "auc"))@y.values[[1]] })
-  
-  AUC
+  if(!identical(getLevels(label),2)){
+    return(NA)
+  }
+  AUC <- try({
+    (performance(prediction(predictions=prob, labels=label), "auc"))@y.values[[1]]
+  })
+  if ('try-error' %in% class(AUC)){
+    NA
+  } else {
+    AUC
+  }
 }
 
 getPcaData = function(exprCols=2:33){
@@ -518,6 +537,13 @@ testThetaStats <- function(X,k,y,cols, theta){
 
 trainAndTestLogReg <- function(lncDf, ratio, cols, mainEffects=TRUE,reg=FALSE,lambda=1,iter=1,glmTypeOutput=FALSE){
   
+  if (ratio >= 1){
+    stop("trainAndTestLogReg must have a ratio < 1")
+  }
+  if (sum(y) < 2){
+    stop("trainAndTestLogReg must have sum(y == 1) >= 2")
+  }
+  
   totalCount = dim(lncDf)[1]
   
   k <- length(cols) + 1
@@ -528,45 +554,27 @@ trainAndTestLogReg <- function(lncDf, ratio, cols, mainEffects=TRUE,reg=FALSE,la
   X <- cbind(rep(1,dim(X)[1]),X)
   y <- as.matrix(lncDf[,"label"])
   
-  # we need to center X:
-  #  X <- apply(X,2,function(x){x - mean(x)})
-  
   if (TRUE == mainEffects){
     X[,1] <- 1
   } else{
     X <- X[,-1]
     k <- k - 1
   }
-  
-  #scale X
-  X <- X / max(X)
- # y <- rep(0,totalCount)
-  sumYtrain <- 0
-  sumYtest <- 0
-  ## ensure there is at least one positive in the training example
-  #while(sumYtest == 0){
-  #print("iter")
-  train = sample(1:totalCount, totalCount * ratio)
-  #sumYtrain = sum(y[train])
-  #sumYtest = sum(y[-train])
-  #}
-  
-  #theta = runLogRegTheta(X[train,],k,y,cols,iter=iter,reg=reg,lambda=lambda)
-  theta = matrix(runNLM(X[train,],y[train],k,reg,lambda)$estimate,k)
-  probs <- sigmoid(apply(X[-train,],1,function(x){t(x) %*% theta %*% x} ))
-  if(glmTypeOutput){
-    
-    getStatsFromGlmModel(probs, y[-train], knn=FALSE)
-    
-  } else {
-    AUC <- NA
-  #print(y[-train])
-    #print(probs)
-  tryCatch(expr= {AUC <-getStatsFromGlmModel(probs, y[-train], knn=FALSE)$AUC})
 
-  
-  #testThetaStatsEllipse(X,k,y,cols, theta)
-  
+  X <- X / max(X)
+
+  train <- getTrainFromY (y,ratio)
+  theta <- matrix(runNLM(X[train,],y[train],k,reg,lambda)$estimate,k)
+  probs <- sigmoid(apply(X[-train,],1,function(x){t(x) %*% theta %*% x} ))
+  if(glmTypeOutput){  
+    getStatsFromGlmModel(probs, y[-train], knn=FALSE)
+  } else {
+    AUC <- try(getStatsFromGlmModel(probs, y[-train], knn=FALSE)$AUC )
+  if ('try-error' %in% class(AUC)){
+    warning("problem in trainAndTestLogReg see line 579 ")
+    return(list(R=NA,TPR=NA,TP=NA,TN=NA,FP=NA,FN=NA,AUC=NA))   
+  }
+    
   four <- testThetaStats(X,k,y,cols, theta) # TP=four$TP,TN=four$TN,FP=four$FP,FN=four$FN
   list(R=testTheta(X[-train,],k,y[-train],cols,theta),TPR =testThetaTPR(X[-train,],k,y[-train],cols,theta),
        TP=four$TP,TN=four$TN,FP=four$FP,FN=four$FN,AUC=AUC)
