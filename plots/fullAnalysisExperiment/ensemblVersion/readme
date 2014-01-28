@@ -1,0 +1,10 @@
+==Jan 27, 2014
+
+see ridgeRegPred_proteinCoding.R
+
+use analyzegetVersionsForGeneList
+  idr.file <- getFullPath("plots/fullAnalysisExperiment/lincProcTrans/lpa-IDRlessthan0_1/comparison/lpa-IDRlessthan0_1.tab")
+
+ ensv.file =getFullPath("data/lncFoundEnsInfo_ensFull.tab")
+
+

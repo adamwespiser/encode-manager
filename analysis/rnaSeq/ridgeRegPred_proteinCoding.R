@@ -139,9 +139,12 @@ getEnsArch <- function(ens.vec,plotResults=FALSE,
   
 }
 
-analyzeEnsemblArchive <- function(outdir = getFullPath("analysis/ensemblArchive"/)){
+analyzeEnsemblArchive <- function(outdir){
+  if(missing(outdir)){
+    outdir = getFullPath("/analysis/ensemblArchive"/)
+  }
   if(!file.exists(outdir)){
-    dir.create(outdir,recursive=TRUE,showWarnings=TRUE,)
+    dir.create(outdir,recursive=TRUE,showWarnings=TRUE)
   }
   df <- readInTable(getFullPath("plots/fullAnalysisExperiment/test/logReg/ridgeRegression/lncFoundEnsInfo_ensFull.tab"))
   
@@ -195,11 +198,70 @@ lncRNAComparisons <- function(outdir){
 
 
 analyzeEnsVersionsForGeneList <- function(){
+    ensBiotype.df <- readInTable(file=getFullPath("data/lncFoundEnsInfo_ensFull.tab"))
+  copies.melt <- melt(ensBiotype.df,id.var="ensembl_gene_id")
+  copies.melt$ensemblRelease <- sub(pattern= "Ensembl", replacement = "", copies.melt$variable)
   
   
 }
 
 
+
+
+analyzegetVersionsForGeneList <- function(indir=getFullPath("data/")){
+  outdir <- getFullPath("plots/fullAnalysisExperiment/ensemblVersion/")
+  if (!file.exists(outdir)){
+    dir.create(outdir,recursive=TRUE,showWarnings=TRUE)
+  }
+  
+  idr.file <- getFullPath("plots/fullAnalysisExperiment/lincProcTrans/lpa-IDRlessthan0_1/comparison/lpa-IDRlessthan0_1.tab")
+  idr.df <- readInTable(idr.file)
+  gene.idr <- idr.df$external_gene_id
+  
+  ensv.file =getFullPath("data/lncFoundEnsInfo_ensFull.tab")
+  df <- read.table(ensv.file, sep="\t", stringsAsFactors=FALSE,header=TRUE)
+  df <- subset(df,ensembl_gene_id %in% gene.idr)
+  d <- df
+  ens.order <- d[order(factor(d$Ensembl73)),"ensembl_gene_id" ]
+  melt.df <- melt(d, id.var="ensembl_gene_id")
+  colnames(melt.df) <- c("ensembl_gene_id","ensemblRelease","value")
+  melt.df$ensemblRelease <- sub(pattern= "Ensembl", replacement = "", melt.df$ensemblRelease)
+  
+  ens.pc <- df[which(df$Ensembl73 == "protein_coding"), "ensembl_gene_id"]
+  
+  melt.df$value <- levels(melt.df$value)[factor(ifelse(melt.df$value %in% c("lincRNA","processed_transcript","protein_coding","antisense","sense_intronic","pseudogene"), melt.df$value,"other"))]
+  ggplot(melt.df, aes(x=factor(ensemblRelease),y=ensembl_gene_id, fill=value,color="black")) + 
+    geom_tile() +   theme_bw() + scale_y_discrete(limits=ens.order) +
+    theme(axis.text.y=element_text(size=5,face="bold")) +
+    ggtitle("Ensembl gene biotype:\nIDR < 0.1 & biotype=lincProcTrans")
+  ggsave(paste(outdir, "/lncFoundEnsBiotypes.pdf",sep=""),
+         height=50,width=8,limitsize=FALSE)
+    
+  df$plotGroup = sort(rep_len(1:9,dim(df)[1]))
+  cols <- c("ensembl_gene_id",colnames(df)[grep(colnames(df), pattern="Ense")])
+  
+  for(i in 1:9){
+    df.local <- subset(df, plotGroup == i)
+    df.local <- df.local[,cols]
+    ens.order.local <- df.local[order(factor(df.local$Ensembl73)),"ensembl_gene_id" ]
+    
+    ens.order.local <- df.local[order(factor(df.local$Ensembl73)),"ensembl_gene_id" ]
+    melt.local.df <- melt(df.local[cols], id.var="ensembl_gene_id")
+    colnames(melt.local.df) <- c("ensembl_gene_id","ensemblRelease","value")
+    melt.local.df$ensemblRelease <- sub(pattern= "Ensembl", replacement = "", melt.local.df$ensemblRelease)
+    
+    ens.pc <- df[which(df$Ensembl73 == "protein_coding"), "ensembl_gene_id"]
+    
+    melt.local.df$value <- levels(melt.local.df$value)[factor(ifelse(melt.local.df$value %in% c("lincRNA","processed_transcript","protein_coding","antisense","sense_intronic","pseudogene"), 
+                                                         melt.local.df$value,"other"))]
+    ggplot(melt.local.df, aes(x=factor(ensemblRelease),y=factor(ensembl_gene_id), fill=value,color="black")) + 
+      geom_tile() +   theme_bw() + 
+      theme(axis.text.y=element_text(size=5,face="bold"))+
+      ggtitle("Ensembl gene biotype:\nIDR < 0.1 & biotype=lincProcTrans")
+    ggsave(paste(outdir, "/lncFoundEnsBiotypes-part=",i,".pdf",sep=""),
+           height=12,width=8,limitsize=FALSE)
+  }
+}
 
 
 

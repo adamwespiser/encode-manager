@@ -395,34 +395,6 @@ rungetVersionsForGeneList <- function(){
                          outdir = getFullPath("data/"))
 }
 
-analyzegetVersionsForGeneList <- function(indir=getFullPath("data/")){
-
-  qc.df <- preProcessData()
-  gene.idr <-  qc.df[which(qc.df$IDR < 0.1),"gene_id_short"]  
-  
-  
-file =paste(indir, "/lncFoundEnsInfo_ensFull.tab",sep="")
-df <- readInTable(file)
-df <- which(df$ensembl_gene_id %in% gene.idr)
-d <- df[1:200,]
-ens.order <- d[order(factor(d$Ensembl73)),"ensembl_gene_id" ]
-melt.df <- melt(d, id.var="ensembl_gene_id")
-colnames(melt.df) <- c("ensembl_gene_id","ensemblRelease","value")
-melt.df$ensemblRelease <- sub(pattern= "Ensembl", replacement = "", melt.df$ensemblRelease)
-
-melt.df$value <- factor(ifelse(melt.df$value %in% c("lincRNA","processed_transcript","protein_coding","antisense","sense_intronic","pseudogene"), melt.df$value,"other"))
-
-ggplot(melt.df, aes(x=factor(ensemblRelease),y=ensembl_gene_id, fill=value,color="black")) + 
-  geom_tile() +   theme_bw() + scale_y_discrete(limits=ens.order) +
-  theme(axis.text.y=element_text(size=5,face="bold"))
-ggsave(paste(outdir, "/lncFoundEnsBiotypes.pdf",sep=""),height=13,width=8)
-
-ggplot(copies.melt[which(copies.melt$ensembl_gene_id %in% ens.pc),], aes(x=factor(ensemblRelease),y=ensembl_gene_id, fill=value,color="black")) + 
-  geom_raster() +   theme_bw() + ggtitle("Ridge Reg id'd w/ protein coding label")
-ggsave(paste(outdir, "/lncFoundEnsBiotypes2.pdf",sep=""),height=13,width=8)
-}
-
-
 getVersionsForGeneList <- function(ens.vec,
                                    outdir = getFullPath("plots/fullAnalysisExperiment/test/logReg/ridgeRegression/"),
                                    filter = "ensembl_gene_id",
