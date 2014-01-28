@@ -363,7 +363,8 @@ getEnsemblBiotypeDerrienList <- function(){
 }
 
 fetchEnsembl73 <- function(values,filter= "ensembl_gene_id",
-                           attr=c("ensembl_gene_id", "gene_biotype")){
+                           attr=c("ensembl_gene_id", "gene_biotype"),
+                           verbose=FALSE){
   if (missing(values) || !is.vector(values)){
     stop("values argument must supply a vector of string matching the filter")
   }
@@ -375,7 +376,7 @@ fetchEnsembl73 <- function(values,filter= "ensembl_gene_id",
   getBM(attributes = attr,
         filters = filter, values = values,
         mart = ensembl73,
-        verbose=TRUE)
+        verbose=verbose)
 }
 
 
@@ -465,7 +466,6 @@ getVersionsForGeneList <- function(ens.vec,
   genes <- genes[,c(1,grep("Ensembl",colnames(genes)))]
   exportAsTable(genes, file =paste(outdir, "/lncFoundEnsInfo_ensFull.tab",sep="") )
 }
-
 
 
 

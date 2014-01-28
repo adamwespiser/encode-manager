@@ -8,10 +8,13 @@ setwd(projectDir)
 getwd()
 
 #boiler plate helpers
+
+source(getFullPath("analysis/getENSGfromBiomartByRefseq.R"))
+
 garber.base.dir  <- getFullPath("data/garber2014data/")
 garber.expr.file <- getFullPath("data/garber2014data/garber2014supp.dat")
 garber.analysis.file <- getFullPath("data/garber2014data/garber2014supp-analysis.dat")
-garber.homolog.file <- getFullPath("data/garber2014data/homologs.tab")
+garber.ortholog.ens73.file <- getFullPath("data/garber2014data/orthologs-ens73.tab")
 
 
 getFullPath <- function(projectPath){ paste(projectDir,projectPath,sep="/") }
@@ -108,7 +111,7 @@ getGenomeFromSpecies <- function(species){
 }
 
 # field for using getBM
-getEnsemblHomologFieldFromaName <- function(species){
+getEnsemblOrthologFieldFromaName <- function(species){
   if(missing(species)){
     warning("species is missing -> returning NULL")
   }
@@ -123,15 +126,32 @@ getEnsemblHomologFieldFromaName <- function(species){
   genome
 }
 
-getEnsemblHomologFields <- function(){
+getEnsemblOrthologFields <- function(){
 c("rnorvegicus_homolog_ensembl_gene", "mmulatta_homolog_ensembl_gene",
   "ptroglodytes_homolog_ensembl_gene", "mmusculus_homolog_ensembl_gene",
   "btaurus_homolog_ensembl_gene")
 }
 
-fetchHumanHomologs <- function(outfile = garber.homolog.file){
+fetchHumanOrthologs <- function(outfile = garber.ortholog.ens73.file){
   g.df <- readInGarberExpr()
   g.human.df <- subset(g.df, species == "hg19")
+  ortho.df <- fetchEnsembl73(values=g.human.df$ensembl_gene_id,
+                             filter= "ensembl_gene_id",
+                             attr=c("ensembl_gene_id",getEnsemblOrthologFields()))
+  write.csv(file = garber.ortholog.ens73.file, x = ortho.df)
+  ortho.df
 }
+
+readInGarberOrtho <- function(){
+  if (file.exists(garber.ortholog.ens73.file)){
+    df <- read.csv(garber.ortholog.ens73.file, stringsAsFactors=FALSE, sep=",")
+  }
+  else {
+    df <- fetchHumanOrthologs()
+  }
+  df
+}
+
+
 
 

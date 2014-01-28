@@ -139,6 +139,14 @@ getEnsArch <- function(ens.vec,plotResults=FALSE,
   
 }
 
+analyzeEnsemblArchive <- function(outdir = getFullPath("analysis/ensemblArchive"/)){
+  if(!file.exists(outdir)){
+    dir.create(outdir,recursive=TRUE,showWarnings=TRUE,)
+  }
+  df <- readInTable(getFullPath("plots/fullAnalysisExperiment/test/logReg/ridgeRegression/lncFoundEnsInfo_ensFull.tab"))
+  
+}
+
 createBmEnsembl73 <- function(){
   derrien.df <- read.csv(file=getFullPath("data/Gencode_lncRNAsv7_summaryTable_05_02_2012.csv"), stringsAsFactors=FALSE)
   derrien.df$ensembl_gene_id <- as.vector(sapply(derrien.df$LncRNA_GeneId,
@@ -186,6 +194,10 @@ lncRNAComparisons <- function(outdir){
 }
 
 
+analyzeEnsVersionsForGeneList <- function(){
+  
+  
+}
 
 
 
