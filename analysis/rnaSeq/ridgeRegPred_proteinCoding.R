@@ -141,7 +141,7 @@ getEnsArch <- function(ens.vec,plotResults=FALSE,
 
 analyzeEnsemblArchive <- function(outdir){
   if(missing(outdir)){
-    outdir = getFullPath("/analysis/ensemblArchive"/)
+    outdir = getFullPath("/analysis/ensemblArchive/")
   }
   if(!file.exists(outdir)){
     dir.create(outdir,recursive=TRUE,showWarnings=TRUE)
@@ -265,6 +265,68 @@ analyzegetVersionsForGeneList <- function(indir=getFullPath("data/")){
 
 
 
+getMeltedPhastConsForPred <- function(
+                                      aggrFN=mean,
+                                      found.file = getFullPath("plots/fullAnalysisExperiment/test/logReg/ridgeRegression/foundGeneByRidgeRegression.tab"),
+                                      derrien.file = getFullPath("data/Gencode_lncRNAsv7_summaryTable_05_02_2012.csv") ,
+                                      idr.file =  getFullPath("plots/fullAnalysisExperiment/lincProcTrans/lpa-IDRlessthan0_1/comparison/lpa-IDRlessthan0_1.tab")
+                                      ){
+  ### found file
+  found.df <- read.csv(file=found.file, stringsAsFactors=FALSE,sep="\t")
 
+  ### get lncRNA used in training/test ridge regression
+  idr.df <- readInTable(idr.file)
+  gene.idr <- idr.df$external_gene_id
+   
+  ### conservation scores for each lncRNA transcript
+  derrien.df <- read.csv(file=derrien.file,
+                         stringsAsFactors=FALSE)
+  derrien.df$ensembl_gene_id <- as.vector(sapply(derrien.df$LncRNA_GeneId,
+                                                 function(x)unlist(strsplit(x, "\\."))[1]))
+  derrien.df$gene_biotype <- NULL
+  derrienCon.df <- derrien.df[which(derrien.df$ensembl_gene_id %in% gene.idr),c("ensembl_gene_id",
+                                colnames(derrien.df)[grep(x=colnames(derrien.df),pattern="phast")])]
+  
+  ### aggregate the lncRNA conservation by gene
+  conMean.df <- ddply(derrienCon.df, .(ensembl_gene_id),numcolwise(aggrFN))  
+  
+  conMean.df$label <- factor(ifelse(conMean.df$ensembl_gene_id %in% found.df$ensembl_gene_id, 1, 0))
+  con.melt <- melt(conMean.df, id.var=c("ensembl_gene_id", "label"), 
+                   measure.var=colnames(derrien.df)[grep(x=colnames(derrien.df),pattern="phast")])  
+  con.melt$clade_region <- sub(x=sub(x=as.character(con.melt$variable),pattern="phastcons_",replacement=""),
+                               pattern="_score",replacement="")
+  con.melt$clade <- factor(unlist(lapply(strsplit(x=con.melt$clade_region, split="_"), function(x)x[1])))
+  con.melt$region <- factor(unlist(lapply(strsplit(x=con.melt$clade_region, split="_"), function(x)x[2])))
+  con.melt
+}
+
+
+lncRNAConservation <- function(
+  outdir=getFullPath("plots/fullAnalysisExperiment/test/logReg/conservation/")
+){
+  if (!file.exists(outdir)){
+    dir.create(outdir)
+  }
+  con.melt <- getMeltedPhastConsForPred()
+  ggplot(con.melt, aes(x=value,fill=label))+geom_density(alpha=I(0.4)) +
+    facet_grid(clade ~ region) + theme_bw() +
+    ggtitle("Ridge Regression predict y=(0,1)\nLincProcTrans, IDR < 0.1")
+  ggsave(paste(outdir,"cladeRegionCons_density.pdf"))
+  
+  ggplot(con.melt, aes(y=value,x=label))+geom_boxplot() +
+    facet_grid(clade ~ region) + theme_bw() +
+    ggtitle("Ridge Regression predict y=(0,1)\nLincProcTrans, IDR < 0.1")
+  ggsave(paste(outdir,"cladeRegionCons_boxplot.pdf"))
+  
+  ggplot(con.melt, aes(x=log(value),fill=label))+geom_density(alpha=I(0.4)) +
+    facet_grid(clade ~ region) + theme_bw() +
+    ggtitle("Ridge Regression predict y=(0,1)\nLincProcTrans, IDR < 0.1")
+  ggsave(paste(outdir,"cladeRegionCons_density.pdf"))
+  
+  ggplot(con.melt, aes(y=log(value),x=label))+geom_boxplot() +
+    facet_grid(clade ~ region) + theme_bw() +
+    ggtitle("Ridge Regression predict y=(0,1)\nLincProcTrans, IDR < 0.1")
+  ggsave(paste(outdir,"cladeRegionCons_boxplot.pdf"))
+}
 
 

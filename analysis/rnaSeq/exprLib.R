@@ -566,4 +566,17 @@ xapplyAndAppendFnDfSecondArg <-function(df=df,cols=cols,FUN=fn,newCol=newCol,arg
   df
 }
 
+getMemory <- function(){
+  gettextf("%.2f Mb stored in memory",
+           sum(sapply(unlist(ls(envir=.GlobalEnv)), 
+                       function(x)object.size(get(x,envir=.GlobalEnv))))
+           / (1000000))
+}
+getMemory()
+
+
+
+
+
+
 

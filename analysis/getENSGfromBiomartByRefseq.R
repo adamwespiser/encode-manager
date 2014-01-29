@@ -340,6 +340,8 @@ evalEnsList <- function(){
 }
   
 
+
+
 getEnsemblBiotypeDerrienList <- function(){
   derrien.df <- read.csv(file=getFullPath("data/Gencode_lncRNAsv7_summaryTable_05_02_2012.csv"), stringsAsFactors=FALSE)
   derrien.df$ensembl_gene_id <- as.vector(sapply(derrien.df$LncRNA_GeneId,

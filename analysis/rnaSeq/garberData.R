@@ -40,7 +40,7 @@ gatherDataFromWeb <- function(datadir = "/home/wespisea/sandbox/gtest/"){
   url.files.vec <-  c("hominid.expressed.lincs.bed.gz", "mammalian.expressed.bed.gz", "online-supplement.tar.gz")
   url.vec <- paste0(url.base, url.files.vec)
   temp.vec <- sapply(seq_along(url.vec),function(x) tempfile())
-  untar
+  
   invisible(sapply(seq_along(url.vec),function(x)download.file(url=url.vec[x],destfile=temp.vec[x])))
   untar(tarfile=temp.vec[3],
         exdir=paste(datadir,"/",sep=""))
@@ -51,6 +51,8 @@ gatherDataFromWeb <- function(datadir = "/home/wespisea/sandbox/gtest/"){
   
   file.copy(from=paste(datadir,"/online-data/supplementary-data.csv",sep=""),
             to=paste(datadir,"/garber2014supp.dat",sep=""))
+  
+  invisible(sapply(1:3, function(x)unlink(temp.vec[i])))
 }
 
 #gatherDataFromWeb(datadir = "/home/wespisea/sandbox/gtest/")
