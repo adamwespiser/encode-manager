@@ -311,22 +311,22 @@ lncRNAConservation <- function(
   ggplot(con.melt, aes(x=value,fill=label))+geom_density(alpha=I(0.4)) +
     facet_grid(clade ~ region) + theme_bw() +
     ggtitle("Ridge Regression predict y=(0,1)\nLincProcTrans, IDR < 0.1")
-  ggsave(paste(outdir,"cladeRegionCons_density.pdf"))
+  ggsave(paste(outdir,"cladeRegionCons_density.pdf", sep = ""))
   
   ggplot(con.melt, aes(y=value,x=label))+geom_boxplot() +
     facet_grid(clade ~ region) + theme_bw() +
     ggtitle("Ridge Regression predict y=(0,1)\nLincProcTrans, IDR < 0.1")
-  ggsave(paste(outdir,"cladeRegionCons_boxplot.pdf"))
+  ggsave(paste(outdir,"cladeRegionCons_boxplot.pdf",sep = ""))
   
   ggplot(con.melt, aes(x=log(value),fill=label))+geom_density(alpha=I(0.4)) +
     facet_grid(clade ~ region) + theme_bw() +
     ggtitle("Ridge Regression predict y=(0,1)\nLincProcTrans, IDR < 0.1")
-  ggsave(paste(outdir,"cladeRegionCons_density.pdf"))
+  ggsave(paste(outdir,"cladeRegionCons_LOG-density.pdf",sep = ""))
   
   ggplot(con.melt, aes(y=log(value),x=label))+geom_boxplot() +
     facet_grid(clade ~ region) + theme_bw() +
     ggtitle("Ridge Regression predict y=(0,1)\nLincProcTrans, IDR < 0.1")
-  ggsave(paste(outdir,"cladeRegionCons_boxplot.pdf"))
+  ggsave(paste(outdir,"cladeRegionCons_LOG-boxplot.pdf",sep = ""))
 }
 
 
