@@ -124,25 +124,29 @@ plotGTEx <- function(){
   comb.dfdf <- getGTExSra()
   outdir <- getFullPath("plots/coexpr/GTEx")
   
-  ggplot(comb.df, aes(as.numeric(gap_subject_id),body_site,fill=sex))+geom_raster() +theme_bw()+ 
-    scale_y_discrete(limits=names(sort(tapply(comb.df$body_site, comb.df$body_site, length))))
-  ggsave(paste(outdir,"bodysite-heatmap.pdf",sep=""),height=12,width=5)
+  ggplot(comb.df, aes(as.numeric(gap_subject_id),body_site,fill=sex))+geom_tile() +theme_bw()+ 
+    scale_y_discrete(limits=names(sort(tapply(comb.df$body_site, comb.df$body_site, length))))+
+    ggtitle("GTEx data from SRAdb")
+  ggsave(paste(outdir,"bodysite-heatmap.pdf",sep=""),height=6,width=12)
   
-  ggplot(comb.df, aes(as.numeric(gap_subject_id),histological_type,fill=sex))+geom_raster()+theme_bw()+ 
-    scale_y_discrete(limits=names(sort(tapply(comb.df$histological_type, comb.df$histological_type, length))))
-  ggsave(paste(outdir,"histological_type-heatmap.pdf",sep=""),height=12,width=5)
+  ggplot(comb.df, aes(as.numeric(gap_subject_id),histological_type,fill=sex))+geom_tile()+theme_bw()+ 
+    scale_y_discrete(limits=names(sort(tapply(comb.df$histological_type, comb.df$histological_type, length))))+
+    ggtitle("GTEx data from SRAdb")
+  ggsave(paste(outdir,"histological_type-heatmap.pdf",sep=""),height=5,width=12)
   
   ggplot(comb.df, aes(histological_type,fill=sex))+geom_bar() + coord_flip() + theme_bw() +
-    scale_x_discrete(limits=names(sort(tapply(comb.df$histological_type, comb.df$histological_type, length))))
+    scale_x_discrete(limits=names(sort(tapply(comb.df$histological_type, comb.df$histological_type, length))))+
+    ggtitle("GTEx data from SRAdb")
   ggsave(paste(outdir,"bodysite-bars.pdf",sep=""),height=12,width=5)
   
   ggplot(comb.df, aes(body_site,fill=sex))+geom_bar() + coord_flip() + theme_bw() + 
-    scale_x_discrete(limits=names(sort(tapply(comb.df$body_site, comb.df$body_site, length))))
+    scale_x_discrete(limits=names(sort(tapply(comb.df$body_site, comb.df$body_site, length))))+
+    ggtitle("GTEx data from SRAdb")
   ggsave(paste(outdir,"histological_type-bars.pdf",sep=""),height=12,width=5)
   
   ggplot(comb.df, aes(bases))+ geom_density()+ theme_bw()+
     ggtitle("distribution of number of bases read in RNA-seq")
-  ggsave(paste(outdir,"bases_per_run",sep=""),height=12,width=5)
+  ggsave(paste(outdir,"bases_per_run",sep=""),height=5,width=5)
   
 }
 #reorder(Position,Position, function(x)-length(x)))
