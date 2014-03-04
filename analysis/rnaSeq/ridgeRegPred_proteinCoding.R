@@ -265,7 +265,7 @@ analyzegetVersionsForGeneList <- function(indir=getFullPath("data/")){
 
 
 
-getMeltedPhastConsForPred <- function(
+getMeltedPhastConsForPred <- function(getMelt=TRUE
                                       aggrFN=mean,
                                       found.file = getFullPath("plots/fullAnalysisExperiment/test/logReg/ridgeRegression/foundGeneByRidgeRegression.tab"),
                                       derrien.file = getFullPath("data/Gencode_lncRNAsv7_summaryTable_05_02_2012.csv") ,
@@ -290,6 +290,10 @@ getMeltedPhastConsForPred <- function(
   ### aggregate the lncRNA conservation by gene
   conMean.df <- ddply(derrienCon.df, .(ensembl_gene_id),numcolwise(aggrFN))  
   
+  if (!getMelt){
+    conMean.df
+  
+  } else {
   conMean.df$label <- factor(ifelse(conMean.df$ensembl_gene_id %in% found.df$ensembl_gene_id, 1, 0))
   con.melt <- melt(conMean.df, id.var=c("ensembl_gene_id", "label"), 
                    measure.var=colnames(derrien.df)[grep(x=colnames(derrien.df),pattern="phast")])  
@@ -298,35 +302,36 @@ getMeltedPhastConsForPred <- function(
   con.melt$clade <- factor(unlist(lapply(strsplit(x=con.melt$clade_region, split="_"), function(x)x[1])))
   con.melt$region <- factor(unlist(lapply(strsplit(x=con.melt$clade_region, split="_"), function(x)x[2])))
   con.melt
+  }
 }
 
 
 lncRNAConservation <- function(
-  outdir=getFullPath("plots/fullAnalysisExperiment/test/logReg/conservation/")
+  outdir = getFullPath("plots/fullAnalysisExperiment/test/logReg/conservation/")
 ){
   if (!file.exists(outdir)){
     dir.create(outdir)
   }
-  con.melt <- getMeltedPhastConsForPred()
-  ggplot(con.melt, aes(x=value,fill=label))+geom_density(alpha=I(0.4)) +
+  con.melt <- getMeltedPhastConsForPred(getMelt=TRUE)
+  ggplot(con.melt, aes(x = value, fill = label)) + geom_density(alpha = I(0.4)) +
     facet_grid(clade ~ region) + theme_bw() +
     ggtitle("Ridge Regression predict y=(0,1)\nLincProcTrans, IDR < 0.1")
   ggsave(paste(outdir,"cladeRegionCons_density.pdf", sep = ""))
   
-  ggplot(con.melt, aes(y=value,x=label))+geom_boxplot() +
+  ggplot(con.melt, aes(y = value, x = label)) + geom_boxplot() +
     facet_grid(clade ~ region) + theme_bw() +
     ggtitle("Ridge Regression predict y=(0,1)\nLincProcTrans, IDR < 0.1")
   ggsave(paste(outdir,"cladeRegionCons_boxplot.pdf",sep = ""))
   
-  ggplot(con.melt, aes(x=log(value),fill=label))+geom_density(alpha=I(0.4)) +
+  ggplot(con.melt, aes(x = log(value), fill = label)) + geom_density(alpha = I(0.4)) +
     facet_grid(clade ~ region) + theme_bw() +
     ggtitle("Ridge Regression predict y=(0,1)\nLincProcTrans, IDR < 0.1")
   ggsave(paste(outdir,"cladeRegionCons_LOG-density.pdf",sep = ""))
   
-  ggplot(con.melt, aes(y=log(value),x=label))+geom_boxplot() +
+  ggplot(con.melt, aes(y = log(value), x = label))+geom_boxplot() +
     facet_grid(clade ~ region) + theme_bw() +
     ggtitle("Ridge Regression predict y=(0,1)\nLincProcTrans, IDR < 0.1")
-  ggsave(paste(outdir,"cladeRegionCons_LOG-boxplot.pdf",sep = ""))
+  ggsave(paste(outdir,"cladeRegionCons_LOG-boxplot.pdf", sep = ""))
 }
 
 
