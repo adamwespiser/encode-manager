@@ -1,6 +1,6 @@
 library(SRAdb)
 #sqlfile <- getSRAdbFile()
-
+setwd("~/work//research/researchProjects//encode/encode-manager/")
 sqlfile <- "/home/wespisea/data/SRAmetadb.sqlite" 
 sra_con <- dbConnect(SQLite(),sqlfile)
 sra_tables <- dbListTables(sra_con)
@@ -92,6 +92,21 @@ sampleAttrToDf <- function(sa.vec){
   Reduce("rbind",sapply(sa.vec,function(x) as.data.frame(convertToList(x))))
 }
 
+readInGTExAllMeta <- function(){
+  df <- read.csv(file = "./data/GTExSraDB-metainfo.tab",stringsAsFactors=FALSE,sep="\t")
+  datadir <- "/data/wespisea/gtex/fastq/"
+  df$read1 <- paste0(datadir,df$sample_accession,"_1.fasta.gz")
+  df$read2 <- paste0(datadir,df$sample_accession,"_2.fasta.gz")
+  df$cddownloadCmd <- paste0("cd /data/wespisea/gtex/sraDB;~/bin/sratoolkit.2.3.5-2-ubuntu64/bin/fastq-dump -O /data/wespisea/gtex/fastq/ --split-files -gzip ",df$sample_accession)
+  df$downloadCmd <- paste0("/home/wespisea/bin/sratoolkit.2.3.5-2-ubuntu64/bin/fastq-dump -O /data/wespisea/gtex/fastq/ --split-files -gzip ",df$sample_accession)
+}
+
+createDownloadFile <- function(){
+  df <- readInGTExAllMeta()
+  write(paste0(df$downloadCmd,rep(c(" &"," "),length=length(df$downloadCmd))), file="~/sandbox/downloadGTEx.sh")
+  
+}
+
 
 getGTExSra <- function(){
   sqlfile <- "/home/wespisea/data/SRAmetadb.sqlite" 
@@ -109,6 +124,7 @@ getGTExSra <- function(){
   sampleAttr   <- sapply(gtex.df$sample_attribute, function(x)convertToList(x))
   # take only SRA GTEx entries with 16 memebers in sample attributes
   gtex.16.df <- gtex.df[which(as.numeric(unlist(sapply(sampleAttr,length))) == 16),]
+  gtex.11.df <-  gtex.df[which(as.numeric(unlist(sapply(sampleAttr,length))) == 11),]
   # get sample attributes where sample attrs has 16 members
   # sampleAttr.16   <- sapply(gtex.16.df$sample_attribute[1:100], function(x)as.data.frame(convertToList(x)))
   
