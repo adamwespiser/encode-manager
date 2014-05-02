@@ -95,17 +95,47 @@ sampleAttrToDf <- function(sa.vec){
 readInGTExAllMeta <- function(){
   df <- read.csv(file = "./data/GTExSraDB-metainfo.tab",stringsAsFactors=FALSE,sep="\t")
   datadir <- "/data/wespisea/gtex/fastq/"
-  df$read1 <- paste0(datadir,df$sample_accession,"_1.fasta.gz")
-  df$read2 <- paste0(datadir,df$sample_accession,"_2.fasta.gz")
-  df$cddownloadCmd <- paste0("cd /data/wespisea/gtex/sraDB;~/bin/sratoolkit.2.3.5-2-ubuntu64/bin/fastq-dump -O /data/wespisea/gtex/fastq/ --split-files -gzip ",df$sample_accession)
-  df$downloadCmd <- paste0("/home/wespisea/bin/sratoolkit.2.3.5-2-ubuntu64/bin/fastq-dump -O /data/wespisea/gtex/fastq/ --split-files -gzip ",df$sample_accession)
+  df$read1 <- paste0(datadir,df$run_accession,"_1.fasta.gz")
+  df$read2 <- paste0(datadir,df$run_accession,"_2.fasta.gz")
+  df$cddownloadCmd <- paste0("cd /data/wespisea/gtex/sraDB;~/bin/sratoolkit.2.3.5-2-ubuntu64/bin/fastq-dump -O /data/wespisea/gtex/fastq/ --split-files -gzip ",df$run_accession)
+  df$downloadCmd <- paste0("/home/wespisea/bin/sratoolkit.2.3.5-2-ubuntu64/bin/fastq-dump -O /data/wespisea/gtex/fastq/ --split-files -gzip ",df$run_accession)
+  df
 }
 
 createDownloadFile <- function(){
   df <- readInGTExAllMeta()
-  write(paste0(df$downloadCmd,rep(c(" &"," "),length=length(df$downloadCmd))), file="~/sandbox/downloadGTEx.sh")
-  
+  write(paste0(df$downloadCmd,rep(c(" &"," "),length=length(df$downloadCmd))), file="~/sandbox/downloadGTEx.sh") 
 }
+
+downloadFileMissing <- function(){
+  df <- readInGTExAllMeta()
+  gtexDir <- "/data/wespisea/gtex/fastq/"
+  df$fastq1 <- paste0(gtexDir, df$run_accession, "_1.fastq.gz")
+  df$fastq2 <- paste0(gtexDir, df$run_accession, "_2.fastq.gz")
+  df$haveFiles <- file.exists(df$fastq1)
+  df.need <- df[which(df$haveFiles == FALSE),]
+  
+  write(paste0(df.need$downloadCmd,rep(c(" &"," "),length=length(df.need$downloadCmd))), file="~/sandbox/downloadGTEx_need.sh") 
+  # http://gap-upload.ncbi.nlm.nih.gov/E2004057-252A-4BC9-ADA3-2463E4AC9B98/SRR612551.sra?tic=ECA2A0FB-F5AC-43F1-BF95-7E38649C8A47
+  o <- paste0("wget -O /data/wespisea/gtex/sra/",df.need$run_accession,".sra 'http://gap-upload.ncbi.nlm.nih.gov/E2004057-252A-4BC9-ADA3-2463E4AC9B98/",
+              df.need$run_accession,".sra?tic=ECA2A0FB-F5AC-43F1-BF95-7E38649C8A47' --continue",
+              rep(c(" &"," "),length=length(df.need$run_accession)))
+  
+  len <- length(o)
+  midpoint <- floor(len/2)
+  write(o[1:midpoint], file = "~/sandbox/downloadGTEx_wget1.sh")
+  write(o[(midpoint+1):len], file = "~/sandbox/downloadGTEx_wget2.sh")
+}
+
+
+
+getMeanDownloadSpeed <- function(downloadFile,sampleSize=10){
+  mean(diff(sapply(1:sampleSize,function(x){Sys.sleep(1);file.info(downloadFile)$size}))/1000)
+}
+# getMeanDownloadSpeed("/data/wespisea/gtex//fastq/SRR818749_1.fastq.gz")
+
+
+
 
 
 getGTExSra <- function(){
@@ -137,7 +167,7 @@ getGTExSra <- function(){
 }
 
 plotGTEx <- function(){
-  comb.dfdf <- getGTExSra()
+  comb.df <- getGTExSra()
   outdir <- getFullPath("plots/coexpr/GTEx")
   
   ggplot(comb.df, aes(as.numeric(gap_subject_id),body_site,fill=sex))+geom_tile() +theme_bw()+ 
@@ -163,6 +193,25 @@ plotGTEx <- function(){
   ggplot(comb.df, aes(bases))+ geom_density()+ theme_bw()+
     ggtitle("distribution of number of bases read in RNA-seq")
   ggsave(paste(outdir,"bases_per_run",sep=""),height=5,width=5)
+  
+  ggplot(comb.df, aes(x=body_site))+geom_bar()
+  
+  vals <- lapply(unique(comb.df$histological_type), function(x)dim(comb.df[which(comb.df$histological_type == x),])[1])
+  names(vals) <- unique(comb.df$histological_type)
+  names(vals[vals > 10])
+  
+  valsb <- lapply(unique(comb.df$body_site), function(x)dim(comb.df[which(comb.df$body_site == x),])[1])
+  names(valsb) <- unique(comb.df$body_site)
+  names(valsb[valsb > 20])
+  valsb20 = valsb[valsb > 20]
+  
+  ggplot(comb.df[which(comb.df$body_site %in% names(valsb[valsb > 20])),], aes(x=body_site)) + 
+    geom_bar() + coord_flip() + 
+    thisTheme2 + ggtitle("GTEx RNA-seq\nbody sites with 20 or more samples") + 
+    xlab("body site") + 
+    scale_x_discrete(limits=names(valsb20)[order(as.numeric(valsb20))])
+  
+  
   
 }
 #reorder(Position,Position, function(x)-length(x)))
