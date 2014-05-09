@@ -4,6 +4,8 @@ setwd("~/work//research/researchProjects//encode/encode-manager/")
 sqlfile <- "/home/wespisea/data/SRAmetadb.sqlite" 
 sra_con <- dbConnect(SQLite(),sqlfile)
 sra_tables <- dbListTables(sra_con)
+
+test <- function(){
 dbListFields(sra_con,"run")
 sqliteQuickSQL(sra_con,"PRAGMA TABLE_INFO(sra)")
 
@@ -48,7 +50,7 @@ study.rna.df <- sra.df[which(sra.df$library_strategy == "RNA-Seq" &
 dbGetQuery(sra_con, paste( "SELECT * FROM experiment where experiment_accession == \"DRX000003\" ", sep=""))
 
 listSRAfile('SRR578654',sra_con)
-
+}
 
 
 getRNASeqRuns <- function(){
@@ -127,7 +129,25 @@ downloadFileMissing <- function(){
   write(o[(midpoint+1):len], file = "~/sandbox/downloadGTEx_wget2.sh")
 }
 
-
+downloadFileMissing_url2 <- function(){
+  df <- readInGTExAllMeta()
+  gtexDir <- "/data/wespisea/gtex/fastq/"
+  df$fastq1 <- paste0(gtexDir, df$run_accession, "_1.fastq.gz")
+  df$fastq2 <- paste0(gtexDir, df$run_accession, "_2.fastq.gz")
+  df$haveFiles <- file.exists(df$fastq1)
+  df.need <- df[which(df$haveFiles == FALSE),]
+  
+  write(paste0(df.need$downloadCmd,rep(c(" &"," "),length=length(df.need$downloadCmd))), file="~/sandbox/downloadGTEx_need.sh") 
+  # http://gap-upload.ncbi.nlm.nih.gov/E2004057-252A-4BC9-ADA3-2463E4AC9B98/SRR612551.sra?tic=ECA2A0FB-F5AC-43F1-BF95-7E38649C8A47
+  o <- paste0("wget -O /data/wespisea/gtex/sra/",df.need$run_accession,".sra 'http://gap-upload.ncbi.nlm.nih.gov/D0F68BBC-70E4-4163-BA50-8CFFF55E4CDE/",
+              df.need$run_accession,".sra?tic=ECA2A0FB-F5AC-43F1-BF95-7E38649C8A47' --continue",
+              rep(c(" &"," "),length=length(df.need$run_accession)))
+  
+  len <- length(o)
+  midpoint <- floor(len/2)
+  write(o[1:midpoint], file = "~/sandbox/downloadGTEx2_wget1.sh")
+  write(o[(midpoint+1):len], file = "~/sandbox/downloadGTEx2_wget2.sh")
+}
 
 getMeanDownloadSpeed <- function(downloadFile,sampleSize=10){
   mean(diff(sapply(1:sampleSize,function(x){Sys.sleep(1);file.info(downloadFile)$size}))/1000)
@@ -210,12 +230,99 @@ plotGTEx <- function(){
     thisTheme2 + ggtitle("GTEx RNA-seq\nbody sites with 20 or more samples") + 
     xlab("body site") + 
     scale_x_discrete(limits=names(valsb20)[order(as.numeric(valsb20))])
-  
-  
-  
+   
 }
 #reorder(Position,Position, function(x)-length(x)))
 
 #library_selection
 #library_strategy
 #library_name
+
+
+
+
+genWebsiteKey <- function(SRA="SRR613771"){
+system(paste("cd /data/wespisea/gtex/sraDB; ~/bin/sratoolkit.2.3.5-2-ubuntu64/bin/test-sra",SRA,"2>&1 > ~/sandbox/sratoolTest &"))
+Sys.sleep(30)
+}
+
+getWebsiteKey <- function(){
+  lines <- readLines(con="~/sandbox/sratoolTest")
+  lines <- lines[grep(x=lines, "Remote http")]
+  lines <- lines[grep(x=lines, "http://gap-upload.ncbi.nlm.nih.gov/")]
+  
+  
+#   
+# p <- pipe("cat ~/sandbox/sratoolTest |grep 'Remote http' |grep 'gap'")
+# res <- readLines(p)
+as.character(unlist(strsplit(x=as.character(unlist(strsplit(x=lines[1],split ="gap-upload.ncbi.nlm.nih.gov/")))[-1],split="/")[1]))[1]
+}
+
+downloadFileMissing_url_getkey <- function(){
+  df <- readInGTExAllMeta()
+  gtexDir <- "/data/wespisea/gtex/fastq/"
+  df$fastq1 <- paste0(gtexDir, df$run_accession, "_1.fastq.gz")
+  df$fastq2 <- paste0(gtexDir, df$run_accession, "_2.fastq.gz")
+  df$haveFiles <- file.exists(df$fastq1)
+  df.need <- df[which(df$haveFiles == FALSE),]
+  
+  write(paste0(df.need$downloadCmd,rep(c(" &"," "),length=length(df.need$downloadCmd))), file="~/sandbox/downloadGTEx_need.sh") 
+  # http://gap-upload.ncbi.nlm.nih.gov/E2004057-252A-4BC9-ADA3-2463E4AC9B98/SRR612551.sra?tic=ECA2A0FB-F5AC-43F1-BF95-7E38649C8A47
+ 
+  genWebsiteKey() #takes 30 seconds....
+  key <- getWebsiteKey()
+  print(paste("website key is ", key))
+  o <- paste0("wget -O /data/wespisea/gtex/sra/",df.need$run_accession,".sra 'http://gap-upload.ncbi.nlm.nih.gov/",key,"/",
+              df.need$run_accession,".sra?tic=ECA2A0FB-F5AC-43F1-BF95-7E38649C8A47' --continue",
+              rep(c(" &"," "),length=length(df.need$run_accession)))
+  
+  len <- length(o)
+  midpoint <- floor(len/2)
+ write(o[1:midpoint], file = "~/sandbox/downloadGTEx2_wget1.sh")
+  write(o[(midpoint+1):len], file = "~/sandbox/downloadGTEx2_wget2.sh")
+  
+  
+  s0 <- "find /data/wespisea/gtex/sra/ -name \"*.sra\" -size 0 -delete"
+  s1 <- "screen -d -m sh -c \"~/sandbox/downloadGTEx2_wget1.sh\""
+  s2 <- "screen -d -m sh -c \"~/sandbox/downloadGTEx2_wget2.sh\""
+  cat(paste0(c(s0,s1,s2),collapse="\n"))
+  c(s0,s1,s2)
+  
+}
+
+
+SRAstatusGood <- function(sraDir="/data/wespisea/gtex/sra/"){
+  sraDir <- "/data/wespisea/gtex/sra/"
+ # sraDir <- "/home/wespisea/sandbox/testSRA"
+  p <- pipe(paste("ls",sraDir))
+  files <- file.path(sraDir,readLines(p))
+  close(p)
+  sizeDistro <- sapply(files, function(x)file.info(x)$size)
+  if (sum(sizeDistro == 0) > 10){
+    FALSE
+  }
+  TRUE
+}
+
+
+runDownloadMoniter <- function(){
+  
+  while(TRUE){
+    if (FALSE == SRAstatusGood()){
+      cmds <- downloadFileMissing_url_getkey()
+      system(cmds[1])
+      Sys.sleep(10)
+      system(cmds[2])
+      system(cmds[3])
+      Sys.sleep(10)
+    } 
+    Sys.sleep(3600)
+  }
+} 
+
+
+
+
+
+
+
