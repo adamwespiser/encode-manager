@@ -95,7 +95,7 @@ sampleAttrToDf <- function(sa.vec){
 }
 
 readInGTExAllMeta <- function(){
-  df <- read.csv(file = "./data/GTExSraDB-metainfo.tab",stringsAsFactors=FALSE,sep="\t")
+  df <- read.csv(file = "/home/wespisea/work/research/researchProjects/encode/encode-manager/data/GTExSraDB-metainfo.tab",stringsAsFactors=FALSE,sep="\t")
   datadir <- "/data/wespisea/gtex/fastq/"
   df$read1 <- paste0(datadir,df$run_accession,"_1.fasta.gz")
   df$read2 <- paste0(datadir,df$run_accession,"_2.fasta.gz")
@@ -117,7 +117,7 @@ downloadFileMissing <- function(){
   df$haveFiles <- file.exists(df$fastq1)
   df.need <- df[which(df$haveFiles == FALSE),]
   
-  write(paste0(df.need$downloadCmd,rep(c(" &"," "),length=length(df.need$downloadCmd))), file="~/sandbox/downloadGTEx_need.sh") 
+  write(paste0(df.need$cddownloadCmd,rep(c(" &"," "),length=length(df.need$cddownloadCmd))), file="~/sandbox/downloadGTEx_need.sh") 
   # http://gap-upload.ncbi.nlm.nih.gov/E2004057-252A-4BC9-ADA3-2463E4AC9B98/SRR612551.sra?tic=ECA2A0FB-F5AC-43F1-BF95-7E38649C8A47
   o <- paste0("wget -O /data/wespisea/gtex/sra/",df.need$run_accession,".sra 'http://gap-upload.ncbi.nlm.nih.gov/E2004057-252A-4BC9-ADA3-2463E4AC9B98/",
               df.need$run_accession,".sra?tic=ECA2A0FB-F5AC-43F1-BF95-7E38649C8A47' --continue",
@@ -320,7 +320,11 @@ runDownloadMoniter <- function(){
   }
 } 
 
-
+runConvertToFastq <- function(){
+  downloadFileMissing()
+  
+  
+}
 
 
 
