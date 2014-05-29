@@ -101,8 +101,27 @@ readInGTExAllMeta <- function(){
   df$read2 <- paste0(datadir,df$run_accession,"_2.fasta.gz")
   df$cddownloadCmd <- paste0("cd /data/wespisea/gtex/sraDB;~/bin/sratoolkit.2.3.5-2-ubuntu64/bin/fastq-dump -O /data/wespisea/gtex/fastq/ --split-files -gzip ",df$run_accession)
   df$downloadCmd <- paste0("/home/wespisea/bin/sratoolkit.2.3.5-2-ubuntu64/bin/fastq-dump -O /data/wespisea/gtex/fastq/ --split-files -gzip ",df$run_accession)
+  df$gtexId <- as.character(unlist(sapply(df$sample_attribute, function(x)convertToList(x)[["submitted_sample_id"]])))
+  
   df
 }
+getGTExAnnot <- function(file=gtex.annot){
+  df <- read.csv(file,sep="\t",stringsAsFactors=FALSE)
+  df$SAMPID <- as.character(sapply(df$SAMPID, function(x)gsub(x=x,pattern="[\\_\\-]",replacement="\\.")))
+  df
+}
+
+getGTExWithFullAnnot <- function(){
+  d <- getGTExAnnot()
+  m <- readInGTExAllMeta()
+  d$SAMPIDdash = gsub(d$SAMPID, pattern="\\.",replacement="-")
+  m$gtexId= sapply(m$gtexId,toupper)
+  d$SAMPIDdash= sapply(d$SAMPIDdash,toupper)
+  comb <- merge(d,m, by.x="SAMPIDdash",by.y="gtexId")
+
+}
+
+
 
 createDownloadFile <- function(){
   df <- readInGTExAllMeta()
