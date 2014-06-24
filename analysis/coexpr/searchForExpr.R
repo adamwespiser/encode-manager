@@ -1,5 +1,7 @@
 library(SRAdb)
 #sqlfile <- getSRAdbFile()
+#source("http://bioconductor.org/biocLite.R")
+#biocLite("SRAdb")
 setwd("~/work//research/researchProjects//encode/encode-manager/")
 sqlfile <- "/home/wespisea/data/SRAmetadb.sqlite" 
 sra_con <- dbConnect(SQLite(),sqlfile)
@@ -105,6 +107,8 @@ readInGTExAllMeta <- function(){
   
   df
 }
+
+gtex.annot <- "/home/wespisea/data/GTEx_Data_2014-01-17_Annotations_SampleAttributesDS.txt"
 getGTExAnnot <- function(file=gtex.annot){
   df <- read.csv(file,sep="\t",stringsAsFactors=FALSE)
   df$SAMPID <- as.character(sapply(df$SAMPID, function(x)gsub(x=x,pattern="[\\_\\-]",replacement="\\.")))
@@ -258,6 +262,100 @@ plotGTEx <- function(){
 #library_name
 
 
+plotGTEx2014 <- function(){
+  d <- getGTExAnnot()
+  m <- readInGTExAllMeta()
+  d$SAMPIDdash = gsub(d$SAMPID, pattern="\\.",replacement="-")
+  m$gtexId= sapply(m$gtexId,toupper)
+  d$SAMPIDdash= sapply(d$SAMPIDdash,toupper)
+  comb <- merge(d,m, by.x="SAMPIDdash",by.y="gtexId")
+  comb$subject_id <- unlist(sapply(comb$sample_attribute, function(x)do.call("[[",list(convertToList(x),"gap_subject_id"))),use.names=FALSE)
+  comb$sex <- unlist(sapply(comb$sample_attribute, function(x)do.call("[[",list(convertToList(x),"sex"))),use.names=FALSE)
+  #body_site <- sapply(comb$sample_attribute, function(x)unlist(do.call("$",list(convertToList(x),"body_site")),
+  #                                                             use.names=FALSE),simplify="vector")
+  comb$body_site <- comb$SMTS
+  comb$histological_type <- comb$SMTSD
+  comb$gap_subject_id <- factor(comb$subject_id)
+  
+  indCount <- tapply(comb$gap_subject_id, comb$subject_id, length)
+  body_siteCount <- tapply(comb$SMTSD, comb$SMTSD, length)
+  
+  
+  ggplot(as.data.frame(indCount), aes(x=indCount))+geom_bar()+
+    ggtitle("GTEX 2014\nNumber of samples per participant")
+  ggsave(paste(outdir,"samplesPerPerson-heatmap-2014.pdf",sep=""),height=6,width=12)
+  
+  outdir <- getFullPath("plots/coexpr/GTEx")
+  
+  ggplot(comb, aes(as.numeric(gap_subject_id),SMTSD,fill=factor(SMTS)))+geom_tile() +theme_bw()+ 
+    scale_y_discrete(limits=names(sort(tapply(comb$SMTSD, comb$SMTSD, length))))+
+    ggtitle("GTEx data from SRAdb\n2014")
+  ggsave(paste(outdir,"bodysite-heatmap-2014.pdf",sep=""),height=6,width=12)
+  
+  
+  
+  bodySites30 <- names(table(comb$SMTSD)[which(table(comb$SMTSD) > 30)])
+  subjCount10<- names(table(comb$gap_subject_id)[which(table(comb$gap_subject_id) > 9)])  
+  comb30 <- comb[which(comb$SMTSD %in% bodySites30),]
+  
+  ggplot(comb30, aes(gap_subject_id,SMTSD,fill=factor(SMTS)))+geom_tile() +theme_bw()+ 
+    scale_y_discrete(limits=names(sort(tapply(comb30$SMTSD, comb30$SMTSD, length))))+
+    scale_x_discrete(limits=names(sort(tapply(comb30$gap_subject_id, comb30$gap_subject_id, length))))+
+    ggtitle("GTEx data from SRAdb\n2014\n30 or more samples present")
+  ggsave(paste(outdir,"bodysite-heatmap-2014-above30examples.pdf",sep=""),height=6,width=12)
+  
+  comb30s10 <- comb[which(comb$SMTSD %in% bodySites30 & comb$gap_subject_id %in% subjCount10),]
+  ggplot(comb30, aes(gap_subject_id,SMTSD,fill=factor(SMTS)))+geom_tile() +theme_bw()+ 
+    scale_y_discrete(limits=names(sort(tapply(comb30$SMTSD, comb30$SMTSD, length))))+
+    scale_x_discrete(limits=names(sort(tapply(comb30$gap_subject_id, comb30$gap_subject_id, length))))+
+    ggtitle("GTEx data from SRAdb\n2014\n30 or more samples present")
+  ggsave(paste(outdir,"bodysite-heatmap-2014-above30examplesIndividualFound10times.pdf",sep=""),height=6,width=12)
+  
+  
+  cellTypes <-  combn(names(sort(tapply(comb30$SMTSD, comb30$SMTSD, length),decreasing=FALSE))[1:10],5)
+  indWcellTypes <- apply(cellTypes,2,function(x)with(comb[which(comb$SMTSD %in% x),],sum(tapply(SMTSD,gap_subject_id,length) == 5,na.rm=TRUE)))
+  cellTypes[,which(indWcellTypes == max(indWcellTypes))]
+  
+  
+  
+  pairsInd <-  combn(names(sort(tapply(comb$gap_subject_id, comb$gap_subject_id, length),decreasing=FALSE)),2)
+  cellTypesInComman <- apply(pairsInd,2,function(x)with(comb[which(comb$gap_subject_id %in% x),],sum(tapply(gap_subject_id,SMTSD,length) == 2,na.rm=TRUE)))
+  cellTypes[,which(indWcellTypes == max(indWcellTypes))]
+  
+  
+  
+  ggplot(comb.df, aes(histological_type,fill=sex))+geom_bar() + coord_flip() + theme_bw() +
+    scale_x_discrete(limits=names(sort(tapply(comb.df$histological_type, comb.df$histological_type, length))))+
+    ggtitle("GTEx data from SRAdb")
+  ggsave(paste(outdir,"bodysite-bars.pdf",sep=""),height=12,width=5)
+  
+  ggplot(comb.df, aes(body_site,fill=sex))+geom_bar() + coord_flip() + theme_bw() + 
+    scale_x_discrete(limits=names(sort(tapply(comb.df$body_site, comb.df$body_site, length))))+
+    ggtitle("GTEx data from SRAdb")
+  ggsave(paste(outdir,"histological_type-bars.pdf",sep=""),height=12,width=5)
+  
+  ggplot(comb.df, aes(bases))+ geom_density()+ theme_bw()+
+    ggtitle("distribution of number of bases read in RNA-seq")
+  ggsave(paste(outdir,"bases_per_run",sep=""),height=5,width=5)
+  
+  ggplot(comb.df, aes(x=body_site))+geom_bar()
+  
+  vals <- lapply(unique(comb.df$histological_type), function(x)dim(comb.df[which(comb.df$histological_type == x),])[1])
+  names(vals) <- unique(comb.df$histological_type)
+  names(vals[vals > 10])
+  
+  valsb <- lapply(unique(comb.df$body_site), function(x)dim(comb.df[which(comb.df$body_site == x),])[1])
+  names(valsb) <- unique(comb.df$body_site)
+  names(valsb[valsb > 20])
+  valsb20 = valsb[valsb > 20]
+  
+  ggplot(comb.df[which(comb.df$body_site %in% names(valsb[valsb > 20])),], aes(x=body_site)) + 
+    geom_bar() + coord_flip() + 
+    thisTheme2 + ggtitle("GTEx RNA-seq\nbody sites with 20 or more samples") + 
+    xlab("body site") + 
+    scale_x_discrete(limits=names(valsb20)[order(as.numeric(valsb20))])
+  
+}
 
 
 genWebsiteKey <- function(SRA="SRR613771"){
@@ -344,6 +442,25 @@ runConvertToFastq <- function(){
   
   
 }
+
+
+checkFastqFile <- function(){
+  #/home/wespisea/bin/FastQC/fastqc -q -o ~/sandbox SRR1092397_1.fastq.gz
+  # cd /data/wespisea/gtex/sraDB;~/bin/sratoolkit.2.3.5-2-ubuntu64/bin/fastq-dump -O /data/wespisea/gtex/fastq/ --split-files -gzip /data/wespisea/gtex/sra/SRR1072247.sra &
+
+  
+}
+
+
+
+
+
+
+
+
+
+
+
 
 
 

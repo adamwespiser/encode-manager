@@ -59,6 +59,14 @@ calcTissSpec <- function(x,cols,logFn=log2){
   #specEn
 }
 
+calcTissSpecVector <- function(x,logFn=log2){
+  x <- sapply(x,as.numeric)
+  profile <- diag(length(x))
+  specEn <- sapply(seq_along(x),function(y)JSsp(x,profile[y,],logFn))
+  # cols[which(specEn == max(specEn))]
+  max(specEn)
+  #specEn
+}
 
 #this needs to be generalized...
 tissSpec <- function(...){
