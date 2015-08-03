@@ -13,7 +13,14 @@ From the analysis, we realized that non-functional lncRNA are generally clusted 
 [pagerank importance values for functional lncRNA](./plots/rnaSeq-eigenRank/functionalTypes/bothPullDowns-all_biotypes/bothPullDowns-all_biotypesrank-bars.pdf)
 To implement the pagerank algorithm I decided to extend the my R code base with C++ after realizing that calculating eigenvectors for dataset was too slow in base R.  Simply, the Rcpp package allowed me to add a C++ function as an inline string(see `./analysis/rnaSeq/eigenRank_08272013.R`, `srcCalcEigenCppD`), wrap the function, then use it as a regular R function.     
 
-## Implementing logistic regression with custon decision boundaries
+## Implementing logistic regression with custom decision boundaries
+Using N-dimensional data, logistic regression can be used to apply a circular decision boundary. Increasing the degree polynomial of the objective function, the decision boundary can can therefore be more complicated. To implement logistic regression, the first and second derivatives to the objective function are used to optimize a weight matrix, which is then applied to the test set.  Although many packages exist for this purpose, implementing the logistic regression algorithm gives greater control, and is a great learning exercise.
+
+
+
+
+
+
 ## Extending the learning problem to account for unlabled data
 
 ## Using entropy based approaches to quantify tissue specificity
