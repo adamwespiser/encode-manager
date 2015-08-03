@@ -14,9 +14,15 @@ From the analysis, we realized that non-functional lncRNA are generally clusted 
 To implement the pagerank algorithm I decided to extend the my R code base with C++ after realizing that calculating eigenvectors for dataset was too slow in base R.  Simply, the Rcpp package allowed me to add a C++ function as an inline string(see `./analysis/rnaSeq/eigenRank_08272013.R`, `srcCalcEigenCppD`), wrap the function, then use it as a regular R function.     
 
 ## Implementing logistic regression with custom decision boundaries
-Using N-dimensional data, logistic regression can be used to apply a circular decision boundary. Increasing the degree polynomial of the objective function, the decision boundary can can therefore be more complicated. To implement logistic regression, the first and second derivatives to the objective function are used to optimize a weight matrix, which is then applied to the test set.  Although many packages exist for this purpose, implementing the logistic regression algorithm gives greater control, and is a great learning exercise.
-
-
+Using N-dimensional data, logistic regression can be used to apply a circular decision boundary. Increasing the degree polynomial of the objective function, the decision boundary can can therefore be more complicated. To implement logistic regression, the first and second derivatives to the objective function are used to optimize a weight matrix, which is then applied to the test set.  Although many packages exist for this purpose, implementing the logistic regression algorithm gives greater control, and is a great learning exercise.     
+These two plots should be the same, which means that the formula used in the implemented logistic regression, is equivlent to applying a polynomial of degree 2 to the data, then passing the data into a regular logistic regression.     
+[ellipse implemented into the algorithm](./plots/fullAnalysisExperiment/test/logReg/mlclass/ellipse_ex2data2_lambda=10_degree=2.pdf)     
+[polynomial of degree=2 applied to data, then passed to log reg](./plots/fullAnalysisExperiment/test/logReg/mlclass/ex2data2_degree=2.pdf)     
+Code:     
+[cost function](./analysis/rnaSeq/logisticRegPcaExprData.R#L139-149)    
+[gradient function](./analysis/rnaSeq/logisticRegPcaExprData.R#L202-217)
+[using optimization to find a log. reg. parameter](./analysis/rnaSeq/logisticRegPcaExprData.R#L482-509)    
+(note: the optimization doesn't use the 2nd differential, as the optimization works better this way)     
 
 
 
